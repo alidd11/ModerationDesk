@@ -22,6 +22,7 @@ const navigation = [
     label: 'Setup',
     items: [
       { id: 'staff-access', label: 'Staff access' },
+      { id: 'commands', label: 'Commands' },
       { id: 'logging', label: 'Logging' },
       { id: 'member-messages', label: 'Member messages' },
       { id: 'roles', label: 'Roles' },
@@ -99,7 +100,8 @@ export default function GuildDashboardPage() {
             allowedInviteCodes: cfg.automod.allowedInviteCodes.join('\n')
           },
           security: cfg.security,
-          verification: cfg.verification
+          verification: cfg.verification,
+          commands: cfg.commandSettings || { overrides: {}, syncedAt: '' }
         });
       })
       .catch(error => setError(error.status === 401 ? 'Sign in to manage this server.' : error.message));
@@ -308,6 +310,22 @@ export default function GuildDashboardPage() {
                 <div className="form-grid">
                   <Multi label="Staff roles" help="Roles allowed to use staff-level commands." values={drafts.general.staffRoleIds} options={roles} onChange={value => set('general', data => (data.staffRoleIds = value, data))} />
                   <Multi label="Administrator roles" help="Roles allowed to change protected configuration." values={drafts.general.adminRoleIds} options={roles} onChange={value => set('general', data => (data.adminRoleIds = value, data))} />
+                </div>
+              </SettingsSection>
+            )}
+
+            {activeSection === 'commands' && (
+              <SettingsSection id="commands" title="Commands" description="Rename, describe or hide ModerationDesk commands for this server. Changes are registered only in this Discord server." guildId={guildId} csrf={session.csrf} section="commands" data={drafts.commands}>
+                <div className="command-customisation-list">
+                  <div className="notice">Command names must be lowercase and use letters, numbers, hyphens or underscores. Subcommands stay the same, so your team can change the top-level wording without losing functionality.</div>
+                  {Object.entries(drafts.commands.overrides).map(([key, value]) => (
+                    <div className="command-customisation-row" key={key}>
+                      <div><strong>/{key}</strong><small>Top-level command</small></div>
+                      <Text label="Command name" value={value.name || key} onChange={next => set('commands', data => (data.overrides[key] = { ...data.overrides[key], name: next }, data))} />
+                      <Text label="Description" value={value.description || ''} onChange={next => set('commands', data => (data.overrides[key] = { ...data.overrides[key], description: next }, data))} />
+                      <Check label="Show in Discord" checked={value.enabled !== false} onChange={next => set('commands', data => (data.overrides[key] = { ...data.overrides[key], enabled: next }, data))} />
+                    </div>
+                  ))}
                 </div>
               </SettingsSection>
             )}

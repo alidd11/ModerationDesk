@@ -450,3 +450,9 @@ input:focus, select:focus, textarea:focus { border-color: rgba(124,140,255,.72);
   .feature-grid { grid-template-columns: 1fr; }.feature-card { min-height: 170px; }.feature-card h3 { margin-top: 0; }
   .footer nav { gap: 12px; }
 }
+ .command-customisation-list { display: grid; gap: 14px; }
+.command-customisation-row { display: grid; grid-template-columns: 150px minmax(150px, .8fr) minmax(220px, 1.5fr) 150px; gap: 16px; align-items: end; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,255,255,.02); }
+.command-customisation-row > div:first-child { align-self: center; display: grid; gap: 4px; }
+.command-customisation-row > div:first-child strong { font-family: var(--mono); font-size: 14px; }
+.command-customisation-row > div:first-child small { color: var(--muted); font-size: 12px; }
+@media (max-width: 900px) { .command-customisation-row { grid-template-columns: 1fr 1fr; } .command-customisation-row > div:first-child { grid-column: 1 / -1; } }

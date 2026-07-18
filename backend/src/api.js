@@ -1,5 +1,6 @@
 import { PermissionFlagsBits } from 'discord.js';
 import { config } from './config.js';
+import { commandCatalog, sanitiseCommandSettings, syncGuildCommands } from './commandSync.js';
 import { billingConfigured, createCheckoutSession, createPortalSession } from './billing.js';
 import {
   consumeOAuthState,
@@ -151,8 +152,11 @@ function dashboardGuild(client, partial) {
 }
 
 function publicConfig(cfg) {
+  const commandOverrides = { ...(cfg.commandSettings?.overrides || {}) };
+  for (const command of commandCatalog()) commandOverrides[command.key] ||= { name: command.name, description: command.description, enabled: true };
   return {
     ...cfg,
+    commandSettings: { ...(cfg.commandSettings || {}), overrides: commandOverrides },
     billing: {
       status: cfg.billing.status || '',
       currentPeriodEnd: cfg.billing.currentPeriodEnd || 0,
@@ -221,6 +225,13 @@ async function applySettings(guild, section, body) {
   const channel = value => selectedId(value, guild.channels.cache);
   const role = value => selectedId(value, guild.roles.cache);
   const roleIds = value => selectedIds(value, guild.roles.cache);
+
+  if (section === 'commands') {
+    const settings = sanitiseCommandSettings(data.commandSettings || data);
+    const updated = updateGuildConfig(guild.id, { commandSettings: settings });
+    await syncGuildCommands(guild.id);
+    return updated;
+  }
 
   if (section === 'general') {
     return updateGuildConfig(guild.id, {
@@ -390,6 +401,10 @@ export function mountApi(app, client) {
 
   app.get('/api/guilds/:guildId', requireSession, requireGuildAccess(client), (req, res) => {
     res.json({ ok: true, guild: guildPayload(req.dashboardGuild) });
+  });
+
+  app.get('/api/commands/catalog', requireSession, (req, res) => {
+    res.json({ ok: true, commands: commandCatalog() });
   });
 
   app.get('/api/guilds/:guildId/cases', requireSession, requireGuildAccess(client), (req, res) => {

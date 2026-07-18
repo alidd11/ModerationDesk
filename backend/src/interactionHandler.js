@@ -13,6 +13,7 @@ import { handleSecurityCommand } from './handlers/securityCommands.js';
 import { handleUtilityCommand } from './handlers/utilityCommands.js';
 import { handleVerificationCommand } from './handlers/verificationCommands.js';
 import { handleMigrationCommand } from './handlers/migrationCommands.js';
+import { canonicalCommandName } from './commandSync.js';
 
 const staffCommands = new Set(['mod', 'case', 'appeal']);
 const adminCommands = new Set(['security', 'verify', 'migration', 'config']);
@@ -21,10 +22,11 @@ export function attachInteractionHandler(client) {
   client.on('interactionCreate', async interaction => {
     if (!interaction.isChatInputCommand() || !interaction.guild) return;
     try {
-      if (staffCommands.has(interaction.commandName) && !isStaff(interaction.member)) {
+      const commandName = canonicalCommandName(interaction.guildId, interaction.commandName);
+      if (staffCommands.has(commandName) && !isStaff(interaction.member)) {
         return interaction.reply({ content: 'You are not authorised to use ModerationDesk staff commands.', ephemeral: true });
       }
-      if (adminCommands.has(interaction.commandName) && !isGuildAdmin(interaction.member)) {
+      if (adminCommands.has(commandName) && !isGuildAdmin(interaction.member)) {
         return interaction.reply({ content: 'You are not authorised to manage ModerationDesk for this server.', ephemeral: true });
       }
 
@@ -43,7 +45,7 @@ export function attachInteractionHandler(client) {
         appeal: handleAppealCommand,
         premium: handlePremiumCommand
       };
-      const handler = handlers[interaction.commandName];
+      const handler = handlers[commandName];
       if (handler) await handler(interaction);
     } catch (error) {
       logger.error('Command failed', { command: interaction.commandName, guildId: interaction.guildId, userId: interaction.user.id, error: error.stack || error.message });

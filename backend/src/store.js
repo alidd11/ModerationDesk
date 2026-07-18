@@ -71,6 +71,7 @@ export const DEFAULT_GUILD = Object.freeze({
     requireSourceMembership: true,
     complianceMode: 'individual-oauth-consent'
   },
+  commandSettings: { overrides: {}, syncedAt: '' },
   autoroles: [],
   stickyRoles: { enabled: false, roleIds: [] },
   suggestions: { enabled: false, channelId: '' },
