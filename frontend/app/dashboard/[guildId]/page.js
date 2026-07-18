@@ -240,25 +240,31 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
   return (
     <Shell wide>
       <div className="dashboard-shell">
-        <header className="dashboard-heading">
-          <div className="guild-card">
-            {guild.icon ? <img className="guild-icon" src={guild.icon} alt="" /> : <div className="guild-icon">{guild.name.slice(0, 2).toUpperCase()}</div>}
-            <div className="grow">
-              <span className="dashboard-kicker">Server workspace</span>
-              <h1>{guild.name}</h1>
-              <div className="dashboard-meta"><span>{guild.memberCount.toLocaleString()} members</span><span className="header-health"><i aria-hidden="true" />{health.connected ? 'Connected' : 'Offline'}</span><span className="header-separator">·</span><span>{titleCase(plan)} plan</span></div>
-            </div>
-          </div>
-          <div className="dashboard-heading-actions"><a className="button ghost small" href="/dashboard">Switch server</a><a className="button secondary small" href={`https://discord.com/channels/${guildId}`} target="_blank" rel="noreferrer">Open Discord <span aria-hidden="true">↗</span></a></div>
-        </header>
-
         {error && <div className="error dashboard-error">{error}</div>}
+
+        <div className="mobile-workspace">
+          {guild.icon ? <img className="mobile-workspace-icon" src={guild.icon} alt="" /> : <div className="mobile-workspace-icon">{guild.name.slice(0, 2).toUpperCase()}</div>}
+          <div><strong>{guild.name}</strong><small>{guild.memberCount.toLocaleString()} members <i aria-hidden="true">·</i> <b className={health.connected ? 'online' : ''}>{health.connected ? 'Connected' : 'Offline'}</b></small></div>
+          <a href="/dashboard">Switch</a>
+        </div>
 
         <div className="dashboard-layout">
           <aside className="sidebar" aria-label="Server settings">
+            <section className="sidebar-server" aria-label="Current server">
+              {guild.icon ? <img className="sidebar-server-icon" src={guild.icon} alt="" /> : <div className="sidebar-server-icon">{guild.name.slice(0, 2).toUpperCase()}</div>}
+              <div className="sidebar-server-copy">
+                <span>Current server</span>
+                <strong title={guild.name}>{guild.name}</strong>
+                <small>{guild.memberCount.toLocaleString()} members <i aria-hidden="true">·</i> <b className={health.connected ? 'online' : ''}>{health.connected ? 'Connected' : 'Offline'}</b></small>
+              </div>
+              <div className="sidebar-server-actions">
+                <a href="/dashboard">All servers</a>
+                <a href={`https://discord.com/channels/${guildId}`} target="_blank" rel="noreferrer">Discord <span aria-hidden="true">↗</span></a>
+              </div>
+            </section>
             <div className="sidebar-utility">
-              <span>Server settings</span>
-              <label className="sidebar-search"><i aria-hidden="true">⌕</i><input value={sidebarQuery} onChange={event => setSidebarQuery(event.target.value)} placeholder="Find a setting" aria-label="Find a server setting" /></label>
+              <span>Configuration</span>
+              <label className="sidebar-search"><i aria-hidden="true">⌕</i><input value={sidebarQuery} onChange={event => setSidebarQuery(event.target.value)} placeholder="Search settings" aria-label="Find a server setting" /></label>
             </div>
             {visibleNavigation.map(group => (
               <div className="sidebar-group" key={group.label}>
