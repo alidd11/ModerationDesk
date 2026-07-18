@@ -220,14 +220,13 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
   return (
     <Shell wide>
       <div className="dashboard-shell">
-        <div className="dashboard-breadcrumb"><a href="/dashboard">Servers</a><span aria-hidden="true">/</span><strong>{guild.name}</strong></div>
         <header className="dashboard-heading">
           <div className="guild-card">
             {guild.icon ? <img className="guild-icon" src={guild.icon} alt="" /> : <div className="guild-icon">{guild.name.slice(0, 2).toUpperCase()}</div>}
             <div className="grow">
-              <span className="dashboard-kicker">Workspace</span>
+              <span className="dashboard-kicker">Server workspace</span>
               <h1>{guild.name}</h1>
-              <p>{guild.memberCount.toLocaleString()} members <span className="header-separator">·</span> <span className="header-health"><i aria-hidden="true" />{health.connected ? 'Connected' : 'Offline'}</span></p>
+              <div className="dashboard-meta"><span>{guild.memberCount.toLocaleString()} members</span><span className="header-health"><i aria-hidden="true" />{health.connected ? 'Connected' : 'Offline'}</span><span className="header-separator">·</span><span>{titleCase(plan)} plan</span></div>
             </div>
           </div>
           <div className="dashboard-heading-actions"><a className="button ghost small" href="/dashboard">Switch server</a><a className="button secondary small" href={`https://discord.com/channels/${guildId}`} target="_blank" rel="noreferrer">Open Discord <span aria-hidden="true">↗</span></a></div>

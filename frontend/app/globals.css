@@ -243,6 +243,7 @@ button { color: inherit; }
 .dashboard-heading .guild-icon { width: 40px; height: 40px; border-radius: 9px; }
 .dashboard-heading h1 { margin: 1px 0 0; font-size: 22px; line-height: 1.2; letter-spacing: -.035em; }
 .dashboard-heading p { margin: 1px 0 0; color: var(--muted); font-size: 12px; }
+.dashboard-meta { display: flex; align-items: center; gap: 7px; margin-top: 3px; color: var(--muted); font-size: 12px; }
 .header-separator { color: #4d515c; padding: 0 3px; }.header-health { color: #7fd59b; }.header-health i { display: inline-block; width: 6px; height: 6px; margin-right: 5px; border-radius: 50%; background: #57c47e; box-shadow: 0 0 7px rgba(87,196,126,.45); }
 .dashboard-heading-actions { display: flex; align-items: center; gap: 8px; }
 .dashboard-kicker, .settings-kicker { display: block; color: #777b88; font-size: 9px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
