@@ -33,7 +33,7 @@ export default function Shell({ children, compact = false }) {
           {user ? (
             <><span className="user-chip">{user.avatar ? <img src={user.avatar} alt="" /> : null}<span>{user.username}</span></span><button className="button ghost small" onClick={logout}>Log out</button></>
           ) : (
-            <a className="button small" href="/api/auth/login">Dashboard <span aria-hidden="true">→</span></a>
+            <Link className="button small" href="/dashboard">Dashboard <span aria-hidden="true">→</span></Link>
           )}
         </nav>
       </header>
