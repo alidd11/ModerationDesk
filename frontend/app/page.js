@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Shell from '../components/Shell';
-import ProductTour from '../components/ProductTour';
+import ProductDirectory from '../components/ProductDirectory';
 
 const botInviteUrl = 'https://discord.com/oauth2/authorize?client_id=1528046559923666944&permissions=1099914374358&scope=bot%20applications.commands';
 
@@ -62,7 +62,7 @@ export default function Home() {
         <span>Clear, separate security controls</span>
       </section>
 
-      <ProductTour />
+      <ProductDirectory />
 
       <section className="plans-section" id="plans">
         <div className="section-head"><div><span className="section-kicker">PLANS</span><h2>Start with the controls you need.</h2></div><p>Features are grouped by operational need, with advanced protection kept separate from everyday moderation.</p></div>

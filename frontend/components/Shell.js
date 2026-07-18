@@ -27,8 +27,8 @@ export default function Shell({ children, compact = false, wide = false }) {
           <span>ModerationDesk</span>
         </Link>
         <nav className="nav-actions">
-          <Link href="/#platform">Platform</Link>
-          <Link href="/#security">Security</Link>
+          <Link href="/platform/overview">Platform</Link>
+          <Link href="/platform/protection">Security</Link>
           <Link href="/#plans">Plans</Link>
           {user ? (
             <><Link href="/dashboard">Dashboard</Link><span className="user-chip">{user.avatar ? <img src={user.avatar} alt="" /> : null}<span>{user.username}</span></span><button className="button ghost small" onClick={logout}>Log out</button></>
