@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { productAreas } from '../content/productAreas';
+import DashboardCommandPalette from './DashboardCommandPalette';
 
 export default function Shell({ children, compact = false, wide = false }) {
   const [user, setUser] = useState(null);
@@ -136,6 +137,7 @@ export default function Shell({ children, compact = false, wide = false }) {
         </div>
       )}
       <main>{children}</main>
+      <DashboardCommandPalette enabled={dashboardContext && Boolean(dashboardGuildId)} />
       <footer className="footer">
         <div><strong>ModerationDesk</strong><span>Discord moderation software from DeskLabs.</span></div>
         <nav><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link><a href="mailto:support@moderationdesk.com">Support</a></nav>
