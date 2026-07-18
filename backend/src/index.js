@@ -169,11 +169,21 @@ app.get('/api/admin/stats', statsOnly, (req, res) => {
   const guilds = [...client.guilds.cache.values()];
   const totalMembers = guilds.reduce((sum, guild) => sum + (guild.memberCount || 0), 0);
   const plans = { free: 0, pro: 0, enterprise: 0 };
-  for (const guild of guilds) {
-    const plan = getGuildConfig(guild.id).plan;
-    plans[plan] = (plans[plan] || 0) + 1;
-  }
-  res.json({ bot: 'ModerationDesk', installs: guilds.length, totalMembers, plans });
+  const guildList = guilds
+    .map((guild) => {
+      const cfg = getGuildConfig(guild.id);
+      plans[cfg.plan] = (plans[cfg.plan] || 0) + 1;
+      return {
+        id: guild.id,
+        name: guild.name,
+        icon: guild.iconURL({ size: 64 }) || null,
+        memberCount: guild.memberCount || 0,
+        plan: cfg.plan,
+        addedAt: cfg.createdAt || null,
+      };
+    })
+    .sort((a, b) => b.memberCount - a.memberCount);
+  res.json({ bot: 'ModerationDesk', installs: guilds.length, totalMembers, plans, guilds: guildList });
 });
 
 app.use((error, req, res, next) => {
