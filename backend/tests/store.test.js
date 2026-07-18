@@ -36,3 +36,12 @@ test('web sessions and OAuth states survive process memory boundaries', () => {
   assert.equal(store.consumeOAuthState(state).returnTo, '/dashboard');
   assert.equal(store.consumeOAuthState(state), null);
 });
+
+test('dashboard activity is retained per guild and newest first', () => {
+  store.recordAuditEvent({ guildId: 'guild-a', category: 'configuration', action: 'automod_updated', actorId: 'mod-a', actorName: 'Moderator', summary: 'AutoMod was updated.' });
+  store.recordAuditEvent({ guildId: 'guild-b', category: 'logging', action: 'log_delivery_tested', actorId: 'mod-b', actorName: 'Other moderator', summary: 'Log delivery was tested.' });
+  const events = store.listAuditEvents('guild-a');
+  assert.equal(events.length, 1);
+  assert.equal(events[0].action, 'automod_updated');
+  assert.equal(events[0].actorName, 'Moderator');
+});

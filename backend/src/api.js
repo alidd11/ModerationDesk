@@ -13,9 +13,11 @@ import {
   getCase,
   getGuildConfig,
   getWebSession,
+  listAuditEvents,
   listAppeals,
   listCases,
   pruneWebAuth,
+  recordAuditEvent,
   updateGuildConfig
 } from './store.js';
 import { ensureVerificationPanel } from './verification.js';
@@ -432,9 +434,58 @@ export function mountApi(app, client) {
     res.json({ ok: true, appeals: listAppeals(req.params.guildId, status) });
   });
 
+  app.get('/api/guilds/:guildId/activity', requireSession, requireGuildAccess(client), (req, res) => {
+    const limit = clamp(req.query.limit, 1, 200, 50);
+    res.json({ ok: true, events: listAuditEvents(req.params.guildId, { limit }) });
+  });
+
+  app.post('/api/guilds/:guildId/logging/test', requireSession, requireGuildAccess(client), checkCsrf, async (req, res) => {
+    const group = String(req.body?.group || '');
+    if (!['member', 'moderation', 'messages', 'server', 'security', 'appeals'].includes(group)) return res.status(400).json({ ok: false, error: 'invalid_log_group' });
+    const channelId = selectedId(req.body?.channelId, req.dashboardGuild.channels.cache) || getGuildConfig(req.params.guildId).logs[group];
+    const channel = req.dashboardGuild.channels.cache.get(channelId);
+    if (!channelId || !channel?.isTextBased()) return res.status(400).json({ ok: false, error: 'log_channel_not_configured' });
+    const message = await sendLog(req.dashboardGuild, group, {
+      title: 'ModerationDesk log delivery test',
+      eventKey: 'log_delivery_test',
+      description: `This confirms that the ${group} log channel is reachable by ModerationDesk.`,
+      footer: `Requested by ${req.dashboardSession.user?.username || 'dashboard user'}`,
+      channelId,
+      force: true
+    });
+    if (!message) return res.status(400).json({ ok: false, error: 'log_delivery_failed' });
+    recordAuditEvent({
+      guildId: req.params.guildId,
+      category: 'logging',
+      action: 'log_delivery_tested',
+      actorId: req.dashboardSession.user?.id,
+      actorName: req.dashboardSession.user?.global_name || req.dashboardSession.user?.username || 'Dashboard user',
+      summary: `${group} log delivery was tested.`
+    });
+    res.json({ ok: true, channelId });
+  });
+
   app.patch('/api/guilds/:guildId/settings/:section', requireSession, requireGuildAccess(client), checkCsrf, async (req, res) => {
     try {
       const updated = await applySettings(req.dashboardGuild, req.params.section, req.body);
+      const actor = req.dashboardSession.user || {};
+      const section = String(req.params.section || 'settings');
+      recordAuditEvent({
+        guildId: req.params.guildId,
+        category: 'configuration',
+        action: `${section}_updated`,
+        actorId: actor.id,
+        actorName: actor.global_name || actor.username || 'Dashboard user',
+        summary: `${section.replaceAll('-', ' ')} settings were updated from the dashboard.`
+      });
+      await sendLog(req.dashboardGuild, 'server', {
+        title: 'Dashboard configuration updated',
+        eventKey: 'configuration_updated',
+        fields: [
+          { name: 'Area', value: section.replaceAll('-', ' '), inline: true },
+          { name: 'Changed by', value: `${actor.username || 'Dashboard user'} (${actor.id || 'unknown'})`, inline: true }
+        ]
+      });
       res.json({ ok: true, config: publicConfig(updated) });
     } catch (error) {
       logger.warn('Dashboard settings update failed', { guildId: req.params.guildId, section: req.params.section, error: error.message });

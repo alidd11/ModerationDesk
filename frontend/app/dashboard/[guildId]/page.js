@@ -10,7 +10,7 @@ import { api } from '../../../lib/api';
 const copy = value => JSON.parse(JSON.stringify(value));
 
 const navigation = [
-  { label: 'Overview', items: [{ id: 'overview', label: 'Overview' }] },
+  { label: 'Overview', items: [{ id: 'overview', label: 'Overview' }, { id: 'activity', label: 'Activity' }] },
   {
     label: 'Moderation',
     items: [
@@ -61,11 +61,11 @@ const LOG_EVENT_OPTIONS = {
   ],
   security: [
     ['automod_action', 'AutoMod actions'], ['anti_raid_triggered', 'Anti-raid triggers'], ['anti_nuke_triggered', 'Anti-nuke triggers'],
-    ['new_account_quarantined', 'New-account quarantines'], ['server_lockdown_started', 'Lockdowns started'], ['server_lockdown_ended', 'Lockdowns ended']
+    ['new_account_quarantined', 'New-account quarantines'], ['server_lockdown_started', 'Lockdowns started'], ['server_lockdown_ended', 'Lockdowns ended'], ['webhook_activity', 'Webhook activity']
   ],
   messages: [['message_deleted', 'Deleted messages'], ['messages_bulk_deleted', 'Bulk deleted messages'], ['message_edited', 'Edited messages']],
-  member: [['member_joined', 'Member joins'], ['member_left_or_was_removed', 'Member leaves'], ['member_updated', 'Member and role changes']],
-  server: [['channel_created', 'Channels created'], ['channel_deleted', 'Channels deleted'], ['channel_updated', 'Channels updated'], ['role_created', 'Roles created'], ['role_deleted', 'Roles deleted'], ['role_updated', 'Roles updated']],
+  member: [['member_joined', 'Member joins'], ['member_left_or_was_removed', 'Member leaves'], ['member_updated', 'Member and role changes'], ['voice_joined', 'Voice joins'], ['voice_left', 'Voice leaves'], ['voice_moved', 'Voice moves'], ['voice_moderation_updated', 'Voice moderation']],
+  server: [['channel_created', 'Channels created'], ['channel_deleted', 'Channels deleted'], ['channel_updated', 'Channels updated'], ['role_created', 'Roles created'], ['role_deleted', 'Roles deleted'], ['role_updated', 'Roles updated'], ['server_settings_updated', 'Server settings'], ['configuration_updated', 'Dashboard configuration'], ['invite_created', 'Invites created'], ['invite_deleted', 'Invites deleted'], ['thread_created', 'Threads created'], ['thread_deleted', 'Threads deleted'], ['thread_updated', 'Threads updated'], ['emoji_created', 'Emojis created'], ['emoji_deleted', 'Emojis deleted'], ['emoji_updated', 'Emojis updated']],
   appeals: [['new_appeal', 'Appeals submitted'], ['appeal_resolved', 'Appeals resolved']]
 };
 
@@ -83,12 +83,14 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
   const [session, setSession] = useState(null);
   const [guild, setGuild] = useState(null);
   const [drafts, setDrafts] = useState(null);
-  const [records, setRecords] = useState({ cases: [], appeals: [] });
+  const [records, setRecords] = useState({ cases: [], appeals: [], activity: [] });
   const [activeSection, setActiveSection] = useState(initialSection);
   const [openGroups, setOpenGroups] = useState({ Overview: true, Moderation: false, Protection: false, Access: false, Community: false, System: false });
   const [error, setError] = useState('');
   const [danger, setDanger] = useState('');
   const [billingBusy, setBillingBusy] = useState(false);
+  const [logTestBusy, setLogTestBusy] = useState(false);
+  const [logTestResult, setLogTestResult] = useState('');
   const [activeLogGroup, setActiveLogGroup] = useState('moderation');
 
   useEffect(() => {
@@ -96,12 +98,13 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
       api('/api/auth/session'),
       api(`/api/guilds/${guildId}`),
       api(`/api/guilds/${guildId}/cases?limit=50`),
-      api(`/api/guilds/${guildId}/appeals`)
+      api(`/api/guilds/${guildId}/appeals`),
+      api(`/api/guilds/${guildId}/activity?limit=50`)
     ])
-      .then(([sessionData, guildData, caseData, appealData]) => {
+      .then(([sessionData, guildData, caseData, appealData, activityData]) => {
         setSession(sessionData);
         setGuild(guildData.guild);
-        setRecords({ cases: caseData.cases, appeals: appealData.appeals });
+        setRecords({ cases: caseData.cases, appeals: appealData.appeals, activity: activityData.events });
         const cfg = guildData.guild.config;
         setDrafts({
           general: {
@@ -180,6 +183,23 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
     }
   }
 
+  async function testLogDelivery(group) {
+    setLogTestBusy(true);
+    setLogTestResult('');
+    try {
+      await api(`/api/guilds/${guildId}/logging/test`, {
+        method: 'POST',
+        headers: { 'X-CSRF-Token': session.csrf },
+        body: JSON.stringify({ group, channelId: drafts.general.logs[group] })
+      });
+      setLogTestResult(`A delivery test was sent to the ${group} log channel.`);
+    } catch (error) {
+      setLogTestResult(error.message === 'log_delivery_failed' ? 'ModerationDesk could not send to that channel. Check channel access and role hierarchy.' : error.message);
+    } finally {
+      setLogTestBusy(false);
+    }
+  }
+
   if (error && !guild) {
     return <Shell wide><section className="section"><div className="error">{error}</div><p><a className="button" href={`/api/auth/login?returnTo=/dashboard/${guildId}`}>Sign in with Discord</a></p></section></Shell>;
   }
@@ -204,6 +224,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
   const setupProgress = Math.round((setupSignals.filter(Boolean).length / setupSignals.length) * 100);
   const sectionStatuses = {
     cases: records.cases.length > 0,
+    activity: records.activity.length > 0,
     appeals: openAppeals.length > 0,
     'staff-access': drafts.general.staffRoleIds.length > 0,
     logging: configuredLogs > 0,
@@ -312,7 +333,23 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                         <a href="#verification" onClick={() => setActiveSection('verification')}><span>Verification</span><Status enabled={drafts.verification.enabled}>{drafts.verification.enabled ? 'Enabled' : 'Optional'}</Status></a>
                       </div>
                     </div>
+                    <div className="overview-panel stack-panel">
+                      <div className="panel-heading"><div><h3>Configuration activity</h3><p>Recent dashboard changes, with the person who made them.</p></div><a href={`/${guildId ? `dashboard/${guildId}/` : 'dashboard/'}activity`} onClick={() => setActiveSection('activity')}>View all</a></div>
+                      <div className="compact-records">
+                        {records.activity.slice(0, 4).map(item => <div key={item.id}><span className="record-index">●</span><span><b>{titleCase(item.action)}</b><small>{item.actorName}: {item.summary}</small></span><time>{formatDate(item.createdAt)}</time></div>)}
+                        {!records.activity.length && <div className="empty-state compact"><strong>No dashboard changes yet</strong><span>Configuration changes will appear here with the person who made them.</span></div>}
+                      </div>
+                    </div>
                   </div>
+                </div>
+              </section>
+            )}
+
+            {activeSection === 'activity' && (
+              <section className="card settings-section" id="activity">
+                <div className="settings-header"><div><span className="settings-kicker">Accountability</span><h2>Activity</h2><p>An auditable record of dashboard configuration changes for this server.</p></div><span className="record-count">{records.activity.length} shown</span></div>
+                <div className="settings-body record-section">
+                  {records.activity.length ? <div className="record-table-wrap"><table className="record-table activity-table"><thead><tr><th>When</th><th>Person</th><th>Area</th><th>Change</th></tr></thead><tbody>{records.activity.map(item => <tr key={item.id}><td><time>{formatDate(item.createdAt)}</time></td><td><strong>{item.actorName || 'System'}</strong><br /><span className="mono">{item.actorId || '—'}</span></td><td><span className="record-status closed">{titleCase(item.category)}</span></td><td className="record-reason"><strong>{titleCase(item.action)}</strong><br />{item.summary || 'Configuration updated.'}</td></tr>)}</tbody></table></div> : <div className="empty-state"><strong>No activity recorded yet</strong><p>Dashboard changes to protection, logging, access or commands will appear here.</p></div>}
                 </div>
               </section>
             )}
@@ -367,7 +404,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                 <div className="workspace-summary logging-summary"><div><span className="workspace-summary-label">Audit coverage</span><strong>{Object.values(drafts.general.logs).filter(Boolean).length}<small> / 6 routed</small></strong><p>Event families currently connected to a Discord channel.</p></div><div><span className="workspace-summary-label">Event types</span><strong>20+</strong><p>Member, message, server and moderation events.</p></div><div><span className="workspace-summary-label">Delivery</span><strong className={Object.values(drafts.general.logs).some(Boolean) ? 'summary-good' : 'summary-muted'}>{Object.values(drafts.general.logs).some(Boolean) ? 'Configured' : 'Not configured'}</strong><p>Logs are sent as staff-only embeds.</p></div></div>
                 <div className="log-coverage-grid">{Object.entries({ moderation: ['Moderation', 'Warnings, bans, kicks and case actions.'], security: ['Security', 'AutoMod, raid and anti-nuke events.'], messages: ['Messages', 'Deleted, edited and bulk-deleted messages.'], member: ['Members', 'Joins, leaves and role changes.'], server: ['Server', 'Channel and role changes.'], appeals: ['Appeals', 'Submissions and decisions.'] }).map(([group, [label, description]]) => <button type="button" className={`log-coverage-card ${activeLogGroup === group ? 'selected' : ''}`} onClick={() => { setActiveLogGroup(group); document.getElementById(`log-${group}`)?.focus(); }} key={group}><strong>{label}</strong><span>{description}</span></button>)}</div>
                 <div className="log-event-panel"><div><span className="workspace-summary-label">{activeLogGroup} events</span><p>Choose the actions routed to this category’s channel. Add an override only when one event needs a different channel.</p></div><div className="log-event-options">{(LOG_EVENT_OPTIONS[activeLogGroup] || []).map(([key, label]) => <div className="log-event-row" key={key}><Check label={label} checked={drafts.general.logEvents[activeLogGroup]?.length === 0 || drafts.general.logEvents[activeLogGroup]?.includes(key)} onChange={checked => set('general', data => { const current = data.logEvents[activeLogGroup] || []; data.logEvents[activeLogGroup] = checked ? [...new Set([...current, key])] : current.filter(value => value !== key); if (!checked) delete data.logEventChannels[activeLogGroup][key]; return data; })} /><ChannelSelect label="Override channel" value={drafts.general.logEventChannels[activeLogGroup]?.[key] || ''} channels={channels} onChange={value => set('general', data => { data.logEventChannels[activeLogGroup][key] = value; return data; })} /></div>)}</div></div>
-                <div className="log-channel-panel"><div><span className="workspace-summary-label">{activeLogGroup} channel</span><p>Only {activeLogGroup} events will be sent here.</p></div><ChannelSelect id={`log-${activeLogGroup}`} label={`${titleCase(activeLogGroup)} log channel`} value={drafts.general.logs[activeLogGroup]} channels={channels} onChange={value => set('general', data => (data.logs[activeLogGroup] = value, data))} /></div>
+                <div className="log-channel-panel"><div><span className="workspace-summary-label">{activeLogGroup} channel</span><p>Only {activeLogGroup} events will be sent here.</p>{logTestResult && <small className="log-test-result">{logTestResult}</small>}</div><div className="log-channel-actions"><ChannelSelect id={`log-${activeLogGroup}`} label={`${titleCase(activeLogGroup)} log channel`} value={drafts.general.logs[activeLogGroup]} channels={channels} onChange={value => set('general', data => (data.logs[activeLogGroup] = value, data))} /><button type="button" className="button ghost small" disabled={!drafts.general.logs[activeLogGroup] || logTestBusy} onClick={() => testLogDelivery(activeLogGroup)}>{logTestBusy ? 'Sending…' : 'Test delivery'}</button></div></div>
               </SettingsSection>
             )}
 

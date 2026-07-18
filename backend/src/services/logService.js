@@ -8,11 +8,11 @@ export const DANGER_COLOUR = 0xED4245;
 export const SUCCESS_COLOUR = 0x57F287;
 export const WARNING_COLOUR = 0xFEE75C;
 
-export async function sendLog(guild, group, { title, eventKey: explicitEventKey, description = '', fields = [], colour = BRAND_COLOUR, footer = '', channelId: explicitChannelId = '' }) {
+export async function sendLog(guild, group, { title, eventKey: explicitEventKey, description = '', fields = [], colour = BRAND_COLOUR, footer = '', channelId: explicitChannelId = '', force = false }) {
   const cfg = getGuildConfig(guild.id);
   const eventKey = explicitEventKey || String(title || group).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
   const configuredEvents = cfg.logEvents?.[group];
-  if (Array.isArray(configuredEvents) && configuredEvents.length && !configuredEvents.includes(eventKey)) return null;
+  if (!force && Array.isArray(configuredEvents) && configuredEvents.length && !configuredEvents.includes(eventKey)) return null;
   const channelId = explicitChannelId || cfg.logEventChannels?.[group]?.[eventKey] || cfg.logs[group];
   if (!channelId) return null;
   const channel = guild.channels.cache.get(channelId);

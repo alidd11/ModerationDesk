@@ -87,4 +87,51 @@ export function attachAuditLogging(client) {
     if (before.color !== after.color) changes.push({ name: 'Colour', value: `${before.hexColor} → ${after.hexColor}` });
     if (changes.length) sendLog(after.guild, 'server', { title: 'Role updated', description: `${after.name} (${after.id})`, fields: changes });
   });
+
+  client.on('guildUpdate', (before, after) => {
+    const changes = [];
+    if (before.name !== after.name) changes.push({ name: 'Name', value: `${before.name} → ${after.name}` });
+    if (before.verificationLevel !== after.verificationLevel) changes.push({ name: 'Verification level', value: `${before.verificationLevel} → ${after.verificationLevel}` });
+    if (before.explicitContentFilter !== after.explicitContentFilter) changes.push({ name: 'Content filter', value: `${before.explicitContentFilter} → ${after.explicitContentFilter}` });
+    if (changes.length) sendLog(after, 'server', { title: 'Server settings updated', eventKey: 'server_settings_updated', fields: changes, colour: WARNING_COLOUR });
+  });
+
+  client.on('inviteCreate', invite => sendLog(invite.guild, 'server', {
+    title: 'Invite created',
+    eventKey: 'invite_created',
+    fields: [
+      { name: 'Code', value: invite.code, inline: true },
+      { name: 'Channel', value: invite.channel ? `<#${invite.channel.id}>` : 'Unknown', inline: true },
+      { name: 'Inviter', value: invite.inviter ? `${invite.inviter.tag} (${invite.inviter.id})` : 'Unknown' }
+    ]
+  }));
+  client.on('inviteDelete', invite => sendLog(invite.guild, 'server', { title: 'Invite deleted', eventKey: 'invite_deleted', description: invite.code, colour: WARNING_COLOUR }));
+
+  client.on('threadCreate', thread => sendLog(thread.guild, 'server', { title: 'Thread created', eventKey: 'thread_created', description: `${thread.name} (<#${thread.id}>)` }));
+  client.on('threadDelete', thread => sendLog(thread.guild, 'server', { title: 'Thread deleted', eventKey: 'thread_deleted', description: `${thread.name} (${thread.id})`, colour: WARNING_COLOUR }));
+  client.on('threadUpdate', (before, after) => {
+    if (before.name !== after.name || before.archived !== after.archived || before.locked !== after.locked) {
+      sendLog(after.guild, 'server', { title: 'Thread updated', eventKey: 'thread_updated', description: `${after.name} (<#${after.id}>)` });
+    }
+  });
+
+  client.on('emojiCreate', emoji => sendLog(emoji.guild, 'server', { title: 'Emoji created', eventKey: 'emoji_created', description: `${emoji.name} (${emoji.id})` }));
+  client.on('emojiDelete', emoji => sendLog(emoji.guild, 'server', { title: 'Emoji deleted', eventKey: 'emoji_deleted', description: `${emoji.name} (${emoji.id})`, colour: WARNING_COLOUR }));
+  client.on('emojiUpdate', (before, after) => {
+    if (before.name !== after.name) sendLog(after.guild, 'server', { title: 'Emoji updated', eventKey: 'emoji_updated', description: `${before.name} → ${after.name}` });
+  });
+
+  client.on('webhooksUpdate', channel => sendLog(channel.guild, 'security', { title: 'Webhook activity detected', eventKey: 'webhook_activity', description: `A webhook changed in <#${channel.id}>. Review the Discord audit log for the executor.`, colour: WARNING_COLOUR }));
+
+  client.on('voiceStateUpdate', (before, after) => {
+    const guild = after.guild;
+    if (before.channelId !== after.channelId) {
+      const eventKey = !before.channelId ? 'voice_joined' : !after.channelId ? 'voice_left' : 'voice_moved';
+      const title = eventKey === 'voice_joined' ? 'Voice channel joined' : eventKey === 'voice_left' ? 'Voice channel left' : 'Voice channel moved';
+      sendLog(guild, 'member', { title, eventKey, description: `${after.member?.user?.tag || after.id}: ${before.channel ? `<#${before.channel.id}>` : 'No channel'} → ${after.channel ? `<#${after.channel.id}>` : 'No channel'}` });
+    }
+    if (before.serverMute !== after.serverMute || before.serverDeaf !== after.serverDeaf) {
+      sendLog(guild, 'member', { title: 'Voice moderation updated', eventKey: 'voice_moderation_updated', description: `${after.member?.user?.tag || after.id} server mute: ${after.serverMute ? 'on' : 'off'}, server deaf: ${after.serverDeaf ? 'on' : 'off'}` });
+    }
+  });
 }

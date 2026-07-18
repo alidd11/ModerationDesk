@@ -111,6 +111,7 @@ let db = {
   warnings: [],
   notes: [],
   appeals: [],
+  auditEvents: [],
   migrations: {},
   tempActions: [],
   afk: {},
@@ -153,7 +154,7 @@ function load() {
   }
   db.schemaVersion = SCHEMA_VERSION;
   for (const key of ['guilds', 'migrations', 'afk', 'stickyRoles', 'starboard', 'billingSubscriptions', 'webSessions', 'oauthStates']) db[key] ||= {};
-  for (const key of ['cases', 'warnings', 'notes', 'appeals', 'tempActions', 'giveaways']) db[key] ||= [];
+  for (const key of ['cases', 'warnings', 'notes', 'appeals', 'auditEvents', 'tempActions', 'giveaways']) db[key] ||= [];
 }
 load();
 
@@ -189,6 +190,7 @@ export function deleteGuildData(guildId) {
   db.warnings = db.warnings.filter(row => row.guildId !== id);
   db.notes = db.notes.filter(row => row.guildId !== id);
   db.appeals = db.appeals.filter(row => row.guildId !== id);
+  db.auditEvents = db.auditEvents.filter(row => row.guildId !== id);
   db.tempActions = db.tempActions.filter(row => row.guildId !== id);
   db.giveaways = db.giveaways.filter(row => row.guildId !== id);
   for (const collection of ['migrations', 'afk', 'stickyRoles', 'starboard']) {
@@ -252,6 +254,31 @@ export function addNote(entry) {
   return clone(row);
 }
 export const listNotes = (guildId, userId, limit = 25) => clone(db.notes.filter(row => row.guildId === String(guildId) && row.userId === String(userId)).slice(-limit).reverse());
+
+export function recordAuditEvent(entry) {
+  const row = {
+    id: randomToken(10),
+    createdAt: new Date().toISOString(),
+    ...entry,
+    guildId: String(entry.guildId),
+    category: String(entry.category || 'system').slice(0, 64),
+    action: String(entry.action || 'updated').slice(0, 128),
+    actorId: String(entry.actorId || ''),
+    actorName: String(entry.actorName || 'System').slice(0, 128),
+    summary: String(entry.summary || '').slice(0, 500)
+  };
+  db.auditEvents.push(row);
+  if (db.auditEvents.length > 10_000) db.auditEvents = db.auditEvents.slice(-10_000);
+  save();
+  return clone(row);
+}
+
+export function listAuditEvents(guildId, { limit = 50, category = '' } = {}) {
+  return clone(db.auditEvents
+    .filter(row => row.guildId === String(guildId) && (!category || row.category === category))
+    .slice(-Math.min(200, Math.max(1, Number(limit) || 50)))
+    .reverse());
+}
 
 export function addTempAction(entry) {
   const row = { id: randomToken(8), active: true, createdAt: new Date().toISOString(), ...entry, guildId: String(entry.guildId) };
@@ -330,6 +357,7 @@ export function exportGuildData(guildId) {
     warnings: db.warnings.filter(row => row.guildId === id),
     notes: db.notes.filter(row => row.guildId === id),
     appeals: db.appeals.filter(row => row.guildId === id),
+    auditEvents: db.auditEvents.filter(row => row.guildId === id),
     migrations: Object.values(db.migrations).filter(row => row.destinationGuildId === id)
   });
 }
