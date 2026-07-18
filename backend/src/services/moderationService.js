@@ -16,6 +16,7 @@ export async function createModerationRecord({ guild, user, moderator, action, r
 
   await sendLog(guild, 'moderation', {
     title: `Case #${row.id}: ${action}`,
+    eventKey: ({ warn: 'member_warned', kick: 'member_kicked', ban: 'member_banned', softban: 'member_softbanned', timeout: 'member_timed_out', tempban: 'member_tempbanned', tempmute: 'member_tempmuted', unban: 'member_unbanned', unmute: 'member_unmuted' }[action] || 'moderation_case'),
     colour: action === 'warn' ? WARNING_COLOUR : DANGER_COLOUR,
     fields: [
       { name: 'User', value: userLabel(user), inline: true },

@@ -53,7 +53,21 @@ const navigation = [
 ];
 
 const validSections = new Set(navigation.flatMap(group => group.items.map(item => item.id)));
-const LOG_EVENT_OPTIONS = { moderation: [['member_warned', 'Warnings'], ['member_kicked', 'Kicks'], ['member_banned', 'Bans']], security: [['automod_action', 'AutoMod actions'], ['anti_raid_triggered', 'Anti-raid triggers'], ['anti_nuke_triggered', 'Anti-nuke triggers']], messages: [['message_deleted', 'Deleted messages'], ['messages_bulk_deleted', 'Bulk deleted messages'], ['message_edited', 'Edited messages']], member: [['member_joined', 'Member joins'], ['member_left_or_was_removed', 'Member leaves'], ['member_updated', 'Member and role changes']], server: [['channel_created', 'Channels created'], ['channel_deleted', 'Channels deleted'], ['role_created', 'Roles created'], ['role_deleted', 'Roles deleted']], appeals: [['appeal_submitted', 'Appeals submitted'], ['appeal_resolved', 'Appeals resolved']] };
+const LOG_EVENT_OPTIONS = {
+  moderation: [
+    ['member_warned', 'Warnings'], ['member_kicked', 'Kicks'], ['member_banned', 'Bans'], ['member_unbanned', 'Unbans'],
+    ['member_softbanned', 'Softbans'], ['member_timed_out', 'Timeouts'], ['member_tempbanned', 'Temporary bans'],
+    ['member_tempmuted', 'Temporary mutes'], ['member_unmuted', 'Timeouts removed'], ['moderation_case', 'Other moderation cases']
+  ],
+  security: [
+    ['automod_action', 'AutoMod actions'], ['anti_raid_triggered', 'Anti-raid triggers'], ['anti_nuke_triggered', 'Anti-nuke triggers'],
+    ['new_account_quarantined', 'New-account quarantines'], ['server_lockdown_started', 'Lockdowns started'], ['server_lockdown_ended', 'Lockdowns ended']
+  ],
+  messages: [['message_deleted', 'Deleted messages'], ['messages_bulk_deleted', 'Bulk deleted messages'], ['message_edited', 'Edited messages']],
+  member: [['member_joined', 'Member joins'], ['member_left_or_was_removed', 'Member leaves'], ['member_updated', 'Member and role changes']],
+  server: [['channel_created', 'Channels created'], ['channel_deleted', 'Channels deleted'], ['channel_updated', 'Channels updated'], ['role_created', 'Roles created'], ['role_deleted', 'Roles deleted'], ['role_updated', 'Roles updated']],
+  appeals: [['new_appeal', 'Appeals submitted'], ['appeal_resolved', 'Appeals resolved']]
+};
 
 const dateFormatter = new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeStyle: 'short' });
 const formatDate = value => value ? dateFormatter.format(new Date(value)) : '—';
@@ -353,14 +367,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                 <div className="workspace-summary logging-summary"><div><span className="workspace-summary-label">Audit coverage</span><strong>{Object.values(drafts.general.logs).filter(Boolean).length}<small> / 6 routed</small></strong><p>Event families currently connected to a Discord channel.</p></div><div><span className="workspace-summary-label">Event types</span><strong>20+</strong><p>Member, message, server and moderation events.</p></div><div><span className="workspace-summary-label">Delivery</span><strong className={Object.values(drafts.general.logs).some(Boolean) ? 'summary-good' : 'summary-muted'}>{Object.values(drafts.general.logs).some(Boolean) ? 'Configured' : 'Not configured'}</strong><p>Logs are sent as staff-only embeds.</p></div></div>
                 <div className="log-coverage-grid">{Object.entries({ moderation: ['Moderation', 'Warnings, bans, kicks and case actions.'], security: ['Security', 'AutoMod, raid and anti-nuke events.'], messages: ['Messages', 'Deleted, edited and bulk-deleted messages.'], member: ['Members', 'Joins, leaves and role changes.'], server: ['Server', 'Channel and role changes.'], appeals: ['Appeals', 'Submissions and decisions.'] }).map(([group, [label, description]]) => <button type="button" className={`log-coverage-card ${activeLogGroup === group ? 'selected' : ''}`} onClick={() => { setActiveLogGroup(group); document.getElementById(`log-${group}`)?.focus(); }} key={group}><strong>{label}</strong><span>{description}</span></button>)}</div>
                 <div className="log-event-panel"><div><span className="workspace-summary-label">{activeLogGroup} events</span><p>Choose the actions routed to this category’s channel.</p></div><div className="log-event-options">{(LOG_EVENT_OPTIONS[activeLogGroup] || []).map(([key, label]) => <Check key={key} label={label} checked={drafts.general.logEvents[activeLogGroup]?.length === 0 || drafts.general.logEvents[activeLogGroup]?.includes(key)} onChange={checked => set('general', data => { const current = data.logEvents[activeLogGroup] || []; data.logEvents[activeLogGroup] = checked ? [...new Set([...current, key])] : current.filter(value => value !== key); return data; })} />)}</div></div>
-                <div className="form-grid">
-                  <ChannelSelect id="log-moderation" label="Moderation log" value={drafts.general.logs.moderation} channels={channels} onChange={value => set('general', data => (data.logs.moderation = value, data))} />
-                  <ChannelSelect id="log-security" label="Security log" value={drafts.general.logs.security} channels={channels} onChange={value => set('general', data => (data.logs.security = value, data))} />
-                  <ChannelSelect id="log-messages" label="Message log" value={drafts.general.logs.messages} channels={channels} onChange={value => set('general', data => (data.logs.messages = value, data))} />
-                  <ChannelSelect id="log-server" label="Server log" value={drafts.general.logs.server} channels={channels} onChange={value => set('general', data => (data.logs.server = value, data))} />
-                  <ChannelSelect id="log-member" label="Member log" value={drafts.general.logs.member} channels={channels} onChange={value => set('general', data => (data.logs.member = value, data))} />
-                  <ChannelSelect id="log-appeals" label="Appeal log" value={drafts.general.logs.appeals} channels={channels} onChange={value => set('general', data => (data.logs.appeals = value, data))} />
-                </div>
+                <div className="log-channel-panel"><div><span className="workspace-summary-label">{activeLogGroup} channel</span><p>Only {activeLogGroup} events will be sent here.</p></div><ChannelSelect id={`log-${activeLogGroup}`} label={`${titleCase(activeLogGroup)} log channel`} value={drafts.general.logs[activeLogGroup]} channels={channels} onChange={value => set('general', data => (data.logs[activeLogGroup] = value, data))} /></div>
               </SettingsSection>
             )}
 

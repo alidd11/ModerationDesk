@@ -85,6 +85,7 @@ export function attachAutomod(client) {
     await message.author.send(`A message you sent in **${message.guild.name}** was removed by AutoMod. Reason: **${reason}**. Case #${row.id}.`).catch(() => {});
     await sendLog(message.guild, 'security', {
       title: `AutoMod: ${reason}`,
+      eventKey: 'automod_action',
       colour: WARNING_COLOUR,
       fields: [
         { name: 'User', value: `${message.author.tag} (${message.author.id})` },

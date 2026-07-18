@@ -18,7 +18,8 @@ export async function setLockdown(guild, enabled, reason = 'ModerationDesk lockd
     } catch {}
   }
   updateGuildConfig(guild.id, { security: { lockdown: enabled } });
-  await sendLog(guild, 'security', { title: enabled ? 'Server lockdown activated' : 'Server lockdown ended', description: `${changed} channels updated.\nReason: ${reason}`, colour: enabled ? DANGER_COLOUR : 0x57F287 });
+  const eventKey = reason.startsWith('Anti-raid') ? 'anti_raid_triggered' : (enabled ? 'server_lockdown_started' : 'server_lockdown_ended');
+  await sendLog(guild, 'security', { title: enabled ? 'Server lockdown activated' : 'Server lockdown ended', eventKey, description: `${changed} channels updated.\nReason: ${reason}`, colour: enabled ? DANGER_COLOUR : 0x57F287 });
   return changed;
 }
 
@@ -80,7 +81,7 @@ async function enforce(guild, executor, eventName, deletedObject = null) {
     }
   }
 
-  await sendLog(guild, 'security', { title: 'Anti-nuke threshold exceeded', colour: DANGER_COLOUR, fields: [
+  await sendLog(guild, 'security', { title: 'Anti-nuke threshold exceeded', eventKey: 'anti_nuke_triggered', colour: DANGER_COLOUR, fields: [
     { name: 'Executor', value: `${executor.tag} (${executor.id})` },
     { name: 'Event', value: eventName, inline: true },
     { name: 'Response', value: result }
@@ -117,7 +118,7 @@ export function attachSecurity(client) {
     const accountAge = Date.now() - member.user.createdTimestamp;
     if (cfg.minimumAccountAgeDays > 0 && accountAge < cfg.minimumAccountAgeDays * 86_400_000 && cfg.quarantineRoleId) {
       await member.roles.add(cfg.quarantineRoleId, 'ModerationDesk new-account quarantine').catch(() => {});
-      await sendLog(member.guild, 'security', { title: 'New account quarantined', description: `${member.user.tag} (${member.id})`, colour: DANGER_COLOUR });
+      await sendLog(member.guild, 'security', { title: 'New account quarantined', eventKey: 'new_account_quarantined', description: `${member.user.tag} (${member.id})`, colour: DANGER_COLOUR });
     }
     const now = Date.now();
     const joins = (joinWindows.get(member.guild.id) || []).filter(time => now - time <= cfg.windowSeconds * 1_000);
