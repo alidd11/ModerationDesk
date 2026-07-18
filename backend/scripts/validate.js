@@ -22,8 +22,21 @@ for (const file of files) {
 const names = commands.map(command => command.name);
 if (new Set(names).size !== names.length) throw new Error('Duplicate application command names detected.');
 if (commands.length > 100) throw new Error('Discord global command limit exceeded.');
+
+function validateRequiredOptionOrder(options = [], path = '') {
+  let optionalSeen = false;
+  for (const option of options) {
+    if (option.required === true && optionalSeen) {
+      throw new Error(`Required Discord option /${path} ${option.name} appears after an optional option.`);
+    }
+    if (option.required !== true && option.type !== 1 && option.type !== 2) optionalSeen = true;
+    validateRequiredOptionOrder(option.options, `${path} ${option.name}`.trim());
+  }
+}
+
 for (const command of commands) {
   if (!command.description || command.description.length > 100) throw new Error(`Invalid description for /${command.name}.`);
+  validateRequiredOptionOrder(command.options, command.name);
 }
 
 console.log(`Validated ${files.length} JavaScript files and ${commands.length} application commands.`);
