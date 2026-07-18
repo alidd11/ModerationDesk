@@ -2,43 +2,47 @@ import Link from 'next/link';
 import Shell from '../components/Shell';
 
 const features = [
-  ['Cases and sanctions', 'Warnings, timeouts, tempbans, softbans, notes and complete case history.'],
-  ['Automated protection', 'Spam, duplicate, invite, link, mention, caps, raid and destructive-action protection.'],
-  ['Verification and appeals', 'Button or OAuth verification, consent-based role restoration and public appeal forms.'],
-  ['Operations dashboard', 'Manage multiple Discord servers from one secure dashboard with granular role controls.']
+  ['01', 'Moderation workspace', 'Warnings, timeouts, temporary bans, staff notes and a complete case history in one place.'],
+  ['02', 'Always-on protection', 'Stop spam, malicious links, mass mentions, raids and destructive server actions automatically.'],
+  ['03', 'Trusted verification', 'Button and OAuth verification with consent-based migration and safe role restoration.'],
+  ['04', 'Multi-server control', 'Run every community from one dashboard with isolated settings and granular staff access.']
 ];
 
 export default function Home() {
   return (
     <Shell>
       <section className="hero">
-        <div>
-          <span className="eyebrow">Built for serious Discord communities</span>
-          <h1>Moderation infrastructure that scales with your server.</h1>
-          <p>ModerationDesk combines moderation, security, verification, appeals, migration tooling and server operations in one multi-guild platform.</p>
+        <div className="hero-copy">
+          <span className="eyebrow"><i /> The all-in-one Discord operations platform</span>
+          <h1>Run your community.<br /><em>Without the chaos.</em></h1>
+          <p>Replace a stack of disconnected bots with one focused platform for moderation, security, verification, appeals and community operations.</p>
           <div className="hero-actions">
-            <a className="button" href="/api/auth/login">Open dashboard</a>
-            <Link className="button secondary" href="#features">Explore the platform</Link>
+            <a className="button button-large" href="/api/auth/login">Start with Discord <span>→</span></a>
+            <Link className="text-link" href="#platform">See what’s included <span>↓</span></Link>
           </div>
+          <div className="trust-row"><span>✓ No user tokens</span><span>✓ Consent-based OAuth</span><span>✓ Per-server settings</span></div>
         </div>
-        <div className="hero-card">
-          <span className="badge good">Production architecture</span>
-          <h2>Railway bot and API. Vercel control centre.</h2>
-          <p>The Discord gateway stays connected on Railway while the responsive dashboard runs independently on Vercel.</p>
-          <div className="metric-grid">
-            <div className="metric"><strong>13</strong><span>command groups</span></div>
-            <div className="metric"><strong>24/7</strong><span>gateway process</span></div>
-            <div className="metric"><strong>OAuth2</strong><span>dashboard access</span></div>
-            <div className="metric"><strong>Multi-guild</strong><span>isolated settings</span></div>
+        <div className="product-window" aria-label="ModerationDesk dashboard preview">
+          <div className="window-bar"><span /><span /><span /><small>Control centre</small></div>
+          <div className="window-body">
+            <div className="preview-sidebar"><div className="preview-logo">M</div>{['Overview','Moderation','AutoMod','Security','Verification'].map((item, index) => <div className={index === 0 ? 'active' : ''} key={item}><i />{item}</div>)}</div>
+            <div className="preview-main">
+              <div className="preview-heading"><div><small>DESKLABS COMMUNITY</small><strong>Good evening, Ali</strong></div><span className="status-dot">All systems operational</span></div>
+              <div className="preview-stats"><div><small>MEMBERS</small><b>24,891</b><span>+8.2% this month</span></div><div><small>CASES TODAY</small><b>18</b><span>6 resolved</span></div><div><small>THREATS BLOCKED</small><b>1,204</b><span>Last 30 days</span></div></div>
+              <div className="activity-card"><div><strong>Live moderation activity</strong><span>View all</span></div>{[['Timeout','Repeated spam','2m ago'],['AutoMod','Blocked invite link','8m ago'],['Verification','Member verified','12m ago']].map(row => <p key={row[2]}><i /> <b>{row[0]}</b><span>{row[1]}</span><small>{row[2]}</small></p>)}</div>
+            </div>
           </div>
         </div>
       </section>
-      <section className="section" id="features">
-        <div className="section-head"><div><h2>One operating layer for community safety</h2><p>Core systems are included in the same product and data model.</p></div></div>
-        <div className="grid">
-          {features.map(([title, text]) => <article className="card" key={title}><h3>{title}</h3><p>{text}</p></article>)}
+      <section className="logo-strip"><span>Built to replace</span><b>Dyno</b><b>Carl-bot</b><b>Wick</b><b>MEE6</b><b>YAGPDB</b></section>
+      <section className="section platform" id="platform">
+        <div className="section-kicker">THE PLATFORM</div>
+        <div className="section-head"><div><h2>Everything your staff needs.<br />Nothing they don’t.</h2></div><p>Powerful tools should feel calm, clear and predictable—even when your server is not.</p></div>
+        <div className="feature-grid">
+          {features.map(([number, title, text]) => <article className="feature-card" key={title}><span>{number}</span><h3>{title}</h3><p>{text}</p><i aria-hidden="true">↗</i></article>)}
         </div>
       </section>
+      <section className="cta"><div><span className="eyebrow"><i /> READY WHEN YOU ARE</span><h2>Your community deserves one reliable control centre.</h2><p>Connect Discord, choose a server and configure ModerationDesk in minutes.</p></div><a className="button button-large" href="/api/auth/login">Open your dashboard <span>→</span></a></section>
     </Shell>
   );
 }
