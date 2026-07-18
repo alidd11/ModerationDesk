@@ -90,7 +90,7 @@ export default function Shell({ children, compact = false, wide = false }) {
               {dashboardContext ? (
                 <>
                   <div className="drawer-group">
-                    <span className="drawer-label">Workspace</span>
+                    <span className="drawer-label">Servers</span>
                     <Link className={pathname === '/dashboard' ? 'active' : ''} href="/dashboard" onClick={() => setMenuOpen(false)}><span>All servers</span><i aria-hidden="true">→</i></Link>
                   </div>
                   {dashboardNavigation.map(group => <div className="drawer-group" key={group.label}><span className="drawer-label">{group.label}</span>{group.items.map(item => <Link className={pathname === `${dashboardHref}/${item.id}` || (item.id === 'overview' && pathname === dashboardHref) ? 'active' : ''} href={`${dashboardHref}/${item.id}`} onClick={() => setMenuOpen(false)} key={item.id}><span>{item.label}</span><i aria-hidden="true">→</i></Link>)}</div>)}
