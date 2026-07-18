@@ -15,9 +15,9 @@ export default function Home() {
     <Shell>
       <section className="home-hero">
         <div className="hero-copy">
-          <span className="eyebrow"><i aria-hidden="true" /> A DESKLABS PRODUCT</span>
-          <h1>Run Discord moderation from one control room.</h1>
-          <p>Cases, logs, AutoMod, raid protection, verification and role continuity—configured together, without a pile of disconnected bots.</p>
+          <span className="eyebrow"><i aria-hidden="true" /> MODERATION FOR DISCORD TEAMS</span>
+          <h1>Give your moderators a clearer way to run the server.</h1>
+          <p>Keep cases, logs, AutoMod, raid protection and member access in one place—so your team can act quickly and see what happened afterwards.</p>
           <div className="hero-actions">
             <a className="button button-large" href={botInviteUrl} target="_blank" rel="noreferrer">Add to Discord <span aria-hidden="true">→</span></a>
             <a className="button ghost button-large" href="/dashboard">Open dashboard</a>
@@ -56,10 +56,10 @@ export default function Home() {
       </section>
 
       <section className="trust-strip" aria-label="Platform principles">
-        <span>Built for Discord moderation teams</span>
-        <span>Dashboard and slash commands</span>
-        <span>Consent-based verification</span>
-        <span>Clear, separate security controls</span>
+        <span>Made for busy moderation teams</span>
+        <span>Dashboard plus slash commands</span>
+        <span>Member-friendly verification</span>
+        <span>Controls you can explain</span>
       </section>
 
       <ProductDirectory />
