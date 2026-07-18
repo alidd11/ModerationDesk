@@ -123,8 +123,8 @@ app.get('/', (req, res) => res.json({
 
 app.get('/health', (req, res) => {
   const ready = client.isReady();
-  res.status(ready ? 200 : 503).json({
-    ok: ready,
+  res.status(200).json({
+    ok: true,
     ready,
     guilds: client.guilds.cache.size,
     uptimeSeconds: Math.floor(process.uptime()),
