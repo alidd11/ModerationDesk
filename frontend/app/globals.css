@@ -400,10 +400,9 @@ input:focus, select:focus, textarea:focus { border-color: rgba(124,140,255,.72);
   .log-channel-panel { grid-template-columns: 1fr; }
   .product-detail-hero { min-height: 520px; }
   .dashboard-layout { grid-template-columns: 1fr; }
-  .sidebar { position: static; padding: 10px; }
+  .sidebar { display: none; }
   .sidebar-group { display: none; }
-  .mobile-section-select { display: block; color: #858a96; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; }
-  .mobile-section-select select { margin-top: 6px; color: white; font-size: 13px; letter-spacing: 0; text-transform: none; }
+  .mobile-section-select { display: none; }
   .overview-columns, .overview-columns.lower { grid-template-columns: 1fr; }
   .split-settings.three { grid-template-columns: 1fr 1fr; }
   .split-settings.three .setting-block:last-child { grid-column: 1 / -1; }
