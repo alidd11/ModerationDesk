@@ -21,5 +21,20 @@ export default function SettingsSection({ id, title, description, guildId, csrf,
     }
   }
 
-  return <section className="card" id={id}><h2>{title}</h2><p>{description}</p>{children}<div className="form-actions"><button className="button" disabled={status.busy} onClick={save}>{status.busy ? 'Saving…' : `Save ${title}`}</button>{status.message && <span className={`status ${status.bad ? 'bad' : 'good'}`}>{status.message}</span>}</div></section>;
+  return (
+    <section className="card settings-section" id={id}>
+      <div className="settings-header">
+        <div>
+          <span className="settings-kicker">Configuration</span>
+          <h2>{title}</h2>
+          <p>{description}</p>
+        </div>
+      </div>
+      <div className="settings-body">{children}</div>
+      <div className="settings-footer">
+        <button className="button" disabled={status.busy} onClick={save}>{status.busy ? 'Saving…' : `Save ${title}`}</button>
+        {status.message && <span className={`status ${status.bad ? 'bad' : 'good'}`} role="status">{status.message}</span>}
+      </div>
+    </section>
+  );
 }
