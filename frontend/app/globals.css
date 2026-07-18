@@ -417,6 +417,7 @@ input:focus, select:focus, textarea:focus { border-color: rgba(124,140,255,.72);
   .site, .site.wide, .site.compact { width: min(100% - 28px, 1180px); }
   .nav { min-height: 70px; }
   .nav-leading { gap: 9px; }
+  .nav-actions { gap: 8px; }
   .hamburger-button { width: 36px; height: 36px; }
   .brand { gap: 8px; font-size: 16px; }
   .brand-mark { width: 30px; height: 30px; }
@@ -426,6 +427,9 @@ input:focus, select:focus, textarea:focus { border-color: rgba(124,140,255,.72);
   }
   .nav-actions > a:not(.button) { display: none; }
   .user-chip { display: none; }
+  .dashboard-search-trigger { width: 36px; height: 36px; justify-content: center; padding: 0; }
+  .dashboard-search-trigger > span:not(:first-child), .dashboard-search-trigger kbd { display: none; }
+  .nav-actions .button.small { min-height: 36px; padding: 8px 10px; white-space: nowrap; }
   .hero { padding: 44px 0 58px; gap: 34px; }
   .hero h1 { font-size: clamp(42px, 13vw, 54px); }
   .hero p { font-size: 16px; line-height: 1.65; }
@@ -471,6 +475,36 @@ input:focus, select:focus, textarea:focus { border-color: rgba(124,140,255,.72);
   .split-settings.three .setting-block:last-child { grid-column: auto; }
   .data-action { align-items: flex-start; flex-direction: column; gap: 12px; }
   .section-head { align-items: flex-start; flex-direction: column; }
+  .server-directory { padding-top: 34px; }
+  .server-directory-head { gap: 18px; margin-bottom: 26px; }
+  .server-directory-head h1 { font-size: clamp(32px, 10vw, 42px); line-height: 1.08; }
+  .server-directory-head p { max-width: 34ch; font-size: 15px; line-height: 1.55; }
+  .server-directory-head .button { min-height: 46px; align-self: stretch; }
+  .server-grid { gap: 10px; }
+  .server-grid .guild-card {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 50px minmax(0, 1fr);
+    align-items: start;
+    gap: 12px;
+    padding: 15px;
+  }
+  .server-grid .guild-icon { width: 50px; height: 50px; border-radius: 13px; }
+  .server-grid .guild-title { min-width: 0; flex-wrap: wrap; gap: 3px 8px; }
+  .server-grid .guild-title h3 {
+    min-width: 0;
+    flex: 1 1 170px;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.26;
+  }
+  .server-grid .connection { flex: 0 0 auto; white-space: nowrap; }
+  .server-grid .guild-card p { margin: 6px 0 0; font-size: 13px; line-height: 1.48; }
+  .server-grid .guild-card > .button,
+  .server-grid .guild-card > .badge { grid-column: 2; justify-self: start; margin-top: 1px; }
+  .server-grid .guild-card > .button { min-height: 38px; }
   .footer { flex-direction: column; justify-content: center; text-align: center; padding: 22px 0; }
   .card { padding: 16px; border-radius: 8px; }
   .product-window { border-radius: 8px; }.window-body { grid-template-columns: 84px 1fr; min-height: 360px; }.preview-sidebar { padding: 12px 7px; }.preview-sidebar > div:not(.preview-logo) { font-size: 0; }.preview-main { padding: 15px; }.preview-heading .status-dot { display: none; }.preview-stats { grid-template-columns: 1fr 1fr; }.preview-stats > div:last-child { display: none; }

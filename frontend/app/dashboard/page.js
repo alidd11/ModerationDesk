@@ -16,8 +16,8 @@ export default function DashboardPage() {
 
   return (
     <Shell>
-      <section className="section">
-        <div className="section-head">
+      <section className="section server-directory">
+        <div className="section-head server-directory-head">
           <div><span className="section-kicker">SERVERS</span><h1>Choose a server</h1><p>Only servers where you have Manage Server permission are shown.</p></div>
           <a className="button secondary" href="/api/auth/login?returnTo=/dashboard">Refresh from Discord</a>
         </div>
