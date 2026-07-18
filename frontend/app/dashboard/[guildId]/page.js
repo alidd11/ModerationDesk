@@ -416,6 +416,11 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
 
             {activeSection === 'automod' && (
               <SettingsSection id="automod" title="AutoMod" description="Filter harmful messages and choose how ModerationDesk responds." guildId={guildId} csrf={session.csrf} section="automod" data={drafts.automod}>
+                <div className="workspace-summary">
+                  <div><span className="workspace-summary-label">Protection status</span><strong className={drafts.automod.enabled ? 'summary-good' : 'summary-muted'}>{drafts.automod.enabled ? 'Active' : 'Not active'}</strong><p>{drafts.automod.enabled ? 'ModerationDesk is checking messages in this server.' : 'Turn on AutoMod when you are ready to start filtering messages.'}</p></div>
+                  <div><span className="workspace-summary-label">Checks enabled</span><strong>{[drafts.automod.antiInvites, drafts.automod.antiLinks, drafts.automod.antiSpam, drafts.automod.antiDuplicates, drafts.automod.antiMassMentions, drafts.automod.antiCaps].filter(Boolean).length}<small> / 6</small></strong><p>Message patterns currently monitored.</p></div>
+                  <div><span className="workspace-summary-label">Response</span><strong>{drafts.automod.action === 'delete' ? 'Delete' : drafts.automod.action === 'warn' ? 'Warn' : 'Timeout'}</strong><p>What happens when a check triggers.</p></div>
+                </div>
                 <div className="split-settings">
                   <div className="setting-block check-list">
                     <h3>Message checks</h3>
