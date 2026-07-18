@@ -1,5 +1,7 @@
 import Shell from '../components/Shell';
 
+const botInviteUrl = 'https://discord.com/oauth2/authorize?client_id=1528046559923666944&permissions=1099914374358&scope=bot%20applications.commands';
+
 const features = [
   ['01', 'Cases that keep context', 'Warnings, timeouts, temporary bans and staff notes stay together in a complete member history.'],
   ['02', 'Protection that stays on', 'Spam, malicious links, mass mentions, raids and destructive actions are handled automatically.'],
@@ -37,7 +39,7 @@ export default function Home() {
           {features.map(([number, title, text]) => <article className="feature-card" key={title}><span>{number}</span><h3>{title}</h3><p>{text}</p><i aria-hidden="true">↗</i></article>)}
         </div>
       </section>
-      <section className="cta"><div><h2>Build your moderation setup visually.</h2><p>Choose a server, configure each system and see exactly what your staff and members will experience.</p></div><a className="button button-large" href="/api/auth/login">Open your dashboard <span>→</span></a></section>
+      <section className="cta"><div><h2>Build your moderation setup visually.</h2><p>Choose a server, configure each system and see exactly what your staff and members will experience.</p></div><a className="button button-large" href={botInviteUrl} target="_blank" rel="noreferrer">Invite ModerationDesk <span>→</span></a></section>
     </Shell>
   );
 }
