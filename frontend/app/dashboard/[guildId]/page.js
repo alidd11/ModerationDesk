@@ -453,6 +453,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
 
             {activeSection === 'anti-raid' && (
               <SettingsSection id="anti-raid" title="Anti-raid" description="Detect sudden join spikes and quarantine suspicious accounts." guildId={guildId} csrf={session.csrf} section="security" data={drafts.security}>
+                <div className="workspace-summary protection-summary"><div><span className="workspace-summary-label">Join protection</span><strong className={drafts.security.antiRaid.enabled ? 'summary-good' : 'summary-muted'}>{drafts.security.antiRaid.enabled ? 'Active' : 'Not active'}</strong><p>Protects the server when joins spike.</p></div><div><span className="workspace-summary-label">Trigger</span><strong>{drafts.security.antiRaid.joinThreshold}<small> joins / {drafts.security.antiRaid.windowSeconds}s</small></strong><p>Detection window.</p></div><div><span className="workspace-summary-label">Recovery</span><strong>{drafts.security.antiRaid.autoUnlockMinutes}<small> min</small></strong><p>Automatic unlock delay.</p></div></div>
                 <Check label="Enable anti-raid" checked={drafts.security.antiRaid.enabled} onChange={value => set('security', data => (data.antiRaid.enabled = value, data))} />
                 <div className="form-grid form-divider">
                   <Text label="Join threshold" type="number" min="3" max="100" value={drafts.security.antiRaid.joinThreshold} onChange={value => set('security', data => (data.antiRaid.joinThreshold = value, data))} />
@@ -466,6 +467,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
 
             {activeSection === 'anti-nuke' && (
               <SettingsSection id="anti-nuke" title="Anti-nuke" description="Respond to destructive actions and restore deleted server objects." guildId={guildId} csrf={session.csrf} section="security" data={drafts.security}>
+                <div className="workspace-summary protection-summary"><div><span className="workspace-summary-label">Server integrity</span><strong className={drafts.security.antiNuke.enabled ? 'summary-good' : 'summary-muted'}>{drafts.security.antiNuke.enabled ? 'Protected' : 'Not protected'}</strong><p>Watches dangerous changes to the server.</p></div><div><span className="workspace-summary-label">Response</span><strong>{drafts.security.antiNuke.action === 'ban' ? 'Ban executor' : 'Strip roles'}</strong><p>Action taken when a threshold is reached.</p></div><div><span className="workspace-summary-label">Recovery</span><strong>{drafts.security.antiNuke.restoreDeletedObjects ? 'Enabled' : 'Off'}</strong><p>Restore deleted channels and roles.</p></div></div>
                 <div className="form-grid">
                   <div>
                     <Check label="Enable anti-nuke" checked={drafts.security.antiNuke.enabled} onChange={value => set('security', data => (data.antiNuke.enabled = value, data))} />
