@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { api } from '../lib/api';
 
-export default function SettingsSection({ id, title, description, guildId, csrf, section, data, children, onSaved }) {
+export default function SettingsSection({ id, title, description, guildId, csrf, section, data, children, onSaved, headerControl }) {
   const [status, setStatus] = useState({ busy: false, message: '', bad: false });
 
   async function save() {
@@ -29,6 +29,7 @@ export default function SettingsSection({ id, title, description, guildId, csrf,
           <h2>{title}</h2>
           <p>{description}</p>
         </div>
+        {headerControl && <div className="settings-header-control">{headerControl}</div>}
       </div>
       <div className="settings-body">{children}</div>
       <div className="settings-footer">

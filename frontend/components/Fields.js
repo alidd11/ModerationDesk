@@ -70,6 +70,18 @@ export function Check({ label, checked, onChange }) {
   return <label className="check"><input type="checkbox" checked={Boolean(checked)} onChange={event => onChange(event.target.checked)} /><span style={{ color: 'inherit', fontSize: 'inherit', fontWeight: 'inherit', margin: 0 }}>{label}</span></label>;
 }
 
+export function ModuleToggle({ label, detail = label, checked, onChange, disabled = false }) {
+  const enabled = Boolean(checked);
+  return (
+    <label className={`module-toggle ${enabled ? 'enabled' : ''} ${disabled ? 'disabled' : ''}`}>
+      <span className="module-toggle-copy"><small>Module status</small><strong>{enabled ? 'Enabled' : 'Disabled'}</strong></span>
+      <input type="checkbox" checked={enabled} disabled={disabled} aria-label={label} onChange={event => onChange(event.target.checked)} />
+      <span className="module-toggle-track" aria-hidden="true"><i /></span>
+      <span className="module-toggle-label">{detail}</span>
+    </label>
+  );
+}
+
 export function ChannelSelect({ id, label, value, onChange, channels }) {
   return <Select id={id} label={label} value={value} onChange={onChange}><option value="">Not configured</option>{channels.map(channel => <option value={channel.id} key={channel.id}>#{channel.name}</option>)}</Select>;
 }

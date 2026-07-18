@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, usePathname } from 'next/navigation';
 import Shell from '../../../components/Shell';
 import SettingsSection from '../../../components/SettingsSection';
-import { Area, ChannelSelect, Check, Multi, RoleSelect, Select, Text } from '../../../components/Fields';
+import { Area, ChannelSelect, Check, ModuleToggle, Multi, RoleSelect, Select, Text } from '../../../components/Fields';
 import { api } from '../../../lib/api';
 
 const copy = value => JSON.parse(JSON.stringify(value));
@@ -427,9 +427,8 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'policies' && (
-              <SettingsSection id="policies" title="Escalation policies" description="Apply a consistent action when a member reaches a warning threshold." guildId={guildId} csrf={session.csrf} section="moderation" data={drafts.moderation}>
+              <SettingsSection id="policies" title="Escalation policies" description="Apply a consistent action when a member reaches a warning threshold." guildId={guildId} csrf={session.csrf} section="moderation" data={drafts.moderation} headerControl={<ModuleToggle label="Enable warning escalation" checked={drafts.moderation.escalation.enabled} onChange={value => set('moderation', data => (data.escalation.enabled = value, data))} />}>
                 <div className="workspace-summary moderation-summary"><div><span className="workspace-summary-label">Policy status</span><strong className={drafts.moderation.escalation.enabled ? 'summary-good' : 'summary-muted'}>{drafts.moderation.escalation.enabled ? 'Active' : 'Not active'}</strong><p>Actions are evaluated after a staff warning is recorded.</p></div><div><span className="workspace-summary-label">First threshold</span><strong>{drafts.moderation.escalation.firstThreshold}<small> warnings</small></strong><p>Within the configured review period.</p></div><div><span className="workspace-summary-label">Final threshold</span><strong>{drafts.moderation.escalation.finalThreshold}<small> warnings</small></strong><p>Uses the stronger final response.</p></div></div>
-                <Check label="Enable warning escalation" checked={drafts.moderation.escalation.enabled} onChange={value => set('moderation', data => (data.escalation.enabled = value, data))} />
                 <div className="form-grid form-divider">
                   <Text label="Warning review window (days)" type="number" min="1" max="365" value={drafts.moderation.escalation.windowDays} onChange={value => set('moderation', data => (data.escalation.windowDays = value, data))} />
                   <Text label="First threshold" help="Active warnings before the first automatic action." type="number" min="1" max="50" value={drafts.moderation.escalation.firstThreshold} onChange={value => set('moderation', data => (data.escalation.firstThreshold = value, data))} />
@@ -534,7 +533,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'automod' && (
-              <SettingsSection id="automod" title="AutoMod" description="Filter harmful messages and choose how ModerationDesk responds." guildId={guildId} csrf={session.csrf} section="automod" data={drafts.automod}>
+              <SettingsSection id="automod" title="AutoMod" description="Filter harmful messages and choose how ModerationDesk responds." guildId={guildId} csrf={session.csrf} section="automod" data={drafts.automod} headerControl={<ModuleToggle label="Enable AutoMod" checked={drafts.automod.enabled} onChange={value => set('automod', data => (data.enabled = value, data))} />}>
                 <div className="workspace-summary">
                   <div><span className="workspace-summary-label">Protection status</span><strong className={drafts.automod.enabled ? 'summary-good' : 'summary-muted'}>{drafts.automod.enabled ? 'Active' : 'Not active'}</strong><p>{drafts.automod.enabled ? 'ModerationDesk is checking messages in this server.' : 'Turn on AutoMod when you are ready to start filtering messages.'}</p></div>
                   <div><span className="workspace-summary-label">Checks enabled</span><strong>{[drafts.automod.antiInvites, drafts.automod.antiLinks, drafts.automod.antiSpam, drafts.automod.antiDuplicates, drafts.automod.antiMassMentions, drafts.automod.antiCaps].filter(Boolean).length}<small> / 6</small></strong><p>Message patterns currently monitored.</p></div>
@@ -545,7 +544,6 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                 <div className="split-settings">
                   <div className="setting-block check-list">
                     <h3>Message checks</h3>
-                    <Check label="Enable AutoMod" checked={drafts.automod.enabled} onChange={value => set('automod', data => (data.enabled = value, data))} />
                     <Check label="Block Discord invites" checked={drafts.automod.antiInvites} onChange={value => set('automod', data => (data.antiInvites = value, data))} />
                     <Check label="Block non-allowlisted links" checked={drafts.automod.antiLinks} onChange={value => set('automod', data => (data.antiLinks = value, data))} />
                     <Check label="Detect spam" checked={drafts.automod.antiSpam} onChange={value => set('automod', data => (data.antiSpam = value, data))} />
@@ -578,9 +576,8 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'anti-raid' && (
-              <SettingsSection id="anti-raid" title="Anti-raid & Join Gate" description="Detect sudden join spikes and inspect risky accounts as they enter your server." guildId={guildId} csrf={session.csrf} section="security" data={drafts.security}>
+              <SettingsSection id="anti-raid" title="Anti-raid & Join Gate" description="Detect sudden join spikes and inspect risky accounts as they enter your server." guildId={guildId} csrf={session.csrf} section="security" data={drafts.security} headerControl={<ModuleToggle label="Enable anti-raid" detail={plan === 'free' ? 'Pro plan required' : 'Enable module'} checked={drafts.security.antiRaid.enabled} disabled={plan === 'free'} onChange={value => set('security', data => (data.antiRaid.enabled = value, data))} />}>
                 <div className="workspace-summary protection-summary"><div><span className="workspace-summary-label">Join protection</span><strong className={drafts.security.antiRaid.enabled ? 'summary-good' : 'summary-muted'}>{drafts.security.antiRaid.enabled ? 'Active' : 'Not active'}</strong><p>Protects the server when joins spike.</p></div><div><span className="workspace-summary-label">Trigger</span><strong>{drafts.security.antiRaid.joinThreshold}<small> joins / {drafts.security.antiRaid.windowSeconds}s</small></strong><p>Detection window.</p></div><div><span className="workspace-summary-label">Recovery</span><strong>{drafts.security.antiRaid.autoUnlockMinutes}<small> min</small></strong><p>Automatic unlock delay.</p></div></div>
-                <Check label="Enable anti-raid" checked={drafts.security.antiRaid.enabled} onChange={value => set('security', data => (data.antiRaid.enabled = value, data))} />
                 <div className="form-grid form-divider">
                   <Text label="Join threshold" type="number" min="3" max="100" value={drafts.security.antiRaid.joinThreshold} onChange={value => set('security', data => (data.antiRaid.joinThreshold = value, data))} />
                   <Text label="Window seconds" type="number" min="5" max="300" value={drafts.security.antiRaid.windowSeconds} onChange={value => set('security', data => (data.antiRaid.windowSeconds = value, data))} />
@@ -603,11 +600,10 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'anti-nuke' && (
-              <SettingsSection id="anti-nuke" title="Anti-nuke" description="Watch high-risk audit events, stop an executor and preserve a clear incident record." guildId={guildId} csrf={session.csrf} section="security" data={drafts.security}>
+              <SettingsSection id="anti-nuke" title="Anti-nuke" description="Watch high-risk audit events, stop an executor and preserve a clear incident record." guildId={guildId} csrf={session.csrf} section="security" data={drafts.security} headerControl={<ModuleToggle label="Enable anti-nuke" detail={plan !== 'enterprise' ? 'Enterprise required' : 'Enable module'} checked={drafts.security.antiNuke.enabled} disabled={plan !== 'enterprise'} onChange={value => set('security', data => (data.antiNuke.enabled = value, data))} />}>
                 <div className="workspace-summary protection-summary"><div><span className="workspace-summary-label">Server integrity</span><strong className={drafts.security.antiNuke.enabled ? 'summary-good' : 'summary-muted'}>{drafts.security.antiNuke.enabled ? 'Protected' : 'Not protected'}</strong><p>Watches destructive changes and dangerous permission escalation.</p></div><div><span className="workspace-summary-label">Response</span><strong>{drafts.security.antiNuke.action === 'ban' ? 'Ban executor' : 'Strip roles'}</strong><p>Action taken when a policy threshold is reached.</p></div><div><span className="workspace-summary-label">Panic response</span><strong>{drafts.security.antiNuke.panicMode ? 'Lockdown' : 'Controlled'}</strong><p>{drafts.security.antiNuke.panicMode ? 'Immediately locks messaging as part of enforcement.' : 'Uses your configured containment policy.'}</p></div></div>
                 <div className="form-grid">
                   <div>
-                    <Check label="Enable anti-nuke" checked={drafts.security.antiNuke.enabled} onChange={value => set('security', data => (data.antiNuke.enabled = value, data))} />
                     <Check label="Restore deleted channels and roles" checked={drafts.security.antiNuke.restoreDeletedObjects} onChange={value => set('security', data => (data.antiNuke.restoreDeletedObjects = value, data))} />
                     <Check label="Lock the server when enforcement runs" checked={drafts.security.antiNuke.lockdownOnTrigger} onChange={value => set('security', data => (data.antiNuke.lockdownOnTrigger = value, data))} />
                     <Check label="Panic mode (always lock down)" checked={drafts.security.antiNuke.panicMode} onChange={value => set('security', data => (data.antiNuke.panicMode = value, data))} />
@@ -634,10 +630,10 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'verification' && (
-              <SettingsSection id="verification" title="Verification" description="Publish a verification panel and assign member roles safely." guildId={guildId} csrf={session.csrf} section="verification" data={drafts.verification}>
+              <SettingsSection id="verification" title="Verification" description="Publish a verification panel and assign member roles safely." guildId={guildId} csrf={session.csrf} section="verification" data={drafts.verification} headerControl={<ModuleToggle label="Enable verification" checked={drafts.verification.enabled} onChange={value => set('verification', data => (data.enabled = value, data))} />}>
                 <div className="workspace-summary access-summary"><div><span className="workspace-summary-label">Member access</span><strong className={drafts.verification.enabled ? 'summary-good' : 'summary-muted'}>{drafts.verification.enabled ? 'Enabled' : 'Not enabled'}</strong><p>{drafts.verification.enabled ? 'New members can complete the configured verification flow.' : 'Members currently join without a ModerationDesk verification gate.'}</p></div><div><span className="workspace-summary-label">Method</span><strong>{drafts.verification.mode === 'oauth' ? 'Discord OAuth' : 'Button'}</strong><p>How members complete verification.</p></div><div><span className="workspace-summary-label">Verified role</span><strong>{roles.find(role => role.id === drafts.verification.verifiedRoleId)?.name || 'Not selected'}</strong><p>Applied after completion.</p></div></div>
                 <div className="form-grid">
-                  <div><Check label="Enable verification" checked={drafts.verification.enabled} onChange={value => set('verification', data => (data.enabled = value, data))} /><Select label="Mode" value={drafts.verification.mode} onChange={value => set('verification', data => (data.mode = value, data))}><option value="button">Discord button</option><option value="oauth">Discord OAuth</option></Select></div>
+                  <div><Select label="Mode" value={drafts.verification.mode} onChange={value => set('verification', data => (data.mode = value, data))}><option value="button">Discord button</option><option value="oauth">Discord OAuth</option></Select></div>
                   <ChannelSelect label="Verification channel" value={drafts.verification.channelId} channels={channels} onChange={value => set('verification', data => (data.channelId = value, data))} />
                   <RoleSelect label="Verified role" value={drafts.verification.verifiedRoleId} roles={roles} onChange={value => set('verification', data => (data.verifiedRoleId = value, data))} />
                   <RoleSelect label="Unverified role" value={drafts.verification.unverifiedRoleId} roles={roles} onChange={value => set('verification', data => (data.unverifiedRoleId = value, data))} />
