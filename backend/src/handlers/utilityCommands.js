@@ -1,5 +1,6 @@
 import { EmbedBuilder, PermissionFlagsBits, PermissionsBitField } from 'discord.js';
 import { config } from '../config.js';
+import { diagnoseGuild } from '../diagnostics.js';
 import { getGuildConfig, setAfk } from '../store.js';
 import { discordTimestamp } from '../utils.js';
 import { success } from './helpers.js';
@@ -47,6 +48,22 @@ export async function handleUtilityCommand(interaction) {
   if (subcommand === 'afk') {
     setAfk(interaction.guildId, interaction.user.id, { reason: interaction.options.getString('reason') || 'AFK' });
     return success(interaction, 'AFK status set. It will be removed when you next send a message.');
+  }
+
+  if (subcommand === 'diagnose') {
+    if (!interaction.memberPermissions?.has(PermissionFlagsBits.ManageGuild)) return interaction.reply({ content: 'You need Manage Server to run a ModerationDesk diagnosis.', ephemeral: true });
+    const diagnosis = diagnoseGuild(interaction.guild);
+    const passed = diagnosis.checks.filter(check => check.ok);
+    const attention = diagnosis.checks.filter(check => !check.ok);
+    return interaction.reply({ embeds: [new EmbedBuilder()
+      .setColor(attention.length ? 0xFEE75C : 0x57F287)
+      .setTitle(`ModerationDesk diagnosis: ${diagnosis.score}% ready`)
+      .setDescription(attention.length ? 'Address the items below before relying on the affected protection features.' : 'Permissions, role hierarchy and core configuration look ready.')
+      .addFields(
+        { name: `Ready (${passed.length})`, value: passed.slice(0, 8).map(check => `✓ ${check.label}`).join('\n') || 'None', inline: false },
+        ...(attention.length ? [{ name: `Needs attention (${attention.length})`, value: attention.slice(0, 8).map(check => `• ${check.label} — ${check.detail}`).join('\n'), inline: false }] : [])
+      )
+      .setTimestamp()], ephemeral: true });
   }
 
   if (subcommand === 'invite') {

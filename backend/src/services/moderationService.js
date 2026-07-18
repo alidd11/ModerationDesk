@@ -1,5 +1,5 @@
 import { EmbedBuilder } from 'discord.js';
-import { addTempAction, addWarning, recordCase } from '../store.js';
+import { addTempAction, addWarning, getGuildConfig, listWarnings, recordAuditEvent, recordCase } from '../store.js';
 import { DANGER_COLOUR, sendLog, userLabel, WARNING_COLOUR } from './logService.js';
 import { discordTimestamp, formatDuration } from '../utils.js';
 
@@ -12,6 +12,14 @@ export async function createModerationRecord({ guild, user, moderator, action, r
     reason,
     durationMs,
     metadata
+  });
+  recordAuditEvent({
+    guildId: guild.id,
+    category: 'moderation',
+    action: `case_${action}`,
+    actorId: moderator.id,
+    actorName: moderator.tag || moderator.username || 'ModerationDesk',
+    summary: `${action} recorded for ${user.tag || user.username || user.id}: ${reason || 'No reason supplied'}`
   });
 
   await sendLog(guild, 'moderation', {
@@ -45,6 +53,45 @@ export async function sendModerationDm(user, { guild, action, reason, durationMs
 
 export function registerWarning({ guildId, userId, moderatorId, reason, caseId }) {
   return addWarning({ guildId, userId, moderatorId, reason, caseId });
+}
+
+export async function applyWarningEscalation({ guild, user, member, moderator }) {
+  const escalation = getGuildConfig(guild.id).moderation.escalation;
+  if (!escalation?.enabled || !member) return null;
+  const cutoff = Date.now() - escalation.windowDays * 86_400_000;
+  const warningCount = listWarnings(guild.id, user.id).filter(warning => new Date(warning.createdAt).getTime() >= cutoff).length;
+  const step = warningCount >= escalation.finalThreshold
+    ? { action: escalation.finalAction, threshold: escalation.finalThreshold, durationMinutes: escalation.firstDurationMinutes }
+    : warningCount >= escalation.firstThreshold
+      ? { action: escalation.firstAction, threshold: escalation.firstThreshold, durationMinutes: escalation.firstDurationMinutes }
+      : null;
+  if (!step) return null;
+
+  const reason = `Warning escalation: ${warningCount} active warnings within ${escalation.windowDays} days.`;
+  let durationMs = 0;
+  if (step.action === 'timeout') {
+    if (!member.moderatable) return { warningCount, blocked: true, reason: 'ModerationDesk cannot timeout this member because of role hierarchy or permissions.' };
+    durationMs = Math.min(Math.max(1, step.durationMinutes) * 60_000, 2_419_200_000);
+    await member.timeout(durationMs, reason);
+  } else if (step.action === 'kick') {
+    if (!member.kickable) return { warningCount, blocked: true, reason: 'ModerationDesk cannot kick this member because of role hierarchy or permissions.' };
+    await member.kick(reason);
+  } else if (step.action === 'ban') {
+    if (!member.bannable) return { warningCount, blocked: true, reason: 'ModerationDesk cannot ban this member because of role hierarchy or permissions.' };
+    await member.ban({ reason });
+  } else return null;
+
+  const row = await createModerationRecord({
+    guild,
+    user,
+    moderator,
+    action: `warning-escalation-${step.action}`,
+    reason,
+    durationMs,
+    metadata: { warningCount, threshold: step.threshold, windowDays: escalation.windowDays }
+  });
+  const dmDelivered = await sendModerationDm(user, { guild, action: `warning escalation: ${step.action}`, reason, durationMs, caseId: row.id });
+  return { warningCount, action: step.action, row, dmDelivered };
 }
 
 export function scheduleUnban({ guildId, userId, executeAt, caseId }) {

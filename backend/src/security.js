@@ -1,5 +1,5 @@
 import { AuditLogEvent, ChannelType, PermissionFlagsBits } from 'discord.js';
-import { addTempAction, getGuildConfig, incrementStat, updateGuildConfig } from './store.js';
+import { addTempAction, getGuildConfig, incrementStat, recordAuditEvent, recordCase, updateGuildConfig } from './store.js';
 import { DANGER_COLOUR, sendLog } from './services/logService.js';
 import { logger } from './logger.js';
 
@@ -99,6 +99,8 @@ async function enforce(guild, executor, eventName, deletedObject = null) {
     }
   }
 
+  recordAuditEvent({ guildId: guild.id, category: 'security', action: 'anti_nuke_enforced', actorId: executor.id, actorName: executor.tag, summary: `${eventName}: ${result}` });
+
   await sendLog(guild, 'security', { title: 'Anti-nuke threshold exceeded', eventKey: 'anti_nuke_triggered', colour: DANGER_COLOUR, fields: [
     { name: 'Executor', value: `${executor.tag} (${executor.id})` },
     { name: 'Event', value: eventName, inline: true },
@@ -120,6 +122,61 @@ async function observeDestructive(guild, eventName, auditType, targetId, deleted
   if (rows.length >= threshold) await enforce(guild, executor, eventName, deletedObject);
 }
 
+async function enforceJoinGate(member) {
+  const cfg = getGuildConfig(member.guild.id);
+  const policy = cfg.security.joinGate;
+  if (!policy?.enabled || member.user.bot) return;
+
+  const reasons = [];
+  const accountAgeDays = (Date.now() - member.user.createdTimestamp) / 86_400_000;
+  if (policy.minimumAccountAgeDays > 0 && accountAgeDays < policy.minimumAccountAgeDays) reasons.push(`Account is ${Math.max(0, Math.floor(accountAgeDays))} days old`);
+  if (policy.requireAvatar && !member.user.avatar) reasons.push('Account has no custom avatar');
+  const identity = [member.user.username, member.user.globalName, member.displayName].filter(Boolean).join(' ').toLowerCase();
+  const matchedTerm = policy.blockedTerms.find(term => identity.includes(String(term).toLowerCase()));
+  if (matchedTerm) reasons.push(`Identity matched the Join Gate term “${matchedTerm}”`);
+  if (!reasons.length) return;
+
+  const reason = `Join Gate: ${reasons.join('; ')}`;
+  const row = recordCase({
+    guildId: member.guild.id,
+    userId: member.id,
+    moderatorId: member.client.user.id,
+    action: `join-gate-${policy.action}`,
+    reason,
+    metadata: { accountAgeDays: Math.floor(accountAgeDays), matchedTerm: matchedTerm || null }
+  });
+  let outcome = 'No action could be completed.';
+  if (policy.action === 'quarantine') {
+    const role = member.guild.roles.cache.get(policy.quarantineRoleId);
+    if (role?.editable) {
+      await member.roles.add(role, reason);
+      outcome = `Quarantined with ${role.name}.`;
+    } else outcome = 'Quarantine role is missing or above ModerationDesk.';
+  } else if (policy.action === 'timeout' && member.moderatable) {
+    await member.timeout(Math.min(policy.timeoutMinutes * 60_000, 2_419_200_000), reason);
+    outcome = `Timed out for ${policy.timeoutMinutes} minutes.`;
+  } else if (policy.action === 'kick' && member.kickable) {
+    await member.kick(reason);
+    outcome = 'Member kicked.';
+  } else if (policy.action === 'ban' && member.bannable) {
+    await member.ban({ reason });
+    outcome = 'Member banned.';
+  }
+
+  recordAuditEvent({ guildId: member.guild.id, category: 'security', action: 'join_gate_enforced', actorId: member.id, actorName: member.user.tag, summary: `${policy.action}: ${reasons.join('; ')}` });
+  await sendLog(member.guild, 'security', {
+    title: 'Join Gate action',
+    eventKey: 'join_gate_action',
+    colour: DANGER_COLOUR,
+    fields: [
+      { name: 'Member', value: `${member.user.tag} (${member.id})` },
+      { name: 'Signals', value: reasons.join('\n') },
+      { name: 'Action', value: outcome },
+      { name: 'Case', value: `#${row.id}`, inline: true }
+    ]
+  });
+}
+
 export function attachSecurity(client) {
   const cleanup = setInterval(() => {
     const now = Date.now();
@@ -132,9 +189,11 @@ export function attachSecurity(client) {
   client.on('guildMemberAdd', async member => {
     if (member.user.bot) return;
     const cfg = getGuildConfig(member.guild.id).security.antiRaid;
+    await enforceJoinGate(member).catch(error => logger.warn('Join Gate enforcement failed', { error: error.message }));
     if (!cfg.enabled) return;
     const accountAge = Date.now() - member.user.createdTimestamp;
-    if (cfg.minimumAccountAgeDays > 0 && accountAge < cfg.minimumAccountAgeDays * 86_400_000 && cfg.quarantineRoleId) {
+    const joinGateEnabled = getGuildConfig(member.guild.id).security.joinGate?.enabled;
+    if (!joinGateEnabled && cfg.minimumAccountAgeDays > 0 && accountAge < cfg.minimumAccountAgeDays * 86_400_000 && cfg.quarantineRoleId) {
       await member.roles.add(cfg.quarantineRoleId, 'ModerationDesk new-account quarantine').catch(() => {});
       await sendLog(member.guild, 'security', { title: 'New account quarantined', eventKey: 'new_account_quarantined', description: `${member.user.tag} (${member.id})`, colour: DANGER_COLOUR });
     }

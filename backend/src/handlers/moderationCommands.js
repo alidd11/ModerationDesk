@@ -2,7 +2,7 @@ import { EmbedBuilder } from 'discord.js';
 import { addNote, clearWarning, listNotes, listWarnings, updateCase } from '../store.js';
 import { moderationHierarchyError } from '../permissions.js';
 import { isSnowflake, parseDuration, truncate } from '../utils.js';
-import { createModerationRecord, registerWarning, scheduleUnban, sendModerationDm } from '../services/moderationService.js';
+import { applyWarningEscalation, createModerationRecord, registerWarning, scheduleUnban, sendModerationDm } from '../services/moderationService.js';
 import { failure, fetchTarget, listEmbed, success } from './helpers.js';
 
 export async function handleModerationCommand(interaction) {
@@ -55,6 +55,7 @@ export async function handleModerationCommand(interaction) {
   let action = subcommand;
   let durationMs = 0;
   let dmDelivered = false;
+  let escalation = null;
   let row;
 
   try {
@@ -62,6 +63,7 @@ export async function handleModerationCommand(interaction) {
     row = await createModerationRecord({ guild: interaction.guild, user, moderator: interaction.user, action, reason });
     registerWarning({ guildId: interaction.guildId, userId: user.id, moderatorId: interaction.user.id, reason, caseId: row.id });
     dmDelivered = await sendModerationDm(user, { guild: interaction.guild, action, reason, caseId: row.id });
+    escalation = await applyWarningEscalation({ guild: interaction.guild, user, member, moderator: interaction.user });
   } else if (subcommand === 'kick') {
     row = await createModerationRecord({ guild: interaction.guild, user, moderator: interaction.user, action, reason });
     dmDelivered = await sendModerationDm(user, { guild: interaction.guild, action, reason, caseId: row.id });
@@ -105,5 +107,6 @@ export async function handleModerationCommand(interaction) {
   }
 
   const dmNote = ['warn', 'kick', 'ban', 'softban', 'tempban', 'timeout'].includes(subcommand) ? ` DM ${dmDelivered ? 'delivered' : 'could not be delivered'}.` : '';
-  return success(interaction, `${action} completed for ${user.tag}. Case #${row.id}.${dmNote}`);
+  const escalationNote = escalation?.row ? ` Escalation applied: ${escalation.action} (case #${escalation.row.id}).` : escalation?.blocked ? ` Escalation threshold reached, but action could not run: ${escalation.reason}` : '';
+  return success(interaction, `${action} completed for ${user.tag}. Case #${row.id}.${dmNote}${escalationNote}`);
 }

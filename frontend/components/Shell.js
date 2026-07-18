@@ -16,7 +16,7 @@ export default function Shell({ children, compact = false, wide = false }) {
   const dashboardGuildId = pathname.split('/')[2] || '';
   const dashboardHref = dashboardGuildId ? `/dashboard/${dashboardGuildId}` : '/dashboard';
   const dashboardLinks = dashboardGuildId ? [
-    ['Overview', 'overview'], ['Activity', 'activity'], ['Cases', 'cases'], ['Appeals', 'appeals'],
+    ['Overview', 'overview'], ['Activity', 'activity'], ['Cases', 'cases'], ['Appeals', 'appeals'], ['Policies', 'policies'],
     ['Staff access', 'staff-access'], ['Commands', 'commands'], ['Logging', 'logging'],
     ['Member messages', 'member-messages'], ['Roles', 'roles'], ['Community tools', 'community'],
     ['AutoMod', 'automod'], ['Anti-raid', 'anti-raid'], ['Anti-nuke', 'anti-nuke'],

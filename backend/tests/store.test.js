@@ -12,6 +12,8 @@ test('guild configuration is isolated and deep-merged', () => {
   store.updateGuildConfig('guild-a', { automod: { enabled: true } });
   assert.equal(store.getGuildConfig('guild-a').automod.enabled, true);
   assert.equal(store.getGuildConfig('guild-a').automod.antiInvites, true);
+  assert.equal(store.getGuildConfig('guild-a').security.joinGate.action, 'quarantine');
+  assert.equal(store.getGuildConfig('guild-a').moderation.escalation.firstThreshold, 3);
   assert.equal(store.getGuildConfig('guild-b').automod.enabled, false);
 });
 

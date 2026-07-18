@@ -26,7 +26,7 @@
 
 ## Utilities
 
-`/utility ping`, `/utility serverinfo`, `/utility userinfo`, `/utility avatar`, `/utility roleinfo`, `/utility afk`, `/utility invite`, `/utility dashboard`, `/utility privacy`
+`/utility ping`, `/utility serverinfo`, `/utility userinfo`, `/utility avatar`, `/utility roleinfo`, `/utility afk`, `/utility diagnose`, `/utility invite`, `/utility dashboard`, `/utility privacy`
 
 ## Verification and migration
 

@@ -24,6 +24,8 @@ import { ensureVerificationPanel } from './verification.js';
 import { clamp, safeUrlDomain } from './utils.js';
 import { sendLog, WARNING_COLOUR } from './services/logService.js';
 import { logger } from './logger.js';
+import { diagnoseGuild } from './diagnostics.js';
+import { automodActionForRule, inspectAutomodContent } from './automod.js';
 
 const SESSION_COOKIE = 'moderationdesk_session';
 const MANAGE_GUILD = PermissionFlagsBits.ManageGuild;
@@ -202,6 +204,7 @@ function guildPayload(guild) {
       total: permissionChecks.length,
       highestRole: botMember?.roles.highest?.name || ''
     },
+    diagnostics: diagnoseGuild(guild),
     billingConfigured: billingConfigured(),
     appealUrl: frontend(`/appeal/${guild.id}`)
   };
@@ -278,6 +281,7 @@ async function applySettings(guild, section, body) {
   if (section === 'automod') {
     return updateGuildConfig(guild.id, { automod: {
       enabled: bool(data.enabled),
+      preset: ['custom', 'community', 'strict', 'high-risk'].includes(data.preset) ? data.preset : 'custom',
       antiInvites: bool(data.antiInvites),
       antiLinks: bool(data.antiLinks),
       antiSpam: bool(data.antiSpam),
@@ -302,6 +306,24 @@ async function applySettings(guild, section, body) {
     } });
   }
 
+  if (section === 'moderation') {
+    const firstThreshold = clamp(data.escalation?.firstThreshold, 1, 50, cfg.moderation.escalation.firstThreshold);
+    const requestedFinalThreshold = clamp(data.escalation?.finalThreshold, 1, 100, cfg.moderation.escalation.finalThreshold);
+    return updateGuildConfig(guild.id, {
+      moderation: {
+        escalation: {
+          enabled: bool(data.escalation?.enabled),
+          windowDays: clamp(data.escalation?.windowDays, 1, 365, cfg.moderation.escalation.windowDays),
+          firstThreshold,
+          firstAction: ['timeout', 'kick', 'ban'].includes(data.escalation?.firstAction) ? data.escalation.firstAction : 'timeout',
+          firstDurationMinutes: clamp(data.escalation?.firstDurationMinutes, 1, 40_320, cfg.moderation.escalation.firstDurationMinutes),
+          finalThreshold: Math.max(firstThreshold, requestedFinalThreshold),
+          finalAction: ['timeout', 'kick', 'ban'].includes(data.escalation?.finalAction) ? data.escalation.finalAction : 'kick'
+        }
+      }
+    });
+  }
+
   if (section === 'security') {
     return updateGuildConfig(guild.id, { security: {
       antiRaid: {
@@ -311,6 +333,15 @@ async function applySettings(guild, section, body) {
         autoUnlockMinutes: clamp(data.antiRaid?.autoUnlockMinutes, 1, 1_440, cfg.security.antiRaid.autoUnlockMinutes),
         minimumAccountAgeDays: clamp(data.antiRaid?.minimumAccountAgeDays, 0, 3_650, cfg.security.antiRaid.minimumAccountAgeDays),
         quarantineRoleId: role(data.antiRaid?.quarantineRoleId)
+      },
+      joinGate: {
+        enabled: cfg.plan !== 'free' && bool(data.joinGate?.enabled),
+        minimumAccountAgeDays: clamp(data.joinGate?.minimumAccountAgeDays, 0, 3_650, cfg.security.joinGate.minimumAccountAgeDays),
+        requireAvatar: bool(data.joinGate?.requireAvatar),
+        blockedTerms: String(data.joinGate?.blockedTerms || '').split(/\r?\n/).map(value => value.trim()).filter(Boolean).slice(0, 100),
+        action: ['quarantine', 'timeout', 'kick', 'ban'].includes(data.joinGate?.action) ? data.joinGate.action : 'quarantine',
+        timeoutMinutes: clamp(data.joinGate?.timeoutMinutes, 1, 40_320, cfg.security.joinGate.timeoutMinutes),
+        quarantineRoleId: role(data.joinGate?.quarantineRoleId)
       },
       antiNuke: {
         enabled: cfg.plan === 'enterprise' && bool(data.antiNuke?.enabled),
@@ -436,7 +467,23 @@ export function mountApi(app, client) {
 
   app.get('/api/guilds/:guildId/activity', requireSession, requireGuildAccess(client), (req, res) => {
     const limit = clamp(req.query.limit, 1, 200, 50);
-    res.json({ ok: true, events: listAuditEvents(req.params.guildId, { limit }) });
+    const category = String(req.query.category || '').slice(0, 64);
+    res.json({ ok: true, events: listAuditEvents(req.params.guildId, { limit, category }) });
+  });
+
+  app.post('/api/guilds/:guildId/automod/test', requireSession, requireGuildAccess(client), checkCsrf, (req, res) => {
+    const content = String(req.body?.content || '').slice(0, 4_000);
+    if (!content.trim()) return res.status(400).json({ ok: false, error: 'message_content_required' });
+    const mentionCount = clamp(req.body?.mentionCount, 0, 100, 0);
+    const cfg = getGuildConfig(req.params.guildId).automod;
+    const detection = inspectAutomodContent(content, cfg, { mentionCount });
+    res.json({
+      ok: true,
+      evaluatedAt: new Date().toISOString(),
+      detection,
+      action: detection ? automodActionForRule(req.params.guildId, cfg, detection.rule) : null,
+      note: 'This evaluates saved direct-content rules. Spam and duplicate checks require live message history and are not simulated.'
+    });
   });
 
   app.post('/api/guilds/:guildId/logging/test', requireSession, requireGuildAccess(client), checkCsrf, async (req, res) => {

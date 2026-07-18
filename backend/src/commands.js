@@ -94,6 +94,7 @@ export const commandBuilders = [
     .addSubcommand(command => command.setName('avatar').setDescription('Show a user avatar').addUserOption(option => option.setName('user').setDescription('User')))
     .addSubcommand(command => command.setName('roleinfo').setDescription('Show role information').addRoleOption(option => option.setName('role').setDescription('Role').setRequired(true)))
     .addSubcommand(command => command.setName('afk').setDescription('Set your AFK status').addStringOption(option => option.setName('reason').setDescription('Reason').setMaxLength(200)))
+    .addSubcommand(command => command.setName('diagnose').setDescription('Check ModerationDesk permissions and configuration'))
     .addSubcommand(command => command.setName('invite').setDescription('Get the ModerationDesk invite link'))
     .addSubcommand(command => command.setName('dashboard').setDescription('Open the ModerationDesk dashboard'))
     .addSubcommand(command => command.setName('privacy').setDescription('View privacy and data controls')),

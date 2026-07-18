@@ -17,6 +17,7 @@ export const DEFAULT_GUILD = Object.freeze({
   logEventChannels: { member: {}, moderation: {}, messages: {}, server: {}, security: {}, appeals: {} },
   automod: {
     enabled: false,
+    preset: 'custom',
     action: 'delete',
     timeoutSeconds: 300,
     ruleActions: { invites: 'inherit', links: 'inherit', spam: 'inherit', duplicates: 'inherit', mentions: 'inherit', caps: 'inherit', blockedWords: 'inherit' },
@@ -39,6 +40,17 @@ export const DEFAULT_GUILD = Object.freeze({
     exemptRoleIds: [],
     exemptChannelIds: []
   },
+  moderation: {
+    escalation: {
+      enabled: false,
+      windowDays: 30,
+      firstThreshold: 3,
+      firstAction: 'timeout',
+      firstDurationMinutes: 60,
+      finalThreshold: 5,
+      finalAction: 'kick'
+    }
+  },
   security: {
     lockdown: false,
     antiRaid: {
@@ -47,6 +59,15 @@ export const DEFAULT_GUILD = Object.freeze({
       windowSeconds: 20,
       autoUnlockMinutes: 10,
       minimumAccountAgeDays: 0,
+      quarantineRoleId: ''
+    },
+    joinGate: {
+      enabled: false,
+      minimumAccountAgeDays: 0,
+      requireAvatar: false,
+      blockedTerms: [],
+      action: 'quarantine',
+      timeoutMinutes: 60,
       quarantineRoleId: ''
     },
     antiNuke: {
@@ -178,6 +199,7 @@ export function updateGuildConfig(guildId, patch) {
   next.automod.blockedWords = normaliseWords(next.automod.blockedWords);
   next.automod.allowedDomains = normaliseWords(next.automod.allowedDomains);
   next.automod.allowedInviteCodes = normaliseWords(next.automod.allowedInviteCodes);
+  next.security.joinGate.blockedTerms = normaliseWords(next.security.joinGate.blockedTerms);
   db.guilds[id] = next;
   save();
   return clone(next);

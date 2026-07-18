@@ -1,5 +1,5 @@
 import { PermissionFlagsBits } from 'discord.js';
-import { addWarning, getGuildConfig, incrementStat, recordCase } from './store.js';
+import { addWarning, getGuildConfig, incrementStat, recordAuditEvent, recordCase } from './store.js';
 import { hasPlan } from './premium.js';
 import { sendLog, WARNING_COLOUR } from './services/logService.js';
 import { truncate } from './utils.js';
@@ -19,14 +19,14 @@ function domainAllowed(hostname, allowed) {
   return allowed.some(domain => clean === domain || clean.endsWith(`.${domain}`));
 }
 
-function inspectMessage(message, cfg) {
-  const content = message.content || '';
-  const lower = content.toLowerCase();
-  const inviteMatches = [...content.matchAll(inviteRegex)];
+export function inspectAutomodContent(content, cfg, { mentionCount = 0 } = {}) {
+  const safeContent = String(content || '');
+  const lower = safeContent.toLowerCase();
+  const inviteMatches = [...safeContent.matchAll(inviteRegex)];
   if (cfg.antiInvites && inviteMatches.some(match => !cfg.allowedInviteCodes.includes(match[1].toLowerCase()))) return { rule: 'invites', reason: 'Unauthorised Discord invite' };
 
   if (cfg.antiLinks) {
-    const links = content.match(urlRegex) || [];
+    const links = safeContent.match(urlRegex) || [];
     for (const link of links) {
       try {
         if (!domainAllowed(new URL(link).hostname, cfg.allowedDomains)) return { rule: 'links', reason: 'Unauthorised link' };
@@ -36,15 +36,25 @@ function inspectMessage(message, cfg) {
 
   const blocked = cfg.blockedWords.find(word => lower.includes(word));
   if (blocked) return { rule: 'blockedWords', reason: 'Blocked word or phrase' };
-  const mentionCount = message.mentions.users.size + message.mentions.roles.size;
   if (cfg.antiMassMentions && mentionCount >= cfg.maxMentions) return { rule: 'mentions', reason: 'Mass mentions' };
 
-  if (cfg.antiCaps && content.length >= cfg.minCapsLength) {
-    const letters = content.replace(/[^a-z]/gi, '');
+  if (cfg.antiCaps && safeContent.length >= cfg.minCapsLength) {
+    const letters = safeContent.replace(/[^a-z]/gi, '');
     const capitals = (letters.match(/[A-Z]/g) || []).length;
     if (letters.length && capitals / letters.length * 100 >= cfg.maxCapsPercent) return { rule: 'caps', reason: 'Excessive capital letters' };
   }
 
+  return null;
+}
+
+function inspectMessage(message, cfg) {
+  const content = message.content || '';
+  const immediate = inspectAutomodContent(content, cfg, {
+    mentionCount: message.mentions.users.size + message.mentions.roles.size
+  });
+  if (immediate) return immediate;
+
+  const lower = content.toLowerCase();
   const key = `${message.guild.id}:${message.author.id}`;
   const now = Date.now();
   const state = activity.get(key) || [];
@@ -56,7 +66,7 @@ function inspectMessage(message, cfg) {
   return null;
 }
 
-function effectiveAction(guildId, cfg, rule) {
+export function automodActionForRule(guildId, cfg, rule) {
   const selected = cfg.ruleActions?.[rule];
   const desired = selected && selected !== 'inherit' ? selected : cfg.action;
   return desired === 'delete' || !hasPlan(guildId, 'pro') ? 'delete' : desired;
@@ -82,8 +92,9 @@ export function attachAutomod(client) {
     const { reason, rule } = detection;
 
     await message.delete().catch(() => {});
-    const action = effectiveAction(message.guild.id, cfg, rule);
+    const action = automodActionForRule(message.guild.id, cfg, rule);
     const row = recordCase({ guildId: message.guild.id, userId: message.author.id, moderatorId: client.user.id, action: `automod-${action}`, reason, metadata: { channelId: message.channelId, rule } });
+    recordAuditEvent({ guildId: message.guild.id, category: 'security', action: 'automod_enforced', actorId: message.author.id, actorName: message.author.tag, summary: `${rule}: ${action} in #${message.channel.name || 'unknown channel'}` });
     incrementStat(message.guild.id, 'automodActions');
 
     if (action === 'warn') addWarning({ guildId: message.guild.id, userId: message.author.id, moderatorId: client.user.id, reason, caseId: row.id });
