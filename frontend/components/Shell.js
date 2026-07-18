@@ -60,9 +60,9 @@ export default function Shell({ children, compact = false, wide = false }) {
     <div className={compact ? 'site compact' : wide ? 'site wide' : 'site'}>
       <header className="nav" aria-label="Primary navigation">
         <div className="nav-leading">
-          <button className="hamburger-button" type="button" aria-label="Open navigation menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}>
+          {!dashboardContext && <button className="hamburger-button" type="button" aria-label="Open navigation menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}>
             <span aria-hidden="true" /><span aria-hidden="true" /><span aria-hidden="true" />
-          </button>
+          </button>}
           <Link className="brand" href="/">
             <span className="brand-mark" aria-hidden="true"><Image src="/brand/moderationdesk-mark.png" width={34} height={34} alt="" priority /></span>
             <span>ModerationDesk</span>
@@ -85,7 +85,7 @@ export default function Shell({ children, compact = false, wide = false }) {
           </>}
         </nav>
       </header>
-      {menuOpen && (
+      {menuOpen && !dashboardContext && (
         <div className="menu-layer">
           <button className="menu-backdrop" type="button" aria-label="Close navigation menu" onClick={() => setMenuOpen(false)} />
           <aside className="site-menu-drawer" role="dialog" aria-modal="true" aria-label="Site navigation">
