@@ -1,0 +1,30 @@
+import { EmbedBuilder } from 'discord.js';
+import { getGuildConfig } from '../store.js';
+import { logger } from '../logger.js';
+import { truncate } from '../utils.js';
+
+export const BRAND_COLOUR = 0x5865F2;
+export const DANGER_COLOUR = 0xED4245;
+export const SUCCESS_COLOUR = 0x57F287;
+export const WARNING_COLOUR = 0xFEE75C;
+
+export async function sendLog(guild, group, { title, description = '', fields = [], colour = BRAND_COLOUR, footer = '' }) {
+  const channelId = getGuildConfig(guild.id).logs[group];
+  if (!channelId) return null;
+  const channel = guild.channels.cache.get(channelId);
+  if (!channel?.isTextBased()) return null;
+  const embed = new EmbedBuilder().setColor(colour).setTitle(truncate(title, 256)).setTimestamp();
+  if (description) embed.setDescription(truncate(description, 4_096));
+  if (fields.length) embed.addFields(fields.slice(0, 25).map(field => ({ ...field, name: truncate(field.name, 256), value: truncate(field.value, 1_024) })));
+  if (footer) embed.setFooter({ text: truncate(footer, 2_048) });
+  try {
+    return await channel.send({ embeds: [embed], allowedMentions: { parse: [] } });
+  } catch (error) {
+    logger.warn('Failed to send Discord log', { guildId: guild.id, group, error: error.message });
+    return null;
+  }
+}
+
+export function userLabel(user) {
+  return `${user.tag || user.username} (${user.id})`;
+}

@@ -1,0 +1,10 @@
+MODERATIONDESK PLATFORM - MOBILE NOTE
+
+This ZIP contains one GitHub repository with two deployment folders:
+
+- backend: connect this folder to Railway
+- frontend: connect this folder to Vercel
+
+Keep the ZIP in the iPhone Files app until you can extract and upload the complete repository structure. Do not upload only the backend or flatten the folders, because Railway and Vercel use different Root Directory settings.
+
+Use DEPLOYMENT.md after the repository is on GitHub. Never commit .env or .env.local files.
