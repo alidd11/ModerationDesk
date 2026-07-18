@@ -99,7 +99,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
       api(`/api/guilds/${guildId}`),
       api(`/api/guilds/${guildId}/cases?limit=50`),
       api(`/api/guilds/${guildId}/appeals`),
-      api(`/api/guilds/${guildId}/activity?limit=50`)
+      api(`/api/guilds/${guildId}/activity?limit=50`).catch(() => ({ events: [] }))
     ])
       .then(([sessionData, guildData, caseData, appealData, activityData]) => {
         setSession(sessionData);
