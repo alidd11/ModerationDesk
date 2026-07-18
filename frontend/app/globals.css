@@ -238,10 +238,12 @@ button { color: inherit; }
 .badge.warning { background: rgba(251,191,36,.12); color: #fde68a; }
 
 .dashboard-shell { padding: 28px 0 64px; }
+.dashboard-breadcrumb { display: flex; align-items: center; gap: 8px; margin-bottom: 13px; color: #6f7480; font-size: 11px; }.dashboard-breadcrumb a:hover { color: white; }.dashboard-breadcrumb strong { color: #aeb2bd; font-weight: 650; }.dashboard-breadcrumb span { color: #454852; }
 .dashboard-heading { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
 .dashboard-heading .guild-icon { width: 48px; height: 48px; border-radius: 10px; }
 .dashboard-heading h1 { margin: 1px 0 0; font-size: 25px; line-height: 1.2; letter-spacing: -.035em; }
 .dashboard-heading p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+.header-separator { color: #4d515c; padding: 0 3px; }.header-health { color: #7fd59b; }.header-health i { display: inline-block; width: 6px; height: 6px; margin-right: 5px; border-radius: 50%; background: #57c47e; box-shadow: 0 0 7px rgba(87,196,126,.45); }
 .dashboard-heading-actions { display: flex; align-items: center; gap: 8px; }
 .dashboard-kicker, .settings-kicker { display: block; color: #777b88; font-size: 9px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
 .dashboard-error { margin-top: 18px; }
