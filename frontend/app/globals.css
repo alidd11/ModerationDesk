@@ -237,17 +237,17 @@ button { color: inherit; }
 .badge.good { background: rgba(87,242,135,.12); color: #86efac; }
 .badge.warning { background: rgba(251,191,36,.12); color: #fde68a; }
 
-.dashboard-shell { padding: 28px 0 64px; }
-.dashboard-breadcrumb { display: flex; align-items: center; gap: 8px; margin-bottom: 13px; color: #6f7480; font-size: 11px; }.dashboard-breadcrumb a:hover { color: white; }.dashboard-breadcrumb strong { color: #aeb2bd; font-weight: 650; }.dashboard-breadcrumb span { color: #454852; }
-.dashboard-heading { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
-.dashboard-heading .guild-icon { width: 48px; height: 48px; border-radius: 10px; }
-.dashboard-heading h1 { margin: 1px 0 0; font-size: 25px; line-height: 1.2; letter-spacing: -.035em; }
-.dashboard-heading p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+.dashboard-shell { padding: 20px 0 64px; }
+.dashboard-breadcrumb { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; color: #6f7480; font-size: 11px; }.dashboard-breadcrumb a:hover { color: white; }.dashboard-breadcrumb strong { color: #aeb2bd; font-weight: 650; }.dashboard-breadcrumb span { color: #454852; }
+.dashboard-heading { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+.dashboard-heading .guild-icon { width: 40px; height: 40px; border-radius: 9px; }
+.dashboard-heading h1 { margin: 1px 0 0; font-size: 22px; line-height: 1.2; letter-spacing: -.035em; }
+.dashboard-heading p { margin: 1px 0 0; color: var(--muted); font-size: 12px; }
 .header-separator { color: #4d515c; padding: 0 3px; }.header-health { color: #7fd59b; }.header-health i { display: inline-block; width: 6px; height: 6px; margin-right: 5px; border-radius: 50%; background: #57c47e; box-shadow: 0 0 7px rgba(87,196,126,.45); }
 .dashboard-heading-actions { display: flex; align-items: center; gap: 8px; }
 .dashboard-kicker, .settings-kicker { display: block; color: #777b88; font-size: 9px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
 .dashboard-error { margin-top: 18px; }
-.dashboard-layout { display: grid; grid-template-columns: 228px minmax(0, 1fr); gap: 18px; padding-top: 24px; align-items: start; }
+.dashboard-layout { display: grid; grid-template-columns: 228px minmax(0, 1fr); gap: 18px; padding-top: 18px; align-items: start; }
 .sidebar { position: sticky; top: 18px; align-self: start; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: #111216; }
 .sidebar-group { padding: 8px 0; }
 .sidebar-group + .sidebar-group { border-top: 1px solid rgba(255,255,255,.055); }
@@ -265,11 +265,11 @@ button { color: inherit; }
 .mobile-section-select { display: none; }
 .dashboard-content { min-width: 0; }
 .settings-section { padding: 0; overflow: hidden; scroll-margin-top: 20px; }
-.settings-header { min-height: 112px; padding: 23px 25px 21px; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--line); background: #15161a; }
-.settings-header h2 { margin: 5px 0 3px; font-size: 23px; }
+.settings-header { min-height: 94px; padding: 19px 22px 17px; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--line); background: #15161a; }
+.settings-header h2 { margin: 4px 0 3px; font-size: 21px; }
 .settings-header p { margin: 0; max-width: 650px; font-size: 13px; }
 .setup-score { min-width: 66px; text-align: right; }.setup-score span { display: block; font-size: 20px; font-weight: 850; letter-spacing: -.035em; }.setup-score small { color: #777c89; font-size: 9px; text-transform: uppercase; letter-spacing: .08em; }
-.settings-body { padding: 24px 25px 26px; }
+.settings-body { padding: 20px 22px 22px; }
 .settings-footer { min-height: 68px; display: flex; align-items: center; gap: 12px; padding: 12px 25px; border-top: 1px solid var(--line); background: #111216; }
 .settings-footer .button { min-width: 132px; }
 .dashboard-overview { padding: 0; overflow: hidden; }
