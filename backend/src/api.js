@@ -246,6 +246,7 @@ async function applySettings(guild, section, body) {
         appeals: channel(data.logs?.appeals)
       },
       logEvents: Object.fromEntries(['member', 'moderation', 'messages', 'server', 'security', 'appeals'].map(group => [group, [...new Set((Array.isArray(data.logEvents?.[group]) ? data.logEvents[group] : []).map(value => String(value).toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 64)).filter(Boolean))].slice(0, 100)])),
+      logEventChannels: Object.fromEntries(['member', 'moderation', 'messages', 'server', 'security', 'appeals'].map(group => [group, Object.fromEntries(Object.entries(data.logEventChannels?.[group] || {}).slice(0, 100).map(([eventKey, channelId]) => [String(eventKey).toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 64), channel(channelId)]).filter(([, channelId]) => channelId))])) ,
       welcome: {
         enabled: bool(data.welcome?.enabled),
         channelId: channel(data.welcome?.channelId),

@@ -13,7 +13,7 @@ export async function sendLog(guild, group, { title, eventKey: explicitEventKey,
   const eventKey = explicitEventKey || String(title || group).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
   const configuredEvents = cfg.logEvents?.[group];
   if (Array.isArray(configuredEvents) && configuredEvents.length && !configuredEvents.includes(eventKey)) return null;
-  const channelId = cfg.logs[group];
+  const channelId = cfg.logEventChannels?.[group]?.[eventKey] || cfg.logs[group];
   if (!channelId) return null;
   const channel = guild.channels.cache.get(channelId);
   if (!channel?.isTextBased()) return null;
