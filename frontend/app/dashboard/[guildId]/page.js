@@ -65,6 +65,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
   const [drafts, setDrafts] = useState(null);
   const [records, setRecords] = useState({ cases: [], appeals: [] });
   const [activeSection, setActiveSection] = useState(initialSection);
+  const [openGroups, setOpenGroups] = useState({ Server: true, Activity: false, Setup: false, Protection: false, Account: false });
   const [error, setError] = useState('');
   const [danger, setDanger] = useState('');
   const [billingBusy, setBillingBusy] = useState(false);
@@ -119,6 +120,11 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
     window.addEventListener('hashchange', syncSection);
     return () => window.removeEventListener('hashchange', syncSection);
   }, [pathname, initialSection]);
+
+  useEffect(() => {
+    const group = navigation.find(item => item.items.some(section => section.id === activeSection))?.label || 'Server';
+    setOpenGroups(current => ({ ...current, [group]: true }));
+  }, [activeSection]);
 
   const set = (section, updater) => setDrafts(current => ({ ...current, [section]: updater(copy(current[section])) }));
   const plan = guild?.config?.plan || 'free';
@@ -210,12 +216,12 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             <label className="mobile-section-select">Dashboard section<select value={activeSection} onChange={event => { window.location.hash = event.target.value; setActiveSection(event.target.value); }}>{navigation.map(group => <optgroup label={group.label} key={group.label}>{group.items.map(item => <option value={item.id} key={item.id}>{item.label}</option>)}</optgroup>)}</select></label>
             {navigation.map(group => (
               <div className="sidebar-group" key={group.label}>
-                <div className="sidebar-label">{group.label}</div>
-                <nav aria-label={`${group.label} settings`}>
+                <button className="sidebar-label sidebar-toggle" type="button" aria-expanded={Boolean(openGroups[group.label])} onClick={() => setOpenGroups(current => ({ ...current, [group.label]: !current[group.label] }))}><span>{group.label}</span><i aria-hidden="true">{openGroups[group.label] ? '−' : '+'}</i></button>
+                {openGroups[group.label] && <nav aria-label={`${group.label} settings`}>
                   {group.items.map(item => (
                     <a
                       className={activeSection === item.id ? 'active' : ''}
-                      href={`#${item.id}`}
+                      href={`/${guildId ? `dashboard/${guildId}/` : 'dashboard/'}${item.id}`}
                       key={item.id}
                       onClick={() => setActiveSection(item.id)}
                       aria-current={activeSection === item.id ? 'page' : undefined}
@@ -224,7 +230,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                       <span className="nav-meta"><b className={`nav-dot ${sectionStatuses[item.id] ? 'enabled' : ''}`} aria-hidden="true" /><i aria-hidden="true">›</i></span>
                     </a>
                   ))}
-                </nav>
+                </nav>}
               </div>
             ))}
           </aside>

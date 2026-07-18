@@ -248,6 +248,7 @@ button { color: inherit; }
 .sidebar-group { padding: 8px 0; }
 .sidebar-group + .sidebar-group { border-top: 1px solid rgba(255,255,255,.055); }
 .sidebar-label { padding: 3px 10px 7px; color: #666b78; font-size: 9px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.sidebar-toggle { width: 100%; display: flex; align-items: center; justify-content: space-between; border: 0; background: transparent; cursor: pointer; text-align: left; }.sidebar-toggle i { color: #777c89; font-size: 15px; font-style: normal; letter-spacing: 0; }
 .sidebar nav { display: grid; gap: 2px; }
 .sidebar a { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 36px; padding: 8px 10px; color: #9da1ad; border-radius: 6px; font-size: 13px; font-weight: 650; }
 .sidebar a i { color: #5f636e; font-style: normal; font-size: 17px; line-height: 1; }
