@@ -69,12 +69,20 @@ export default function Shell({ children, compact = false, wide = false }) {
           </Link>
         </div>
         <nav className="nav-actions">
-          <Link href="/#plans">Plans</Link>
-          {user ? (
-            <><Link href="/dashboard">Dashboard</Link><span className="user-chip">{user.avatar ? <img src={user.avatar} alt="" /> : null}<span>{user.username}</span></span><button className="button ghost small" onClick={logout}>Log out</button></>
-          ) : (
-            <Link className="button small" href="/dashboard">Dashboard <span aria-hidden="true">→</span></Link>
-          )}
+          {dashboardContext ? (
+            <>
+              <Link className="dashboard-top-link" href="/dashboard">All servers</Link>
+              <button className="dashboard-search-trigger" type="button" onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true }))}><span aria-hidden="true">⌕</span><span>Search</span><kbd>⌘K</kbd></button>
+              {user && <><span className="user-chip">{user.avatar ? <img src={user.avatar} alt="" /> : null}<span>{user.username}</span></span><button className="button ghost small" onClick={logout}>Log out</button></>}
+            </>
+          ) : <>
+            <Link href="/#plans">Plans</Link>
+            {user ? (
+              <><Link href="/dashboard">Dashboard</Link><span className="user-chip">{user.avatar ? <img src={user.avatar} alt="" /> : null}<span>{user.username}</span></span><button className="button ghost small" onClick={logout}>Log out</button></>
+            ) : (
+              <Link className="button small" href="/dashboard">Dashboard <span aria-hidden="true">→</span></Link>
+            )}
+          </>}
         </nav>
       </header>
       {menuOpen && (
@@ -132,10 +140,10 @@ export default function Shell({ children, compact = false, wide = false }) {
       )}
       <main>{children}</main>
       <DashboardCommandPalette enabled={dashboardContext && Boolean(dashboardGuildId)} />
-      <footer className="footer">
+      {!dashboardContext && <footer className="footer">
         <div><strong>ModerationDesk</strong><span>Discord moderation software from DeskLabs.</span></div>
         <nav><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link><a href="mailto:support@moderationdesk.com">Support</a></nav>
-      </footer>
+      </footer>}
     </div>
   );
 }
