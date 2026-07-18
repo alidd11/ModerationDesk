@@ -16,17 +16,11 @@ export default function Shell({ children, compact = false, wide = false }) {
   const dashboardGuildId = pathname.split('/')[2] || '';
   const dashboardHref = dashboardGuildId ? `/dashboard/${dashboardGuildId}` : '/dashboard';
   const dashboardLinks = dashboardGuildId ? [
-    ['Overview', '#overview'],
-    ['Cases', '#cases'],
-    ['Appeals', '#appeals'],
-    ['Staff access', '#staff-access'],
-    ['Commands', '#commands'],
-    ['Logging', '#logging'],
-    ['Roles', '#roles'],
-    ['AutoMod', '#automod'],
-    ['Anti-raid', '#anti-raid'],
-    ['Verification', '#verification'],
-    ['Billing', '#billing']
+    ['Overview', 'overview'], ['Cases', 'cases'], ['Appeals', 'appeals'],
+    ['Staff access', 'staff-access'], ['Commands', 'commands'], ['Logging', 'logging'],
+    ['Member messages', 'member-messages'], ['Roles', 'roles'], ['Community tools', 'community'],
+    ['AutoMod', 'automod'], ['Anti-raid', 'anti-raid'], ['Anti-nuke', 'anti-nuke'],
+    ['Verification', 'verification'], ['Billing', 'billing'], ['Data & privacy', 'data']
   ] : [];
 
   useEffect(() => {
@@ -100,7 +94,7 @@ export default function Shell({ children, compact = false, wide = false }) {
                   <div className="drawer-group">
                     <span className="drawer-label">Server</span>
                     <Link className={pathname === '/dashboard' ? 'active' : ''} href="/dashboard" onClick={() => setMenuOpen(false)}><span>All servers</span><i aria-hidden="true">→</i></Link>
-                    {dashboardLinks.map(([label, targetHash]) => <Link className={pathname === dashboardHref && hash === targetHash ? 'active' : ''} href={`${dashboardHref}${targetHash}`} onClick={() => setMenuOpen(false)} key={targetHash}><span>{label}</span><i aria-hidden="true">→</i></Link>)}
+                    {dashboardLinks.map(([label, section]) => <Link className={pathname === `${dashboardHref}/${section}` || (section === 'overview' && pathname === dashboardHref) ? 'active' : ''} href={`${dashboardHref}/${section}`} onClick={() => setMenuOpen(false)} key={section}><span>{label}</span><i aria-hidden="true">→</i></Link>)}
                   </div>
                   <div className="drawer-group">
                     <span className="drawer-label">Account</span>

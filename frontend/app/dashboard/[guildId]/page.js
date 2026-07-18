@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 import Shell from '../../../components/Shell';
 import SettingsSection from '../../../components/SettingsSection';
 import { Area, ChannelSelect, Check, Multi, RoleSelect, Select, Text } from '../../../components/Fields';
@@ -57,13 +57,14 @@ function Status({ enabled, children }) {
   return <span className={`feature-status ${enabled ? 'enabled' : ''}`}><i aria-hidden="true" />{children}</span>;
 }
 
-export default function GuildDashboardPage() {
+export default function GuildDashboardPage({ initialSection = 'overview' }) {
   const { guildId } = useParams();
+  const pathname = usePathname();
   const [session, setSession] = useState(null);
   const [guild, setGuild] = useState(null);
   const [drafts, setDrafts] = useState(null);
   const [records, setRecords] = useState({ cases: [], appeals: [] });
-  const [activeSection, setActiveSection] = useState('overview');
+  const [activeSection, setActiveSection] = useState(initialSection);
   const [error, setError] = useState('');
   const [danger, setDanger] = useState('');
   const [billingBusy, setBillingBusy] = useState(false);
@@ -109,14 +110,15 @@ export default function GuildDashboardPage() {
 
   useEffect(() => {
     const syncSection = () => {
-      const requested = window.location.hash.slice(1);
-      setActiveSection(validSections.has(requested) ? requested : 'overview');
+    const pathSection = pathname.split('/')[3] || initialSection;
+    const requested = window.location.hash.slice(1) || pathSection;
+    setActiveSection(validSections.has(requested) ? requested : 'overview');
     };
 
     syncSection();
     window.addEventListener('hashchange', syncSection);
     return () => window.removeEventListener('hashchange', syncSection);
-  }, []);
+  }, [pathname, initialSection]);
 
   const set = (section, updater) => setDrafts(current => ({ ...current, [section]: updater(copy(current[section])) }));
   const plan = guild?.config?.plan || 'free';

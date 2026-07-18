@@ -29,7 +29,8 @@ export default function DashboardCommandPalette({ enabled }) {
   useEffect(() => { if (open) { setQuery(''); input.current?.focus(); } }, [open]);
   if (!enabled || !open) return null;
 
-  const go = hash => { window.location.hash = hash; setOpen(false); };
+  const guildId = window.location.pathname.split('/')[2];
+  const go = section => { window.location.href = `/dashboard/${guildId}/${section}`; setOpen(false); };
   return <div className="command-palette" role="dialog" aria-modal="true" aria-label="Find dashboard page" onClick={() => setOpen(false)}>
     <div className="command-palette-card" onClick={event => event.stopPropagation()}>
       <div className="command-palette-search"><span aria-hidden="true">⌕</span><input ref={input} value={query} onChange={event => setQuery(event.target.value)} placeholder="Find a dashboard page…" aria-label="Find a dashboard page" /><kbd>ESC</kbd></div>
