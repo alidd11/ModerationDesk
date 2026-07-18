@@ -1,12 +1,13 @@
 import Shell from '../components/Shell';
+import Image from 'next/image';
 
 const botInviteUrl = 'https://discord.com/oauth2/authorize?client_id=1528046559923666944&permissions=1099914374358&scope=bot%20applications.commands';
 
 const features = [
-  ['01', 'Cases that keep context', 'Warnings, timeouts, temporary bans and staff notes stay together in a complete member history.'],
-  ['02', 'Protection that stays on', 'Spam, malicious links, mass mentions, raids and destructive actions are handled automatically.'],
-  ['03', 'Verification you can trust', 'Button and OAuth verification support consent-based migration and safe role restoration.'],
-  ['04', 'One dashboard, every server', 'Manage every community with isolated settings and granular access for your staff team.']
+  ['Case records', 'Keep warnings, timeouts, bans, notes and appeal decisions in one member history.'],
+  ['AutoMod', 'Set limits for spam, repeated messages, mentions, links, invites and blocked terms.'],
+  ['Server protection', 'Detect join spikes and destructive actions, then record who did what and when.'],
+  ['Verification', 'Assign roles through button or OAuth verification, including consent-based role restoration.']
 ];
 
 export default function Home() {
@@ -14,32 +15,31 @@ export default function Home() {
     <Shell>
       <section className="hero">
         <div className="hero-copy">
-          <span className="eyebrow"><i />Built for Discord communities</span>
-          <h1>Turn Discord into a safer community.</h1>
-          <p>Moderation, security and verification—configured from a dashboard instead of a wall of commands or a stack of disconnected bots.</p>
+          <span className="eyebrow">MODERATIONDESK FOR DISCORD</span>
+          <h1>Moderation without the bot pile.</h1>
+          <p>Set staff access, automate routine enforcement, review cases and manage verification from one place.</p>
           <div className="hero-actions">
             <a className="button button-large" href={botInviteUrl} target="_blank" rel="noreferrer">Invite ModerationDesk <span>→</span></a>
-            <a className="text-link" href="#platform">Explore the platform <span>↓</span></a>
+            <a className="text-link" href="#platform">See what it covers</a>
           </div>
-          <div className="trust-row"><span>✓ No-code configuration</span><span>✓ Multi-server ready</span><span>✓ Discord-compliant</span></div>
         </div>
         <div className="product-window" aria-label="ModerationDesk dashboard preview">
           <div className="window-bar"><span /><span /><span /><small>Control centre</small></div>
           <div className="window-body">
-            <div className="preview-sidebar"><div className="preview-logo"><img src="/brand/moderationdesk-mark.png" alt="" /></div>{['Overview','Moderation','AutoMod','Security','Verification'].map((item, index) => <div className={index === 0 ? 'active' : ''} key={item}><i />{item}</div>)}</div>
+            <div className="preview-sidebar"><div className="preview-logo"><Image src="/brand/moderationdesk-mark.png" width={30} height={30} alt="" /></div>{['Overview','Moderation','AutoMod','Security','Verification'].map((item, index) => <div className={index === 0 ? 'active' : ''} key={item}><i />{item}</div>)}</div>
             <div className="preview-main">
-              <div className="preview-heading"><div><small>DESKLABS COMMUNITY</small><strong>Community overview</strong></div><span className="status-dot">All systems operational</span></div>
-              <div className="preview-stats"><div><small>MEMBERS</small><b>24,891</b><span>+8.2% this month</span></div><div><small>CASES TODAY</small><b>18</b><span>6 resolved</span></div><div><small>THREATS BLOCKED</small><b>1,204</b><span>Last 30 days</span></div></div>
-              <div className="activity-card"><div><strong>Live moderation activity</strong><span>View all</span></div>{[['Timeout','Repeated spam','2m ago'],['AutoMod','Blocked invite link','8m ago'],['Verification','Member verified','12m ago']].map(row => <p key={row[2]}><i /> <b>{row[0]}</b><span>{row[1]}</span><small>{row[2]}</small></p>)}</div>
+              <div className="preview-heading"><div><small>DESKLABS COMMUNITY</small><strong>Moderation overview</strong></div><span className="status-dot">Connected</span></div>
+              <div className="preview-stats"><div><small>OPEN CASES</small><b>3</b><span>Needs review</span></div><div><small>AUTOMOD RULES</small><b>12</b><span>Enabled</span></div><div><small>RAID MODE</small><b>Ready</b><span>Monitoring joins</span></div></div>
+              <div className="activity-card"><div><strong>Recent actions</strong><span>Case log</span></div>{[['Timeout','Repeated message spam','2m ago'],['AutoMod','Invite removed','8m ago'],['Verification','Role assigned','12m ago']].map(row => <p key={row[2]}><i /> <b>{row[0]}</b><span>{row[1]}</span><small>{row[2]}</small></p>)}</div>
             </div>
           </div>
         </div>
       </section>
-      <section className="family-features" id="security"><article><span>01</span><h3>Moderation that stays organised</h3><p>Every warning, sanction and staff note becomes part of one searchable case history.</p></article><article><span>02</span><h3>Security, built in</h3><p>AutoMod, anti-raid and anti-nuke protection work together instead of competing for events.</p></article><article><span>03</span><h3>Roles that follow safely</h3><p>Verify members and restore mapped roles through an explicit, Discord-compliant consent flow.</p></article></section>
+      <section className="family-features" id="security"><article><span>CASES</span><h3>A record your staff can follow</h3><p>Reasons, evidence and actions stay attached to the member rather than disappearing into a log channel.</p></article><article><span>SECURITY</span><h3>Automatic response, clear ownership</h3><p>Anti-spam, anti-raid and anti-nuke rules act quickly while keeping an audit trail for staff review.</p></article><article><span>ACCESS</span><h3>Roles applied on purpose</h3><p>Verification and migration require member consent, with explicit mappings for every restored role.</p></article></section>
       <section className="section platform" id="platform">
-        <div className="section-head"><div><div className="section-kicker">ONE CONNECTED PLATFORM</div><h2>Built for the way moderation teams actually work.</h2></div><p>Configure the rules once, give staff the access they need and keep the full operational history.</p></div>
+        <div className="section-head"><div><div className="section-kicker">WHAT IT REPLACES</div><h2>One place for day-to-day moderation.</h2></div><p>ModerationDesk combines the jobs usually split across case, logging, security and verification bots.</p></div>
         <div className="feature-grid">
-          {features.map(([number, title, text]) => <article className="feature-card" key={title}><span>{number}</span><h3>{title}</h3><p>{text}</p><i aria-hidden="true">↗</i></article>)}
+          {features.map(([title, text]) => <article className="feature-card" key={title}><h3>{title}</h3><p>{text}</p></article>)}
         </div>
       </section>
     </Shell>
