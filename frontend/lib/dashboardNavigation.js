@@ -13,7 +13,7 @@ export const dashboardNavigation = [
     items: [
       { id: 'cases', label: 'Cases', keywords: 'warnings punishments history' },
       { id: 'appeals', label: 'Appeals', keywords: 'member review decisions' },
-      { id: 'policies', label: 'Escalation policies', keywords: 'warnings timeout kick ban rules' }
+      { id: 'policies', label: 'Member discipline', keywords: 'staff warnings timeout kick ban ladder escalation' }
     ]
   },
   {
