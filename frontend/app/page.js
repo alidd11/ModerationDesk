@@ -17,7 +17,7 @@ export default function Home() {
           <h1>Turn Discord into a safer community.</h1>
           <p>Moderation, security and verification—configured from a dashboard instead of a wall of commands or a stack of disconnected bots.</p>
           <div className="hero-actions">
-            <a className="button button-large" href="/api/auth/login">Open dashboard <span>→</span></a>
+            <a className="button button-large" href={botInviteUrl} target="_blank" rel="noreferrer">Invite ModerationDesk <span>→</span></a>
           </div>
         </div>
         <div className="product-window" aria-label="ModerationDesk dashboard preview">
@@ -39,7 +39,6 @@ export default function Home() {
           {features.map(([number, title, text]) => <article className="feature-card" key={title}><span>{number}</span><h3>{title}</h3><p>{text}</p><i aria-hidden="true">↗</i></article>)}
         </div>
       </section>
-      <section className="cta"><div><h2>Build your moderation setup visually.</h2><p>Choose a server, configure each system and see exactly what your staff and members will experience.</p></div><a className="button button-large" href={botInviteUrl} target="_blank" rel="noreferrer">Invite ModerationDesk <span>→</span></a></section>
     </Shell>
   );
 }
