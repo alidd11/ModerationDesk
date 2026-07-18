@@ -1,11 +1,10 @@
-import Link from 'next/link';
 import Shell from '../components/Shell';
 
 const features = [
-  ['01', 'Moderation workspace', 'Warnings, timeouts, temporary bans, staff notes and a complete case history in one place.'],
-  ['02', 'Always-on protection', 'Stop spam, malicious links, mass mentions, raids and destructive server actions automatically.'],
-  ['03', 'Trusted verification', 'Button and OAuth verification with consent-based migration and safe role restoration.'],
-  ['04', 'Multi-server control', 'Run every community from one dashboard with isolated settings and granular staff access.']
+  ['01', 'Cases that keep context', 'Warnings, timeouts, temporary bans and staff notes stay together in a complete member history.'],
+  ['02', 'Protection that stays on', 'Spam, malicious links, mass mentions, raids and destructive actions are handled automatically.'],
+  ['03', 'Verification you can trust', 'Button and OAuth verification support consent-based migration and safe role restoration.'],
+  ['04', 'One dashboard, every server', 'Manage every community with isolated settings and granular access for your staff team.']
 ];
 
 export default function Home() {
@@ -13,14 +12,11 @@ export default function Home() {
     <Shell>
       <section className="hero">
         <div className="hero-copy">
-          <span className="eyebrow"><i /> The all-in-one Discord operations platform</span>
-          <h1>Run your community.<br /><em>Without the chaos.</em></h1>
-          <p>Replace a stack of disconnected bots with one focused platform for moderation, security, verification, appeals and community operations.</p>
+          <h1>Turn Discord into a safer community.</h1>
+          <p>Moderation, security and verification—configured from a dashboard instead of a wall of commands or a stack of disconnected bots.</p>
           <div className="hero-actions">
-            <a className="button button-large" href="/api/auth/login">Start with Discord <span>→</span></a>
-            <Link className="text-link" href="#platform">See what’s included <span>↓</span></Link>
+            <a className="button button-large" href="/api/auth/login">Open dashboard <span>→</span></a>
           </div>
-          <div className="trust-row"><span>✓ No user tokens</span><span>✓ Consent-based OAuth</span><span>✓ Per-server settings</span></div>
         </div>
         <div className="product-window" aria-label="ModerationDesk dashboard preview">
           <div className="window-bar"><span /><span /><span /><small>Control centre</small></div>
@@ -34,15 +30,14 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className="logo-strip"><span>Built to replace</span><b>Dyno</b><b>Carl-bot</b><b>Wick</b><b>MEE6</b><b>YAGPDB</b></section>
+      <section className="family-features" id="security"><article><h3>Moderation that stays organised</h3><p>Every warning, sanction and staff note becomes part of one searchable case history.</p></article><article><h3>Security, built in</h3><p>AutoMod, anti-raid and anti-nuke protection work together instead of competing for events.</p></article><article><h3>Roles that follow safely</h3><p>Verify members and restore mapped roles through an explicit, Discord-compliant consent flow.</p></article></section>
       <section className="section platform" id="platform">
-        <div className="section-kicker">THE PLATFORM</div>
-        <div className="section-head"><div><h2>Everything your staff needs.<br />Nothing they don’t.</h2></div><p>Powerful tools should feel calm, clear and predictable—even when your server is not.</p></div>
+        <div className="section-head"><div><h2>Built for the way moderation teams actually work.</h2></div><p>Configure the rules once, give staff the access they need and keep the full operational history.</p></div>
         <div className="feature-grid">
           {features.map(([number, title, text]) => <article className="feature-card" key={title}><span>{number}</span><h3>{title}</h3><p>{text}</p><i aria-hidden="true">↗</i></article>)}
         </div>
       </section>
-      <section className="cta"><div><span className="eyebrow"><i /> READY WHEN YOU ARE</span><h2>Your community deserves one reliable control centre.</h2><p>Connect Discord, choose a server and configure ModerationDesk in minutes.</p></div><a className="button button-large" href="/api/auth/login">Open your dashboard <span>→</span></a></section>
+      <section className="cta"><div><h2>Build your moderation setup visually.</h2><p>Choose a server, configure each system and see exactly what your staff and members will experience.</p></div><a className="button button-large" href="/api/auth/login">Open your dashboard <span>→</span></a></section>
     </Shell>
   );
 }
