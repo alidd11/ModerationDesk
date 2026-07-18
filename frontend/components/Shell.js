@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
-export default function Shell({ children, compact = false }) {
+export default function Shell({ children, compact = false, wide = false }) {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export default function Shell({ children, compact = false }) {
   }
 
   return (
-    <div className={compact ? 'site compact' : 'site'}>
+    <div className={compact ? 'site compact' : wide ? 'site wide' : 'site'}>
       <header className="nav" aria-label="Primary navigation">
         <Link className="brand" href="/">
           <span className="brand-mark" aria-hidden="true"><Image src="/brand/moderationdesk-mark.png" width={34} height={34} alt="" priority /></span>

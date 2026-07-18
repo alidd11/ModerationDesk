@@ -29,6 +29,7 @@ a { color: inherit; text-decoration: none; }
 button { color: inherit; }
 
 .site { width: min(1240px, calc(100% - 64px)); margin: 0 auto; }
+.site.wide { width: min(1580px, calc(100% - 36px)); }
 .site.compact { width: min(900px, calc(100% - 30px)); }
 .nav { min-height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--line); }
 .brand { display: inline-flex; align-items: center; gap: 11px; font-size: 19px; font-weight: 850; letter-spacing: -.025em; }
@@ -180,7 +181,7 @@ button { color: inherit; }
 .dashboard-heading-actions { display: flex; align-items: center; gap: 8px; }
 .dashboard-kicker, .settings-kicker { display: block; color: #777b88; font-size: 9px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
 .dashboard-error { margin-top: 18px; }
-.dashboard-layout { display: grid; grid-template-columns: 244px minmax(0, 1fr); gap: 28px; padding-top: 24px; align-items: start; }
+.dashboard-layout { display: grid; grid-template-columns: 228px minmax(0, 1fr); gap: 18px; padding-top: 24px; align-items: start; }
 .sidebar { position: sticky; top: 18px; align-self: start; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: #111216; }
 .sidebar-group { padding: 8px 0; }
 .sidebar-group + .sidebar-group { border-top: 1px solid rgba(255,255,255,.055); }
@@ -270,8 +271,26 @@ label { display: block; font-weight: 750; color: #e5e7eb; }
 label span { display: block; color: var(--muted); font-size: 12px; font-weight: 500; margin-top: 2px; }
 input, select, textarea { width: 100%; margin-top: 7px; border: 1px solid var(--line); border-radius: 6px; background: #0e0f13; color: white; padding: 10px 11px; outline: none; }
 textarea { min-height: 108px; resize: vertical; }
-select[multiple] { min-height: 132px; }
 input:focus, select:focus, textarea:focus { border-color: rgba(124,140,255,.72); box-shadow: 0 0 0 3px rgba(88,101,242,.11); }
+.multi-field { min-width: 0; margin: 0; padding: 0; border: 0; }
+.multi-field legend { width: 100%; padding: 0; color: #e5e7eb; font-weight: 750; }
+.multi-field legend > span { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; font-weight: 500; }
+.multi-toolbar { position: relative; margin-top: 7px; }
+.multi-toolbar input { margin: 0; padding-right: 88px; }
+.multi-toolbar > span { position: absolute; top: 50%; right: 10px; margin: 0; transform: translateY(-50%); color: #777c89; font-size: 10px; font-weight: 700; pointer-events: none; }
+.multi-actions { min-height: 26px; display: flex; align-items: center; justify-content: flex-end; gap: 14px; }
+.multi-actions button { padding: 0; border: 0; background: transparent; color: #9b91ff; font-size: 10px; font-weight: 750; cursor: pointer; }
+.multi-actions button:last-child { color: #898e99; }
+.multi-actions button:hover:not(:disabled) { color: white; }
+.multi-actions button:disabled { opacity: .4; cursor: default; }
+.multi-options { max-height: 238px; overflow-y: auto; display: grid; gap: 3px; padding: 5px; border: 1px solid var(--line); border-radius: 6px; background: #0e0f13; }
+.multi-option { min-height: 35px; display: flex; align-items: center; gap: 9px; padding: 7px 9px; border-radius: 5px; color: #a9adb7; font-size: 12px; font-weight: 650; cursor: pointer; }
+.multi-option:hover { background: #17181e; color: white; }
+.multi-option.selected { background: rgba(109,92,231,.14); color: white; }
+.multi-option input { width: 15px; height: 15px; flex: 0 0 auto; margin: 0; padding: 0; accent-color: var(--brand); }
+.multi-option > i { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 50%; }
+.multi-option > span { margin: 0; color: inherit; font-size: inherit; font-weight: inherit; }
+.multi-empty { padding: 22px 12px; color: var(--muted); font-size: 11px; text-align: center; }
 .check { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; font-weight: 700; }
 .check input { width: 17px; height: 17px; margin: 2px 0 0; }
 .form-actions { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
@@ -308,7 +327,7 @@ input:focus, select:focus, textarea:focus { border-color: rgba(124,140,255,.72);
 }
 
 @media (max-width: 620px) {
-  .site, .site.compact { width: min(100% - 28px, 1180px); }
+  .site, .site.wide, .site.compact { width: min(100% - 28px, 1180px); }
   .nav { min-height: 70px; }
   .nav-actions > a:not(.button) { display: none; }
   .user-chip { display: none; }

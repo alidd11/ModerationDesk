@@ -148,11 +148,11 @@ export default function GuildDashboardPage() {
   }
 
   if (error && !guild) {
-    return <Shell><section className="section"><div className="error">{error}</div><p><a className="button" href={`/api/auth/login?returnTo=/dashboard/${guildId}`}>Sign in with Discord</a></p></section></Shell>;
+    return <Shell wide><section className="section"><div className="error">{error}</div><p><a className="button" href={`/api/auth/login?returnTo=/dashboard/${guildId}`}>Sign in with Discord</a></p></section></Shell>;
   }
 
   if (!guild || !drafts || !session) {
-    return <Shell><section className="section"><div className="card skeleton">Loading server configuration…</div></section></Shell>;
+    return <Shell wide><section className="section"><div className="card skeleton">Loading server configuration…</div></section></Shell>;
   }
 
   const channels = guild.channels;
@@ -185,7 +185,7 @@ export default function GuildDashboardPage() {
   };
 
   return (
-    <Shell>
+    <Shell wide>
       <div className="dashboard-shell">
         <header className="dashboard-heading">
           <div className="guild-card">
