@@ -22,7 +22,7 @@ export default function Shell({ children, compact = false }) {
     <div className={compact ? 'site compact' : 'site'}>
       <header className="nav" aria-label="Primary navigation">
         <Link className="brand" href="/">
-          <span className="brand-mark" aria-hidden="true"><span>MD</span></span>
+          <span className="brand-mark" aria-hidden="true"><img src="/brand/moderationdesk-mark.png" alt="" /></span>
           <span>ModerationDesk</span>
         </Link>
         <nav className="nav-actions">
