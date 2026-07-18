@@ -8,6 +8,10 @@ export const metadata = {
   openGraph: { title: 'ModerationDesk', description: 'Run Discord moderation from one control room.', type: 'website' }
 };
 
+export const viewport = {
+  themeColor: '#0f1014'
+};
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">

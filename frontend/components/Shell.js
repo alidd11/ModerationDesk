@@ -44,9 +44,13 @@ export default function Shell({ children, compact = false, wide = false }) {
       if (event.key === 'Escape') setMenuOpen(false);
     };
     document.body.style.overflow = 'hidden';
+    document.documentElement.classList.add('menu-open');
+    document.body.classList.add('menu-open');
     window.addEventListener('keydown', closeOnEscape);
     return () => {
       document.body.style.overflow = previousOverflow;
+      document.documentElement.classList.remove('menu-open');
+      document.body.classList.remove('menu-open');
       window.removeEventListener('keydown', closeOnEscape);
     };
   }, [menuOpen]);

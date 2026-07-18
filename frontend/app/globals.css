@@ -16,6 +16,7 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+html.menu-open, body.menu-open { background: #0f1014; }
 body {
   margin: 0;
   min-height: 100vh;
@@ -43,9 +44,9 @@ button { color: inherit; }
 .dashboard-top-link { color: #a6a9b4; font-size: 12px; }.dashboard-top-link:hover { color: white; }
 .dashboard-search-trigger { display: inline-flex; align-items: center; gap: 7px; padding: 6px 9px; border: 1px solid var(--line); border-radius: 6px; background: #15161a; color: #9296a2; cursor: pointer; font: inherit; font-size: 11px; }.dashboard-search-trigger:hover { color: white; border-color: #4b475f; }.dashboard-search-trigger > span:first-child { color: #9a90ff; font-size: 17px; line-height: .7; }.dashboard-search-trigger kbd { padding: 2px 4px; border: 1px solid #3a3c47; border-radius: 3px; color: #6f7480; font-size: 8px; }
 .nav-actions > a:not(.button) { color: var(--muted); }
-.menu-layer { position: fixed; inset: 0; z-index: 1000; }
+.menu-layer { position: fixed; inset: 0; z-index: 1000; width: 100vw; height: 100dvh; min-height: -webkit-fill-available; background: #0f1014; }
 .menu-backdrop { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; background: rgba(3,4,6,.72); cursor: default; animation: menu-fade .18s ease both; }
-.site-menu-drawer { position: relative; z-index: 1; width: min(390px, calc(100vw - 28px)); height: 100%; padding: 18px; display: flex; flex-direction: column; overflow-y: auto; border-right: 1px solid #34353e; background: #0f1014; box-shadow: 30px 0 70px rgba(0,0,0,.45); animation: drawer-enter .22s ease both; }
+.site-menu-drawer { position: relative; z-index: 1; width: min(390px, calc(100vw - 28px)); height: 100dvh; min-height: -webkit-fill-available; padding: calc(18px + env(safe-area-inset-top)) 18px calc(18px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; overflow-y: auto; overscroll-behavior: contain; border-right: 1px solid #34353e; background: #0f1014; box-shadow: 30px 0 70px rgba(0,0,0,.45); animation: drawer-enter .22s ease both; }
 .menu-drawer-head { min-height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 4px 17px; border-bottom: 1px solid var(--line); }
 .menu-close { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 7px; background: #17181d; color: #b8bbc4; font-size: 24px; line-height: 1; cursor: pointer; }
 .menu-close:hover { color: white; border-color: #4a465c; }
@@ -419,7 +420,10 @@ input:focus, select:focus, textarea:focus { border-color: rgba(124,140,255,.72);
   .hamburger-button { width: 36px; height: 36px; }
   .brand { gap: 8px; font-size: 16px; }
   .brand-mark { width: 30px; height: 30px; }
-  .site-menu-drawer { width: min(340px, calc(100vw - 18px)); padding: 14px; }
+  .site-menu-drawer {
+    width: min(340px, calc(100vw - 18px));
+    padding: calc(14px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom));
+  }
   .nav-actions > a:not(.button) { display: none; }
   .user-chip { display: none; }
   .hero { padding: 44px 0 58px; gap: 34px; }
