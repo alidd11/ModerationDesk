@@ -153,6 +153,28 @@ app.delete('/api/admin/guild/:guildId', adminOnly, (req, res) => {
 });
 app.get('/api/admin/snapshot', adminOnly, (req, res) => res.json(snapshot()));
 
+// Aggregate install/member/plan counts for the DeskLabs Stats dashboard.
+// Checked against its own STATS_KEY, not PREMIUM_ADMIN_KEY, so a leaked
+// stats credential can't reach plan edits, config patches, export or delete.
+function statsOnly(req, res, next) {
+  const supplied = req.get('X-Stats-Key') || '';
+  if (!config.statsKey || !constantTimeEqual(supplied, config.statsKey)) {
+    return res.status(401).json({ ok: false, error: 'unauthorized' });
+  }
+  next();
+}
+
+app.get('/api/admin/stats', statsOnly, (req, res) => {
+  const guilds = [...client.guilds.cache.values()];
+  const totalMembers = guilds.reduce((sum, guild) => sum + (guild.memberCount || 0), 0);
+  const plans = { free: 0, pro: 0, enterprise: 0 };
+  for (const guild of guilds) {
+    const plan = getGuildConfig(guild.id).plan;
+    plans[plan] = (plans[plan] || 0) + 1;
+  }
+  res.json({ bot: 'ModerationDesk', installs: guilds.length, totalMembers, plans });
+});
+
 app.use((error, req, res, next) => {
   logger.error('HTTP request failed', { method: req.method, path: req.path, error: error.stack || error.message });
   if (res.headersSent) return next(error);

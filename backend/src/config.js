@@ -20,6 +20,7 @@ export const config = Object.freeze({
   port: Number(process.env.PORT || 3001),
   sessionSecret: process.env.SESSION_SECRET || '',
   premiumAdminKey: process.env.PREMIUM_ADMIN_KEY || '',
+  statsKey: process.env.STATS_KEY || '',
   enterpriseGuildIds: list(process.env.ENTERPRISE_GUILD_IDS),
   allowedOrigins: [...new Set([frontendBaseUrl, ...list(process.env.ALLOWED_ORIGINS)].filter(Boolean))],
   registerCommandsOnStart: bool(process.env.REGISTER_COMMANDS_ON_START),
