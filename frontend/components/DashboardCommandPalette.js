@@ -1,20 +1,18 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { dashboardNavigation } from '../lib/dashboardNavigation';
 
-const sections = [
-  ['Overview', 'overview'], ['Cases', 'cases'], ['Appeals', 'appeals'],
-  ['Staff access', 'staff-access'], ['Commands', 'commands'], ['Logging', 'logging'],
-  ['Member messages', 'member-messages'], ['Roles', 'roles'], ['Community tools', 'community'],
-  ['AutoMod', 'automod'], ['Anti-raid', 'anti-raid'], ['Anti-nuke', 'anti-nuke'],
-  ['Verification', 'verification'], ['Billing', 'billing'], ['Data & privacy', 'data']
-];
+const sections = dashboardNavigation.flatMap(group => group.items.map(item => [item.label, item.id, `${group.label} ${group.description} ${item.keywords || ''}`]));
 
 export default function DashboardCommandPalette({ enabled }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const input = useRef(null);
-  const results = useMemo(() => sections.filter(([label]) => label.toLowerCase().includes(query.toLowerCase())), [query]);
+  const results = useMemo(() => {
+    const search = query.toLowerCase();
+    return sections.filter(([label, , keywords]) => `${label} ${keywords}`.toLowerCase().includes(search));
+  }, [query]);
 
   useEffect(() => {
     if (!enabled) return undefined;

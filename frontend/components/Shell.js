@@ -6,29 +6,15 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { productAreas } from '../content/productAreas';
 import DashboardCommandPalette from './DashboardCommandPalette';
+import { dashboardNavigation } from '../lib/dashboardNavigation';
 
 export default function Shell({ children, compact = false, wide = false }) {
   const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [hash, setHash] = useState('');
   const pathname = usePathname();
   const dashboardContext = pathname.startsWith('/dashboard');
   const dashboardGuildId = pathname.split('/')[2] || '';
   const dashboardHref = dashboardGuildId ? `/dashboard/${dashboardGuildId}` : '/dashboard';
-  const dashboardLinks = dashboardGuildId ? [
-    ['Overview', 'overview'], ['Activity', 'activity'], ['Cases', 'cases'], ['Appeals', 'appeals'], ['Policies', 'policies'],
-    ['Staff access', 'staff-access'], ['Commands', 'commands'], ['Logging', 'logging'],
-    ['Member messages', 'member-messages'], ['Roles', 'roles'], ['Community tools', 'community'],
-    ['AutoMod', 'automod'], ['Anti-raid', 'anti-raid'], ['Anti-nuke', 'anti-nuke'],
-    ['Verification', 'verification'], ['Billing', 'billing'], ['Data & privacy', 'data']
-  ] : [];
-
-  useEffect(() => {
-    const syncHash = () => setHash(window.location.hash);
-    syncHash();
-    window.addEventListener('hashchange', syncHash);
-    return () => window.removeEventListener('hashchange', syncHash);
-  }, [pathname]);
 
   useEffect(() => {
     fetch('/api/auth/session', { cache: 'no-store' })
@@ -104,16 +90,10 @@ export default function Shell({ children, compact = false, wide = false }) {
               {dashboardContext ? (
                 <>
                   <div className="drawer-group">
-                    <span className="drawer-label">Server</span>
+                    <span className="drawer-label">Workspace</span>
                     <Link className={pathname === '/dashboard' ? 'active' : ''} href="/dashboard" onClick={() => setMenuOpen(false)}><span>All servers</span><i aria-hidden="true">→</i></Link>
-                    {dashboardLinks.map(([label, section]) => <Link className={pathname === `${dashboardHref}/${section}` || (section === 'overview' && pathname === dashboardHref) ? 'active' : ''} href={`${dashboardHref}/${section}`} onClick={() => setMenuOpen(false)} key={section}><span>{label}</span><i aria-hidden="true">→</i></Link>)}
                   </div>
-                  <div className="drawer-group">
-                    <span className="drawer-label">Account</span>
-                    <Link href="/#plans" onClick={() => setMenuOpen(false)}><span>Plans</span><i aria-hidden="true">→</i></Link>
-                    <Link href="/privacy" onClick={() => setMenuOpen(false)}><span>Privacy</span><i aria-hidden="true">→</i></Link>
-                    <Link href="/terms" onClick={() => setMenuOpen(false)}><span>Terms</span><i aria-hidden="true">→</i></Link>
-                  </div>
+                  {dashboardNavigation.map(group => <div className="drawer-group" key={group.label}><span className="drawer-label">{group.label}</span>{group.items.map(item => <Link className={pathname === `${dashboardHref}/${item.id}` || (item.id === 'overview' && pathname === dashboardHref) ? 'active' : ''} href={`${dashboardHref}/${item.id}`} onClick={() => setMenuOpen(false)} key={item.id}><span>{item.label}</span><i aria-hidden="true">→</i></Link>)}</div>)}
                 </>
               ) : (
                 <>

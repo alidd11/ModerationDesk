@@ -6,54 +6,10 @@ import Shell from '../../../components/Shell';
 import SettingsSection from '../../../components/SettingsSection';
 import { Area, ChannelSelect, Check, ModuleToggle, Multi, RoleSelect, Select, Text } from '../../../components/Fields';
 import { api } from '../../../lib/api';
+import { dashboardNavigation as navigation, dashboardSections as validSections } from '../../../lib/dashboardNavigation';
 
 const copy = value => JSON.parse(JSON.stringify(value));
 
-const navigation = [
-  { label: 'Overview', items: [{ id: 'overview', label: 'Overview' }, { id: 'activity', label: 'Activity' }] },
-  {
-    label: 'Moderation',
-    items: [
-      { id: 'cases', label: 'Cases' },
-      { id: 'appeals', label: 'Appeals' },
-      { id: 'policies', label: 'Policies' }
-    ]
-  },
-  {
-    label: 'Protection',
-    items: [
-      { id: 'automod', label: 'AutoMod' },
-      { id: 'anti-raid', label: 'Anti-raid' },
-      { id: 'anti-nuke', label: 'Anti-nuke' }
-    ]
-  },
-  {
-    label: 'Access',
-    items: [
-      { id: 'verification', label: 'Verification' },
-      { id: 'roles', label: 'Roles' },
-      { id: 'staff-access', label: 'Staff access' }
-    ]
-  },
-  {
-    label: 'Community',
-    items: [
-      { id: 'member-messages', label: 'Member messages' },
-      { id: 'community', label: 'Community tools' }
-    ]
-  },
-  {
-    label: 'System',
-    items: [
-      { id: 'commands', label: 'Commands' },
-      { id: 'logging', label: 'Logging' },
-      { id: 'billing', label: 'Billing' },
-      { id: 'data', label: 'Data & privacy' }
-    ]
-  }
-];
-
-const validSections = new Set(navigation.flatMap(group => group.items.map(item => item.id)));
 const LOG_EVENT_OPTIONS = {
   moderation: [
     ['member_warned', 'Warnings'], ['member_kicked', 'Kicks'], ['member_banned', 'Bans'], ['member_unbanned', 'Unbans'],
@@ -91,7 +47,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
   const [drafts, setDrafts] = useState(null);
   const [records, setRecords] = useState({ cases: [], appeals: [], activity: [] });
   const [activeSection, setActiveSection] = useState(initialSection);
-  const [openGroups, setOpenGroups] = useState({ Overview: true, Moderation: false, Protection: false, Access: false, Community: false, System: false });
+  const [sidebarQuery, setSidebarQuery] = useState('');
   const [error, setError] = useState('');
   const [danger, setDanger] = useState('');
   const [billingBusy, setBillingBusy] = useState(false);
@@ -158,11 +114,6 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
     window.addEventListener('hashchange', syncSection);
     return () => window.removeEventListener('hashchange', syncSection);
   }, [pathname, initialSection]);
-
-  useEffect(() => {
-    const group = navigation.find(item => item.items.some(section => section.id === activeSection))?.label || 'Overview';
-    setOpenGroups(current => ({ ...current, [group]: true }));
-  }, [activeSection]);
 
   const set = (section, updater) => setDrafts(current => ({ ...current, [section]: updater(copy(current[section])) }));
   const plan = guild?.config?.plan || 'free';
@@ -257,6 +208,10 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
     const matchesQuery = !query || [item.actorName, item.action, item.category, item.summary].join(' ').toLowerCase().includes(query);
     return matchesCategory && matchesQuery;
   });
+  const navigationQuery = sidebarQuery.trim().toLowerCase();
+  const visibleNavigation = navigation
+    .map(group => ({ ...group, items: group.items.filter(item => !navigationQuery || `${item.label} ${item.keywords || ''} ${group.label} ${group.description}`.toLowerCase().includes(navigationQuery)) }))
+    .filter(group => group.items.length);
   const setupSignals = [
     drafts.general.staffRoleIds.length > 0,
     configuredLogs > 0,
@@ -301,11 +256,14 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
 
         <div className="dashboard-layout">
           <aside className="sidebar" aria-label="Server settings">
-            <label className="mobile-section-select">Dashboard section<select value={activeSection} onChange={event => { window.location.hash = event.target.value; setActiveSection(event.target.value); }}>{navigation.map(group => <optgroup label={group.label} key={group.label}>{group.items.map(item => <option value={item.id} key={item.id}>{item.label}</option>)}</optgroup>)}</select></label>
-            {navigation.map(group => (
+            <div className="sidebar-utility">
+              <span>Server settings</span>
+              <label className="sidebar-search"><i aria-hidden="true">⌕</i><input value={sidebarQuery} onChange={event => setSidebarQuery(event.target.value)} placeholder="Find a setting" aria-label="Find a server setting" /></label>
+            </div>
+            {visibleNavigation.map(group => (
               <div className="sidebar-group" key={group.label}>
-                <button className="sidebar-label sidebar-toggle" type="button" aria-expanded={Boolean(openGroups[group.label])} onClick={() => setOpenGroups(current => ({ ...current, [group.label]: !current[group.label] }))}><span>{group.label}</span><i aria-hidden="true">{openGroups[group.label] ? '−' : '+'}</i></button>
-                {openGroups[group.label] && <nav aria-label={`${group.label} settings`}>
+                <div className="sidebar-label"><span>{group.label}</span><small>{group.description}</small></div>
+                <nav aria-label={`${group.label} settings`}>
                   {group.items.map(item => (
                     <a
                       className={activeSection === item.id ? 'active' : ''}
@@ -318,9 +276,10 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                       <span className="nav-meta"><b className={`nav-dot ${sectionStatuses[item.id] ? 'enabled' : ''}`} aria-hidden="true" /><i aria-hidden="true">›</i></span>
                     </a>
                   ))}
-                </nav>}
+                </nav>
               </div>
             ))}
+            {!visibleNavigation.length && <div className="sidebar-empty">No settings match “{sidebarQuery}”.</div>}
           </aside>
 
           <div className="dashboard-content">
