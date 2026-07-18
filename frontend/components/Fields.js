@@ -10,8 +10,8 @@ export function Area({ label, help, value, onChange, placeholder }) {
   return <label>{label}{help && <span>{help}</span>}<textarea value={value ?? ''} placeholder={placeholder} onChange={event => onChange(event.target.value)} /></label>;
 }
 
-export function Select({ label, help, value, onChange, children }) {
-  return <label>{label}{help && <span>{help}</span>}<select value={value ?? ''} onChange={event => onChange(event.target.value)}>{children}</select></label>;
+export function Select({ id, label, help, value, onChange, children }) {
+  return <label htmlFor={id}>{label}{help && <span>{help}</span>}<select id={id} value={value ?? ''} onChange={event => onChange(event.target.value)}>{children}</select></label>;
 }
 
 export function Multi({ label, help, values = [], onChange, options = [] }) {
@@ -70,8 +70,8 @@ export function Check({ label, checked, onChange }) {
   return <label className="check"><input type="checkbox" checked={Boolean(checked)} onChange={event => onChange(event.target.checked)} /><span style={{ color: 'inherit', fontSize: 'inherit', fontWeight: 'inherit', margin: 0 }}>{label}</span></label>;
 }
 
-export function ChannelSelect({ label, value, onChange, channels }) {
-  return <Select label={label} value={value} onChange={onChange}><option value="">Not configured</option>{channels.map(channel => <option value={channel.id} key={channel.id}>#{channel.name}</option>)}</Select>;
+export function ChannelSelect({ id, label, value, onChange, channels }) {
+  return <Select id={id} label={label} value={value} onChange={onChange}><option value="">Not configured</option>{channels.map(channel => <option value={channel.id} key={channel.id}>#{channel.name}</option>)}</Select>;
 }
 
 export function RoleSelect({ label, value, onChange, roles }) {
