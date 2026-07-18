@@ -10,23 +10,12 @@ import { api } from '../../../lib/api';
 const copy = value => JSON.parse(JSON.stringify(value));
 
 const navigation = [
-  { label: 'Server', items: [{ id: 'overview', label: 'Overview' }] },
+  { label: 'Overview', items: [{ id: 'overview', label: 'Overview' }] },
   {
-    label: 'Activity',
+    label: 'Moderation',
     items: [
       { id: 'cases', label: 'Cases' },
       { id: 'appeals', label: 'Appeals' }
-    ]
-  },
-  {
-    label: 'Setup',
-    items: [
-      { id: 'staff-access', label: 'Staff access' },
-      { id: 'commands', label: 'Commands' },
-      { id: 'logging', label: 'Logging' },
-      { id: 'member-messages', label: 'Member messages' },
-      { id: 'roles', label: 'Roles' },
-      { id: 'community', label: 'Community tools' }
     ]
   },
   {
@@ -34,13 +23,29 @@ const navigation = [
     items: [
       { id: 'automod', label: 'AutoMod' },
       { id: 'anti-raid', label: 'Anti-raid' },
-      { id: 'anti-nuke', label: 'Anti-nuke' },
-      { id: 'verification', label: 'Verification' }
+      { id: 'anti-nuke', label: 'Anti-nuke' }
     ]
   },
   {
-    label: 'Account',
+    label: 'Access',
     items: [
+      { id: 'verification', label: 'Verification' },
+      { id: 'roles', label: 'Roles' },
+      { id: 'staff-access', label: 'Staff access' }
+    ]
+  },
+  {
+    label: 'Community',
+    items: [
+      { id: 'member-messages', label: 'Member messages' },
+      { id: 'community', label: 'Community tools' }
+    ]
+  },
+  {
+    label: 'System',
+    items: [
+      { id: 'commands', label: 'Commands' },
+      { id: 'logging', label: 'Logging' },
       { id: 'billing', label: 'Billing' },
       { id: 'data', label: 'Data & privacy' }
     ]
@@ -65,7 +70,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
   const [drafts, setDrafts] = useState(null);
   const [records, setRecords] = useState({ cases: [], appeals: [] });
   const [activeSection, setActiveSection] = useState(initialSection);
-  const [openGroups, setOpenGroups] = useState({ Server: true, Activity: false, Setup: false, Protection: false, Account: false });
+  const [openGroups, setOpenGroups] = useState({ Overview: true, Moderation: false, Protection: false, Access: false, Community: false, System: false });
   const [error, setError] = useState('');
   const [danger, setDanger] = useState('');
   const [billingBusy, setBillingBusy] = useState(false);
@@ -122,7 +127,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
   }, [pathname, initialSection]);
 
   useEffect(() => {
-    const group = navigation.find(item => item.items.some(section => section.id === activeSection))?.label || 'Server';
+    const group = navigation.find(item => item.items.some(section => section.id === activeSection))?.label || 'Overview';
     setOpenGroups(current => ({ ...current, [group]: true }));
   }, [activeSection]);
 
