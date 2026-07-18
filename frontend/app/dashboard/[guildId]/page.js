@@ -462,6 +462,10 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                   <Multi label="Exempt roles" values={drafts.automod.exemptRoleIds} options={roles} onChange={value => set('automod', data => (data.exemptRoleIds = value, data))} />
                   <Multi label="Exempt channels" values={drafts.automod.exemptChannelIds} options={channels} onChange={value => set('automod', data => (data.exemptChannelIds = value, data))} />
                 </div>
+                <div className="form-divider rule-policy-grid">
+                  <div className="settings-subhead"><div><h3>Rule policies</h3><p>Use the global response above, or give a higher-risk rule its own response and log channel.</p></div><span className="badge">Pro</span></div>
+                  {[['invites', 'Discord invites'], ['links', 'External links'], ['spam', 'Message spam'], ['duplicates', 'Repeated messages'], ['mentions', 'Mass mentions'], ['caps', 'Excessive capitals'], ['blockedWords', 'Blocked words']].map(([rule, label]) => <div className="rule-policy-row" key={rule}><strong>{label}</strong><Select label={`${label} action`} value={drafts.automod.ruleActions?.[rule] || 'inherit'} onChange={value => set('automod', data => (data.ruleActions[rule] = value, data))}><option value="inherit">Use global response</option><option value="delete">Delete only</option><option value="warn">Delete and warn</option><option value="timeout">Delete and timeout</option></Select><ChannelSelect label={`${label} log channel`} value={drafts.automod.ruleLogChannels?.[rule] || ''} channels={channels} onChange={value => set('automod', data => (data.ruleLogChannels[rule] = value, data))} /></div>)}
+                </div>
               </SettingsSection>
             )}
 
@@ -480,15 +484,31 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'anti-nuke' && (
-              <SettingsSection id="anti-nuke" title="Anti-nuke" description="Respond to destructive actions and restore deleted server objects." guildId={guildId} csrf={session.csrf} section="security" data={drafts.security}>
-                <div className="workspace-summary protection-summary"><div><span className="workspace-summary-label">Server integrity</span><strong className={drafts.security.antiNuke.enabled ? 'summary-good' : 'summary-muted'}>{drafts.security.antiNuke.enabled ? 'Protected' : 'Not protected'}</strong><p>Watches dangerous changes to the server.</p></div><div><span className="workspace-summary-label">Response</span><strong>{drafts.security.antiNuke.action === 'ban' ? 'Ban executor' : 'Strip roles'}</strong><p>Action taken when a threshold is reached.</p></div><div><span className="workspace-summary-label">Recovery</span><strong>{drafts.security.antiNuke.restoreDeletedObjects ? 'Enabled' : 'Off'}</strong><p>Restore deleted channels and roles.</p></div></div>
+              <SettingsSection id="anti-nuke" title="Anti-nuke" description="Watch high-risk audit events, stop an executor and preserve a clear incident record." guildId={guildId} csrf={session.csrf} section="security" data={drafts.security}>
+                <div className="workspace-summary protection-summary"><div><span className="workspace-summary-label">Server integrity</span><strong className={drafts.security.antiNuke.enabled ? 'summary-good' : 'summary-muted'}>{drafts.security.antiNuke.enabled ? 'Protected' : 'Not protected'}</strong><p>Watches destructive changes and dangerous permission escalation.</p></div><div><span className="workspace-summary-label">Response</span><strong>{drafts.security.antiNuke.action === 'ban' ? 'Ban executor' : 'Strip roles'}</strong><p>Action taken when a policy threshold is reached.</p></div><div><span className="workspace-summary-label">Panic response</span><strong>{drafts.security.antiNuke.panicMode ? 'Lockdown' : 'Controlled'}</strong><p>{drafts.security.antiNuke.panicMode ? 'Immediately locks messaging as part of enforcement.' : 'Uses your configured containment policy.'}</p></div></div>
                 <div className="form-grid">
                   <div>
                     <Check label="Enable anti-nuke" checked={drafts.security.antiNuke.enabled} onChange={value => set('security', data => (data.antiNuke.enabled = value, data))} />
                     <Check label="Restore deleted channels and roles" checked={drafts.security.antiNuke.restoreDeletedObjects} onChange={value => set('security', data => (data.antiNuke.restoreDeletedObjects = value, data))} />
+                    <Check label="Lock the server when enforcement runs" checked={drafts.security.antiNuke.lockdownOnTrigger} onChange={value => set('security', data => (data.antiNuke.lockdownOnTrigger = value, data))} />
+                    <Check label="Panic mode (always lock down)" checked={drafts.security.antiNuke.panicMode} onChange={value => set('security', data => (data.antiNuke.panicMode = value, data))} />
                   </div>
                   <Select label="Enforcement action" value={drafts.security.antiNuke.action} onChange={value => set('security', data => (data.antiNuke.action = value, data))}><option value="strip_roles">Strip dangerous roles</option><option value="ban">Ban executor</option></Select>
                   <Multi label="Trusted roles" values={drafts.security.antiNuke.trustedRoleIds} options={roles} onChange={value => set('security', data => (data.antiNuke.trustedRoleIds = value, data))} />
+                  <RoleSelect label="Quarantine role" value={drafts.security.antiNuke.quarantineRoleId} roles={roles} onChange={value => set('security', data => (data.antiNuke.quarantineRoleId = value, data))} />
+                </div>
+                <div className="form-grid form-divider">
+                  <Text label="Detection window (seconds)" type="number" min="5" max="300" value={drafts.security.antiNuke.windowSeconds} onChange={value => set('security', data => (data.antiNuke.windowSeconds = value, data))} />
+                  <Text label="Channel deletions" type="number" min="1" max="25" value={drafts.security.antiNuke.thresholds.channelDelete} onChange={value => set('security', data => (data.antiNuke.thresholds.channelDelete = value, data))} />
+                  <Text label="Channel creations" type="number" min="1" max="50" value={drafts.security.antiNuke.thresholds.channelCreate} onChange={value => set('security', data => (data.antiNuke.thresholds.channelCreate = value, data))} />
+                  <Text label="Role deletions" type="number" min="1" max="25" value={drafts.security.antiNuke.thresholds.roleDelete} onChange={value => set('security', data => (data.antiNuke.thresholds.roleDelete = value, data))} />
+                  <Text label="Role creations" type="number" min="1" max="50" value={drafts.security.antiNuke.thresholds.roleCreate} onChange={value => set('security', data => (data.antiNuke.thresholds.roleCreate = value, data))} />
+                  <Text label="Dangerous role permission changes" type="number" min="1" max="25" value={drafts.security.antiNuke.thresholds.rolePermissionEscalation} onChange={value => set('security', data => (data.antiNuke.thresholds.rolePermissionEscalation = value, data))} />
+                  <Text label="Bans" type="number" min="1" max="50" value={drafts.security.antiNuke.thresholds.memberBan} onChange={value => set('security', data => (data.antiNuke.thresholds.memberBan = value, data))} />
+                  <Text label="Kicks" type="number" min="1" max="50" value={drafts.security.antiNuke.thresholds.memberKick} onChange={value => set('security', data => (data.antiNuke.thresholds.memberKick = value, data))} />
+                  <Text label="Webhook changes" type="number" min="1" max="25" value={drafts.security.antiNuke.thresholds.webhookUpdate} onChange={value => set('security', data => (data.antiNuke.thresholds.webhookUpdate = value, data))} />
+                  <Text label="Bot additions" type="number" min="1" max="10" value={drafts.security.antiNuke.thresholds.botAdd} onChange={value => set('security', data => (data.antiNuke.thresholds.botAdd = value, data))} />
+                  <Text label="Server setting changes" type="number" min="1" max="25" value={drafts.security.antiNuke.thresholds.guildUpdate} onChange={value => set('security', data => (data.antiNuke.thresholds.guildUpdate = value, data))} />
                 </div>
                 {plan !== 'enterprise' && <div className="notice form-divider">Anti-nuke enforcement is available on Enterprise. Your settings will be kept if you configure them before upgrading.</div>}
               </SettingsSection>

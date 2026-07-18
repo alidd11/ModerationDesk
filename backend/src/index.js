@@ -117,7 +117,7 @@ mountApi(app, client);
 app.get('/', (req, res) => res.json({
   ok: true,
   service: 'ModerationDesk API',
-  version: '1.1.0',
+  version: '1.2.0',
   frontend: config.frontendBaseUrl
 }));
 
@@ -128,7 +128,7 @@ app.get('/health', (req, res) => {
     ready,
     guilds: client.guilds.cache.size,
     uptimeSeconds: Math.floor(process.uptime()),
-    version: '1.1.0'
+    version: '1.2.0'
   });
 });
 

@@ -1,5 +1,11 @@
 # ModerationDesk Platform
 
+## Security centre v1.2
+
+ModerationDesk now protects against destructive channel and role activity, risky permission escalation, ban/kick floods, webhook changes, bot additions and server setting changes. Enterprise servers can choose per-event thresholds, a containment action, an optional quarantine role, restoration for deleted channels and roles, and an immediate lockdown response.
+
+AutoMod rules can inherit the server-wide response or use their own delete, warn or timeout policy and a dedicated log channel. This keeps high-risk checks visible to the right staff team without flooding a general moderation log.
+
 ModerationDesk is a split production deployment for Discord moderation and community operations:
 
 - `backend/` runs continuously on Railway. It owns the Discord gateway connection, moderation engine, security systems, OAuth/API routes, scheduled actions, billing webhooks and persistent data.

@@ -19,6 +19,8 @@ export const DEFAULT_GUILD = Object.freeze({
     enabled: false,
     action: 'delete',
     timeoutSeconds: 300,
+    ruleActions: { invites: 'inherit', links: 'inherit', spam: 'inherit', duplicates: 'inherit', mentions: 'inherit', caps: 'inherit', blockedWords: 'inherit' },
+    ruleLogChannels: { invites: '', links: '', spam: '', duplicates: '', mentions: '', caps: '', blockedWords: '' },
     antiInvites: true,
     antiLinks: false,
     antiSpam: true,
@@ -52,9 +54,25 @@ export const DEFAULT_GUILD = Object.freeze({
       windowSeconds: 20,
       action: 'strip_roles',
       restoreDeletedObjects: true,
+      lockdownOnTrigger: true,
+      panicMode: false,
+      quarantineRoleId: '',
       trustedUserIds: [],
       trustedRoleIds: [],
-      thresholds: { channelDelete: 3, roleDelete: 3, memberBan: 5, memberKick: 5 }
+      thresholds: {
+        channelDelete: 3,
+        channelCreate: 6,
+        channelUpdate: 8,
+        roleDelete: 3,
+        roleCreate: 6,
+        roleUpdate: 8,
+        rolePermissionEscalation: 1,
+        memberBan: 5,
+        memberKick: 5,
+        webhookUpdate: 3,
+        botAdd: 1,
+        guildUpdate: 3
+      }
     }
   },
   verification: {

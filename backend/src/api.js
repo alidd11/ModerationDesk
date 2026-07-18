@@ -284,6 +284,8 @@ async function applySettings(guild, section, body) {
       antiCaps: bool(data.antiCaps),
       action: cfg.plan === 'free' ? 'delete' : ['delete', 'warn', 'timeout'].includes(data.action) ? data.action : 'delete',
       timeoutSeconds: clamp(data.timeoutSeconds, 10, 2_419_200, cfg.automod.timeoutSeconds),
+      ruleActions: Object.fromEntries(['invites', 'links', 'spam', 'duplicates', 'mentions', 'caps', 'blockedWords'].map(rule => [rule, cfg.plan === 'free' ? 'inherit' : ['inherit', 'delete', 'warn', 'timeout'].includes(data.ruleActions?.[rule]) ? data.ruleActions[rule] : 'inherit'])),
+      ruleLogChannels: Object.fromEntries(['invites', 'links', 'spam', 'duplicates', 'mentions', 'caps', 'blockedWords'].map(rule => [rule, channel(data.ruleLogChannels?.[rule])])),
       blockedWords: String(data.blockedWords || '').split(/\r?\n/).map(value => value.trim()).filter(Boolean).slice(0, cfg.plan === 'free' ? 25 : 500),
       allowedDomains: String(data.allowedDomains || '').split(/\r?\n/).map(safeUrlDomain).filter(Boolean).slice(0, cfg.plan === 'free' ? 10 : 250),
       allowedInviteCodes: String(data.allowedInviteCodes || '').split(/\r?\n/).map(value => value.trim()).filter(Boolean).slice(0, 250),
@@ -313,13 +315,24 @@ async function applySettings(guild, section, body) {
         windowSeconds: clamp(data.antiNuke?.windowSeconds, 5, 300, cfg.security.antiNuke.windowSeconds),
         action: data.antiNuke?.action === 'ban' ? 'ban' : 'strip_roles',
         restoreDeletedObjects: bool(data.antiNuke?.restoreDeletedObjects),
+        lockdownOnTrigger: bool(data.antiNuke?.lockdownOnTrigger),
+        panicMode: bool(data.antiNuke?.panicMode),
+        quarantineRoleId: role(data.antiNuke?.quarantineRoleId),
         trustedUserIds: [...new Set((Array.isArray(data.antiNuke?.trustedUserIds) ? data.antiNuke.trustedUserIds : []).map(String).filter(id => /^\d{16,22}$/.test(id)))].slice(0, 100),
         trustedRoleIds: roleIds(data.antiNuke?.trustedRoleIds),
         thresholds: {
           channelDelete: clamp(data.antiNuke?.thresholds?.channelDelete, 1, 25, cfg.security.antiNuke.thresholds.channelDelete),
+          channelCreate: clamp(data.antiNuke?.thresholds?.channelCreate, 1, 50, cfg.security.antiNuke.thresholds.channelCreate),
+          channelUpdate: clamp(data.antiNuke?.thresholds?.channelUpdate, 1, 50, cfg.security.antiNuke.thresholds.channelUpdate),
           roleDelete: clamp(data.antiNuke?.thresholds?.roleDelete, 1, 25, cfg.security.antiNuke.thresholds.roleDelete),
+          roleCreate: clamp(data.antiNuke?.thresholds?.roleCreate, 1, 50, cfg.security.antiNuke.thresholds.roleCreate),
+          roleUpdate: clamp(data.antiNuke?.thresholds?.roleUpdate, 1, 50, cfg.security.antiNuke.thresholds.roleUpdate),
+          rolePermissionEscalation: clamp(data.antiNuke?.thresholds?.rolePermissionEscalation, 1, 25, cfg.security.antiNuke.thresholds.rolePermissionEscalation),
           memberBan: clamp(data.antiNuke?.thresholds?.memberBan, 1, 50, cfg.security.antiNuke.thresholds.memberBan),
-          memberKick: clamp(data.antiNuke?.thresholds?.memberKick, 1, 50, cfg.security.antiNuke.thresholds.memberKick)
+          memberKick: clamp(data.antiNuke?.thresholds?.memberKick, 1, 50, cfg.security.antiNuke.thresholds.memberKick),
+          webhookUpdate: clamp(data.antiNuke?.thresholds?.webhookUpdate, 1, 25, cfg.security.antiNuke.thresholds.webhookUpdate),
+          botAdd: clamp(data.antiNuke?.thresholds?.botAdd, 1, 10, cfg.security.antiNuke.thresholds.botAdd),
+          guildUpdate: clamp(data.antiNuke?.thresholds?.guildUpdate, 1, 25, cfg.security.antiNuke.thresholds.guildUpdate)
         }
       }
     } });

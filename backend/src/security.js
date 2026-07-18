@@ -25,9 +25,14 @@ export async function setLockdown(guild, enabled, reason = 'ModerationDesk lockd
 
 async function latestExecutor(guild, type, targetId) {
   await new Promise(resolve => setTimeout(resolve, 750));
-  const logs = await guild.fetchAuditLogs({ type, limit: 6 }).catch(() => null);
+  const auditTypes = Array.isArray(type) ? type : [type];
+  const logSets = await Promise.all(auditTypes.map(auditType => guild.fetchAuditLogs({ type: auditType, limit: 6 }).catch(() => null)));
   const now = Date.now();
-  return logs?.entries.find(entry => (!targetId || entry.target?.id === targetId) && now - entry.createdTimestamp < 12_000)?.executor || null;
+  const entry = logSets
+    .flatMap(logs => logs ? [...logs.entries.values()] : [])
+    .filter(candidate => (!targetId || candidate.target?.id === targetId) && now - candidate.createdTimestamp < 12_000)
+    .sort((a, b) => b.createdTimestamp - a.createdTimestamp)[0];
+  return entry?.executor || null;
 }
 
 async function isTrusted(guild, userId, cfg) {
@@ -54,6 +59,19 @@ async function enforce(guild, executor, eventName, deletedObject = null) {
       await member.roles.remove([...roles.keys()], `ModerationDesk anti-nuke: ${eventName}`).catch(() => {});
       result = `Removed ${roles.size} dangerous role${roles.size === 1 ? '' : 's'}.`;
     }
+  }
+
+  if (member && cfg.quarantineRoleId && !member.roles.cache.has(cfg.quarantineRoleId)) {
+    const quarantineRole = guild.roles.cache.get(cfg.quarantineRoleId);
+    if (quarantineRole?.editable) {
+      await member.roles.add(quarantineRole, `ModerationDesk anti-nuke: ${eventName}`).catch(() => {});
+      result += ' Executor quarantined.';
+    }
+  }
+
+  if (cfg.lockdownOnTrigger || cfg.panicMode) {
+    await setLockdown(guild, true, `Anti-nuke ${cfg.panicMode ? 'panic mode' : 'threshold'}: ${eventName}`).catch(() => {});
+    result += ' Server lockdown activated.';
   }
 
   if (cfg.restoreDeletedObjects && deletedObject) {
@@ -133,7 +151,21 @@ export function attachSecurity(client) {
   });
 
   client.on('channelDelete', channel => observeDestructive(channel.guild, 'channelDelete', AuditLogEvent.ChannelDelete, channel.id, channel).catch(error => logger.warn('Anti-nuke channel observation failed', { error: error.message })));
+  client.on('channelCreate', channel => observeDestructive(channel.guild, 'channelCreate', AuditLogEvent.ChannelCreate, channel.id).catch(error => logger.warn('Anti-nuke channel observation failed', { error: error.message })));
+  client.on('channelUpdate', (oldChannel, channel) => observeDestructive(channel.guild, 'channelUpdate', AuditLogEvent.ChannelUpdate, channel.id).catch(error => logger.warn('Anti-nuke channel observation failed', { error: error.message })));
   client.on('roleDelete', role => observeDestructive(role.guild, 'roleDelete', AuditLogEvent.RoleDelete, role.id, role).catch(error => logger.warn('Anti-nuke role observation failed', { error: error.message })));
+  client.on('roleCreate', role => observeDestructive(role.guild, 'roleCreate', AuditLogEvent.RoleCreate, role.id).catch(error => logger.warn('Anti-nuke role observation failed', { error: error.message })));
+  client.on('roleUpdate', (oldRole, role) => {
+    const newDangerousPermission = dangerousPermissions.some(permission => !oldRole.permissions.has(permission) && role.permissions.has(permission));
+    const eventName = newDangerousPermission ? 'rolePermissionEscalation' : 'roleUpdate';
+    return observeDestructive(role.guild, eventName, AuditLogEvent.RoleUpdate, role.id).catch(error => logger.warn('Anti-nuke role observation failed', { error: error.message }));
+  });
   client.on('guildBanAdd', ban => observeDestructive(ban.guild, 'memberBan', AuditLogEvent.MemberBanAdd, ban.user.id).catch(error => logger.warn('Anti-nuke ban observation failed', { error: error.message })));
   client.on('guildMemberRemove', member => observeDestructive(member.guild, 'memberKick', AuditLogEvent.MemberKick, member.id).catch(error => logger.warn('Anti-nuke kick observation failed', { error: error.message })));
+  client.on('guildMemberAdd', member => {
+    if (!member.user.bot) return;
+    return observeDestructive(member.guild, 'botAdd', AuditLogEvent.BotAdd, member.id).catch(error => logger.warn('Anti-nuke bot observation failed', { error: error.message }));
+  });
+  client.on('webhooksUpdate', channel => observeDestructive(channel.guild, 'webhookUpdate', [AuditLogEvent.WebhookCreate, AuditLogEvent.WebhookUpdate, AuditLogEvent.WebhookDelete], null).catch(error => logger.warn('Anti-nuke webhook observation failed', { error: error.message })));
+  client.on('guildUpdate', (oldGuild, guild) => observeDestructive(guild, 'guildUpdate', AuditLogEvent.GuildUpdate, guild.id).catch(error => logger.warn('Anti-nuke guild observation failed', { error: error.message })));
 }
