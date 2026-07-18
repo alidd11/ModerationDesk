@@ -12,6 +12,8 @@ import {
   getCase,
   getGuildConfig,
   getWebSession,
+  listAppeals,
+  listCases,
   pruneWebAuth,
   updateGuildConfig
 } from './store.js';
@@ -168,6 +170,17 @@ function guildPayload(guild) {
     .filter(role => !role.managed && role.id !== guild.id)
     .sort((a, b) => b.position - a.position)
     .map(role => ({ id: role.id, name: role.name, position: role.position, colour: role.hexColor }));
+  const botMember = guild.members.me;
+  const permissionChecks = [
+    ['Manage roles', PermissionFlagsBits.ManageRoles],
+    ['Manage channels', PermissionFlagsBits.ManageChannels],
+    ['Moderate members', PermissionFlagsBits.ModerateMembers],
+    ['Kick members', PermissionFlagsBits.KickMembers],
+    ['Ban members', PermissionFlagsBits.BanMembers],
+    ['Manage messages', PermissionFlagsBits.ManageMessages],
+    ['View audit log', PermissionFlagsBits.ViewAuditLog],
+    ['Send messages', PermissionFlagsBits.SendMessages]
+  ].map(([name, permission]) => ({ name, granted: Boolean(botMember?.permissions.has(permission)) }));
   return {
     id: guild.id,
     name: guild.name,
@@ -176,6 +189,13 @@ function guildPayload(guild) {
     channels,
     roles,
     config: publicConfig(getGuildConfig(guild.id)),
+    health: {
+      connected: Boolean(botMember),
+      permissions: permissionChecks,
+      granted: permissionChecks.filter(item => item.granted).length,
+      total: permissionChecks.length,
+      highestRole: botMember?.roles.highest?.name || ''
+    },
     billingConfigured: billingConfigured(),
     appealUrl: frontend(`/appeal/${guild.id}`)
   };
@@ -370,6 +390,16 @@ export function mountApi(app, client) {
 
   app.get('/api/guilds/:guildId', requireSession, requireGuildAccess(client), (req, res) => {
     res.json({ ok: true, guild: guildPayload(req.dashboardGuild) });
+  });
+
+  app.get('/api/guilds/:guildId/cases', requireSession, requireGuildAccess(client), (req, res) => {
+    const limit = clamp(req.query.limit, 1, 100, 25);
+    res.json({ ok: true, cases: listCases(req.params.guildId, { limit }) });
+  });
+
+  app.get('/api/guilds/:guildId/appeals', requireSession, requireGuildAccess(client), (req, res) => {
+    const status = ['open', 'accepted', 'rejected'].includes(String(req.query.status || '')) ? String(req.query.status) : '';
+    res.json({ ok: true, appeals: listAppeals(req.params.guildId, status) });
   });
 
   app.patch('/api/guilds/:guildId/settings/:section', requireSession, requireGuildAccess(client), checkCsrf, async (req, res) => {

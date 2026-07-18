@@ -12,6 +12,13 @@ const copy = value => JSON.parse(JSON.stringify(value));
 const navigation = [
   { label: 'Server', items: [{ id: 'overview', label: 'Overview' }] },
   {
+    label: 'Activity',
+    items: [
+      { id: 'cases', label: 'Cases' },
+      { id: 'appeals', label: 'Appeals' }
+    ]
+  },
+  {
     label: 'Setup',
     items: [
       { id: 'staff-access', label: 'Staff access' },
@@ -41,6 +48,10 @@ const navigation = [
 
 const validSections = new Set(navigation.flatMap(group => group.items.map(item => item.id)));
 
+const dateFormatter = new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeStyle: 'short' });
+const formatDate = value => value ? dateFormatter.format(new Date(value)) : '—';
+const titleCase = value => String(value || '').replaceAll('_', ' ').replace(/\b\w/g, letter => letter.toUpperCase());
+
 function Status({ enabled, children }) {
   return <span className={`feature-status ${enabled ? 'enabled' : ''}`}><i aria-hidden="true" />{children}</span>;
 }
@@ -50,16 +61,23 @@ export default function GuildDashboardPage() {
   const [session, setSession] = useState(null);
   const [guild, setGuild] = useState(null);
   const [drafts, setDrafts] = useState(null);
+  const [records, setRecords] = useState({ cases: [], appeals: [] });
   const [activeSection, setActiveSection] = useState('overview');
   const [error, setError] = useState('');
   const [danger, setDanger] = useState('');
   const [billingBusy, setBillingBusy] = useState(false);
 
   useEffect(() => {
-    Promise.all([api('/api/auth/session'), api(`/api/guilds/${guildId}`)])
-      .then(([sessionData, guildData]) => {
+    Promise.all([
+      api('/api/auth/session'),
+      api(`/api/guilds/${guildId}`),
+      api(`/api/guilds/${guildId}/cases?limit=50`),
+      api(`/api/guilds/${guildId}/appeals`)
+    ])
+      .then(([sessionData, guildData, caseData, appealData]) => {
         setSession(sessionData);
         setGuild(guildData.guild);
+        setRecords({ cases: caseData.cases, appeals: appealData.appeals });
         const cfg = guildData.guild.config;
         setDrafts({
           general: {
@@ -140,6 +158,31 @@ export default function GuildDashboardPage() {
   const channels = guild.channels;
   const roles = guild.roles;
   const configuredLogs = Object.values(drafts.general.logs).filter(Boolean).length;
+  const stats = guild.config.stats;
+  const health = guild.health || { connected: true, permissions: [], granted: 0, total: 0, highestRole: '' };
+  const openAppeals = records.appeals.filter(appeal => appeal.status === 'open');
+  const setupSignals = [
+    drafts.general.staffRoleIds.length > 0,
+    configuredLogs > 0,
+    drafts.automod.enabled,
+    drafts.security.antiRaid.enabled || drafts.security.antiNuke.enabled,
+    drafts.verification.enabled
+  ];
+  const setupProgress = Math.round((setupSignals.filter(Boolean).length / setupSignals.length) * 100);
+  const sectionStatuses = {
+    cases: records.cases.length > 0,
+    appeals: openAppeals.length > 0,
+    'staff-access': drafts.general.staffRoleIds.length > 0,
+    logging: configuredLogs > 0,
+    'member-messages': drafts.general.welcome.enabled || drafts.general.goodbye.enabled,
+    roles: drafts.general.autoroles.length > 0 || drafts.general.stickyRoles.enabled,
+    community: drafts.general.suggestions.enabled || drafts.general.appeals.enabled || drafts.general.starboard.enabled,
+    automod: drafts.automod.enabled,
+    'anti-raid': drafts.security.antiRaid.enabled,
+    'anti-nuke': drafts.security.antiNuke.enabled,
+    verification: drafts.verification.enabled,
+    billing: plan !== 'free'
+  };
 
   return (
     <Shell>
@@ -153,13 +196,14 @@ export default function GuildDashboardPage() {
               <p>{guild.memberCount.toLocaleString()} members</p>
             </div>
           </div>
-          <span className="badge">{plan}</span>
+          <div className="dashboard-heading-actions"><a className="button ghost small" href="/dashboard">All servers</a><a className="button secondary small" href={`https://discord.com/channels/${guildId}`} target="_blank" rel="noreferrer">Open Discord</a><span className="badge">{plan}</span></div>
         </header>
 
         {error && <div className="error dashboard-error">{error}</div>}
 
         <div className="dashboard-layout">
           <aside className="sidebar" aria-label="Server settings">
+            <label className="mobile-section-select">Dashboard section<select value={activeSection} onChange={event => { window.location.hash = event.target.value; setActiveSection(event.target.value); }}>{navigation.map(group => <optgroup label={group.label} key={group.label}>{group.items.map(item => <option value={item.id} key={item.id}>{item.label}</option>)}</optgroup>)}</select></label>
             {navigation.map(group => (
               <div className="sidebar-group" key={group.label}>
                 <div className="sidebar-label">{group.label}</div>
@@ -173,7 +217,7 @@ export default function GuildDashboardPage() {
                       aria-current={activeSection === item.id ? 'page' : undefined}
                     >
                       <span>{item.label}</span>
-                      <i aria-hidden="true">›</i>
+                      <span className="nav-meta"><b className={`nav-dot ${sectionStatuses[item.id] ? 'enabled' : ''}`} aria-hidden="true" /><i aria-hidden="true">›</i></span>
                     </a>
                   ))}
                 </nav>
@@ -181,39 +225,80 @@ export default function GuildDashboardPage() {
             ))}
           </aside>
 
-          <main className="dashboard-content">
+          <div className="dashboard-content">
             {activeSection === 'overview' && (
               <section className="card dashboard-overview" id="overview">
                 <div className="settings-header">
-                  <div><span className="settings-kicker">Overview</span><h2>Server setup</h2><p>A live summary of the settings currently applied to this server.</p></div>
+                  <div><span className="settings-kicker">Overview</span><h2>Control centre</h2><p>Live configuration, bot health and recorded moderation activity for this server.</p></div>
+                  <div className="setup-score"><span>{setupProgress}%</span><small>configured</small></div>
                 </div>
                 <div className="settings-body">
-                  <div className="overview-stats">
-                    <article><span>Plan</span><strong>{plan}</strong><small>{guild.config.billing.status || 'Billing not linked'}</small></article>
-                    <article><span>Logging</span><strong>{configuredLogs} / 6</strong><small>Channels configured</small></article>
-                    <article><span>AutoMod</span><strong>{drafts.automod.enabled ? 'On' : 'Off'}</strong><small>Message protection</small></article>
-                    <article><span>Verification</span><strong>{drafts.verification.enabled ? 'On' : 'Off'}</strong><small>Member access</small></article>
+                  <div className="overview-stats operational">
+                    <article><span>AutoMod actions</span><strong>{Number(stats.automodActions || 0).toLocaleString()}</strong><small>Recorded interventions</small></article>
+                    <article><span>Verified members</span><strong>{Number(stats.verified || 0).toLocaleString()}</strong><small>Completed verification</small></article>
+                    <article><span>Raid triggers</span><strong>{Number(stats.raidTriggers || 0).toLocaleString()}</strong><small>Join spikes detected</small></article>
+                    <article><span>Open appeals</span><strong>{openAppeals.length.toLocaleString()}</strong><small>Awaiting staff review</small></article>
                   </div>
 
-                  <div className="overview-panel">
-                    <div><h3>Protection status</h3><p>Enable and configure each layer separately from the sidebar.</p></div>
-                    <div className="status-list">
-                      <Status enabled={drafts.automod.enabled}>AutoMod</Status>
-                      <Status enabled={drafts.security.antiRaid.enabled}>Anti-raid</Status>
-                      <Status enabled={drafts.security.antiNuke.enabled}>Anti-nuke</Status>
-                      <Status enabled={drafts.verification.enabled}>Verification</Status>
+                  <div className="overview-columns">
+                    <div className="overview-panel stack-panel">
+                      <div className="panel-heading"><div><h3>Bot health</h3><p>Discord permissions available to ModerationDesk.</p></div><Status enabled={health.connected}>{health.connected ? 'Connected' : 'Offline'}</Status></div>
+                      <div className="health-summary"><strong>{health.granted} / {health.total}</strong><span>required permissions granted</span></div>
+                      <div className="permission-grid">
+                        {health.permissions.map(permission => <span key={permission.name} className={permission.granted ? 'granted' : 'missing'}><i aria-hidden="true">{permission.granted ? '✓' : '!'}</i>{permission.name}</span>)}
+                      </div>
+                      {health.total > 0 && health.granted !== health.total && <div className="notice">Some features may fail until the missing Discord permissions are restored.</div>}
+                    </div>
+
+                    <div className="overview-panel stack-panel">
+                      <div className="panel-heading"><div><h3>Protection status</h3><p>Each layer is configured independently.</p></div><span className="badge">{plan}</span></div>
+                      <div className="module-status-list">
+                        <a href="#automod" onClick={() => setActiveSection('automod')}><span><b>AutoMod</b><small>Message filters and automatic sanctions</small></span><Status enabled={drafts.automod.enabled}>{drafts.automod.enabled ? 'Enabled' : 'Disabled'}</Status></a>
+                        <a href="#anti-raid" onClick={() => setActiveSection('anti-raid')}><span><b>Anti-raid</b><small>Join-spike detection and quarantine</small></span><Status enabled={drafts.security.antiRaid.enabled}>{drafts.security.antiRaid.enabled ? 'Enabled' : 'Disabled'}</Status></a>
+                        <a href="#anti-nuke" onClick={() => setActiveSection('anti-nuke')}><span><b>Anti-nuke</b><small>Destructive-action response</small></span><Status enabled={drafts.security.antiNuke.enabled}>{drafts.security.antiNuke.enabled ? 'Enabled' : 'Disabled'}</Status></a>
+                        <a href="#verification" onClick={() => setActiveSection('verification')}><span><b>Verification</b><small>Controlled member access</small></span><Status enabled={drafts.verification.enabled}>{drafts.verification.enabled ? 'Enabled' : 'Disabled'}</Status></a>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="overview-panel">
-                    <div><h3>Configuration</h3><p>These checks use your live server settings, not sample data.</p></div>
-                    <div className="setup-checks">
-                      <a href="#staff-access" onClick={() => setActiveSection('staff-access')}><span>Staff access</span><Status enabled={drafts.general.staffRoleIds.length > 0}>{drafts.general.staffRoleIds.length ? 'Configured' : 'Not configured'}</Status></a>
-                      <a href="#logging" onClick={() => setActiveSection('logging')}><span>Logging</span><Status enabled={configuredLogs > 0}>{configuredLogs ? `${configuredLogs} channels` : 'Not configured'}</Status></a>
-                      <a href="#member-messages" onClick={() => setActiveSection('member-messages')}><span>Member messages</span><Status enabled={drafts.general.welcome.enabled || drafts.general.goodbye.enabled}>{drafts.general.welcome.enabled || drafts.general.goodbye.enabled ? 'Enabled' : 'Disabled'}</Status></a>
-                      <a href="#roles" onClick={() => setActiveSection('roles')}><span>Automatic roles</span><Status enabled={drafts.general.autoroles.length > 0}>{drafts.general.autoroles.length ? 'Configured' : 'Not configured'}</Status></a>
+                  <div className="overview-columns lower">
+                    <div className="overview-panel stack-panel">
+                      <div className="panel-heading"><div><h3>Recent cases</h3><p>The latest actions recorded by the moderation system.</p></div><a href="#cases" onClick={() => setActiveSection('cases')}>View all</a></div>
+                      <div className="compact-records">
+                        {records.cases.slice(0, 4).map(item => <div key={item.id}><span className="record-index">#{item.id}</span><span><b>{titleCase(item.action)}</b><small>{item.reason || 'No reason supplied'}</small></span><time>{formatDate(item.createdAt)}</time></div>)}
+                        {!records.cases.length && <div className="empty-state compact"><strong>No cases recorded</strong><span>Moderation actions will appear here as staff use ModerationDesk.</span></div>}
+                      </div>
+                    </div>
+                    <div className="overview-panel stack-panel">
+                      <div className="panel-heading"><div><h3>Setup checklist</h3><p>Core configuration for a working moderation setup.</p></div><strong>{setupSignals.filter(Boolean).length}/{setupSignals.length}</strong></div>
+                      <div className="setup-progress"><i style={{ width: `${setupProgress}%` }} /></div>
+                      <div className="setup-checks">
+                        <a href="#staff-access" onClick={() => setActiveSection('staff-access')}><span>Staff access</span><Status enabled={drafts.general.staffRoleIds.length > 0}>{drafts.general.staffRoleIds.length ? 'Configured' : 'Required'}</Status></a>
+                        <a href="#logging" onClick={() => setActiveSection('logging')}><span>Logging</span><Status enabled={configuredLogs > 0}>{configuredLogs ? `${configuredLogs} channels` : 'Required'}</Status></a>
+                        <a href="#automod" onClick={() => setActiveSection('automod')}><span>AutoMod</span><Status enabled={drafts.automod.enabled}>{drafts.automod.enabled ? 'Enabled' : 'Optional'}</Status></a>
+                        <a href="#verification" onClick={() => setActiveSection('verification')}><span>Verification</span><Status enabled={drafts.verification.enabled}>{drafts.verification.enabled ? 'Enabled' : 'Optional'}</Status></a>
+                      </div>
                     </div>
                   </div>
+                </div>
+              </section>
+            )}
+
+            {activeSection === 'cases' && (
+              <section className="card settings-section" id="cases">
+                <div className="settings-header"><div><span className="settings-kicker">Activity</span><h2>Cases</h2><p>The latest moderation actions recorded for this server.</p></div><span className="record-count">{records.cases.length} shown</span></div>
+                <div className="settings-body record-section">
+                  {records.cases.length ? <div className="record-table-wrap"><table className="record-table"><thead><tr><th>Case</th><th>Member</th><th>Action</th><th>Reason</th><th>Date</th><th>Status</th></tr></thead><tbody>{records.cases.map(item => <tr key={item.id}><td className="record-index">#{item.id}</td><td className="mono">{item.userId || '—'}</td><td><strong>{titleCase(item.action)}</strong></td><td className="record-reason">{item.reason || 'No reason supplied'}</td><td><time>{formatDate(item.createdAt)}</time></td><td><span className={`record-status ${item.active === false ? 'closed' : ''}`}>{item.active === false ? 'Voided' : 'Active'}</span></td></tr>)}</tbody></table></div> : <div className="empty-state"><strong>No cases recorded yet</strong><p>Warnings, timeouts, kicks and bans created through ModerationDesk will appear here.</p></div>}
+                </div>
+              </section>
+            )}
+
+            {activeSection === 'appeals' && (
+              <section className="card settings-section" id="appeals">
+                <div className="settings-header"><div><span className="settings-kicker">Activity</span><h2>Appeals</h2><p>Review the appeal records submitted through the public Discord OAuth form.</p></div><span className="record-count">{openAppeals.length} open</span></div>
+                <div className="settings-body record-section">
+                  <div className="data-action appeal-page-link"><div><h3>Public appeal form</h3><p>Share this page with members who need to appeal a moderation action.</p></div><a className="button ghost small" href={guild.appealUrl} target="_blank" rel="noreferrer">Open public page</a></div>
+                  {records.appeals.length ? <div className="record-table-wrap appeals-table"><table className="record-table"><thead><tr><th>Appeal</th><th>Member</th><th>Case</th><th>Reason</th><th>Submitted</th><th>Status</th></tr></thead><tbody>{records.appeals.map(item => <tr key={item.id}><td className="record-index mono">{item.id}</td><td className="mono">{item.userId || '—'}</td><td>{item.caseId ? `#${item.caseId}` : '—'}</td><td className="record-reason">{item.reason || 'No reason supplied'}</td><td><time>{formatDate(item.createdAt)}</time></td><td><span className={`record-status ${item.status !== 'open' ? 'closed' : ''}`}>{titleCase(item.status)}</span></td></tr>)}</tbody></table></div> : <div className="empty-state"><strong>No appeals submitted</strong><p>New appeals will appear here when the public appeal form is enabled.</p></div>}
                 </div>
               </section>
             )}
@@ -399,7 +484,7 @@ export default function GuildDashboardPage() {
                 </div>
               </section>
             )}
-          </main>
+          </div>
         </div>
       </div>
     </Shell>
