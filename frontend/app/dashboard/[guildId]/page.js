@@ -53,6 +53,7 @@ const navigation = [
 ];
 
 const validSections = new Set(navigation.flatMap(group => group.items.map(item => item.id)));
+const LOG_EVENT_OPTIONS = { moderation: [['member_warned', 'Warnings'], ['member_kicked', 'Kicks'], ['member_banned', 'Bans']], security: [['automod_action', 'AutoMod actions'], ['anti_raid_triggered', 'Anti-raid triggers'], ['anti_nuke_triggered', 'Anti-nuke triggers']], messages: [['message_deleted', 'Deleted messages'], ['messages_bulk_deleted', 'Bulk deleted messages'], ['message_edited', 'Edited messages']], member: [['member_joined', 'Member joins'], ['member_left_or_was_removed', 'Member leaves'], ['member_updated', 'Member and role changes']], server: [['channel_created', 'Channels created'], ['channel_deleted', 'Channels deleted'], ['role_created', 'Roles created'], ['role_deleted', 'Roles deleted']], appeals: [['appeal_submitted', 'Appeals submitted'], ['appeal_resolved', 'Appeals resolved']] };
 
 const dateFormatter = new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeStyle: 'short' });
 const formatDate = value => value ? dateFormatter.format(new Date(value)) : '—';
@@ -74,6 +75,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
   const [error, setError] = useState('');
   const [danger, setDanger] = useState('');
   const [billingBusy, setBillingBusy] = useState(false);
+  const [activeLogGroup, setActiveLogGroup] = useState('moderation');
 
   useEffect(() => {
     Promise.all([
@@ -92,6 +94,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             staffRoleIds: cfg.staffRoleIds,
             adminRoleIds: cfg.adminRoleIds,
             logs: cfg.logs,
+            logEvents: cfg.logEvents || Object.fromEntries(Object.keys(LOG_EVENT_OPTIONS).map(key => [key, []])),
             welcome: cfg.welcome,
             goodbye: cfg.goodbye,
             autoroles: cfg.autoroles,
@@ -348,7 +351,8 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             {activeSection === 'logging' && (
               <SettingsSection id="logging" title="Logging" description="Send each type of server activity to the right staff channel." guildId={guildId} csrf={session.csrf} section="general" data={drafts.general}>
                 <div className="workspace-summary logging-summary"><div><span className="workspace-summary-label">Audit coverage</span><strong>{Object.values(drafts.general.logs).filter(Boolean).length}<small> / 6 routed</small></strong><p>Event families currently connected to a Discord channel.</p></div><div><span className="workspace-summary-label">Event types</span><strong>20+</strong><p>Member, message, server and moderation events.</p></div><div><span className="workspace-summary-label">Delivery</span><strong className={Object.values(drafts.general.logs).some(Boolean) ? 'summary-good' : 'summary-muted'}>{Object.values(drafts.general.logs).some(Boolean) ? 'Configured' : 'Not configured'}</strong><p>Logs are sent as staff-only embeds.</p></div></div>
-                <div className="log-coverage-grid"><button type="button" className="log-coverage-card" onClick={() => document.getElementById('log-moderation')?.focus()}><strong>Moderation</strong><span>Warnings, bans, kicks, timeouts and case actions.</span></button><button type="button" className="log-coverage-card" onClick={() => document.getElementById('log-security')?.focus()}><strong>Security</strong><span>AutoMod actions, raid triggers and anti-nuke events.</span></button><button type="button" className="log-coverage-card" onClick={() => document.getElementById('log-messages')?.focus()}><strong>Messages</strong><span>Deleted, edited and bulk-deleted messages.</span></button><button type="button" className="log-coverage-card" onClick={() => document.getElementById('log-member')?.focus()}><strong>Members</strong><span>Joins, leaves, role changes and nickname updates.</span></button><button type="button" className="log-coverage-card" onClick={() => document.getElementById('log-server')?.focus()}><strong>Server</strong><span>Channel and role creation, deletion and changes.</span></button><button type="button" className="log-coverage-card" onClick={() => document.getElementById('log-appeals')?.focus()}><strong>Appeals</strong><span>New submissions and moderation decisions.</span></button></div>
+                <div className="log-coverage-grid">{Object.entries({ moderation: ['Moderation', 'Warnings, bans, kicks and case actions.'], security: ['Security', 'AutoMod, raid and anti-nuke events.'], messages: ['Messages', 'Deleted, edited and bulk-deleted messages.'], member: ['Members', 'Joins, leaves and role changes.'], server: ['Server', 'Channel and role changes.'], appeals: ['Appeals', 'Submissions and decisions.'] }).map(([group, [label, description]]) => <button type="button" className={`log-coverage-card ${activeLogGroup === group ? 'selected' : ''}`} onClick={() => { setActiveLogGroup(group); document.getElementById(`log-${group}`)?.focus(); }} key={group}><strong>{label}</strong><span>{description}</span></button>)}</div>
+                <div className="log-event-panel"><div><span className="workspace-summary-label">{activeLogGroup} events</span><p>Choose the actions routed to this category’s channel.</p></div><div className="log-event-options">{(LOG_EVENT_OPTIONS[activeLogGroup] || []).map(([key, label]) => <Check key={key} label={label} checked={drafts.general.logEvents[activeLogGroup]?.length === 0 || drafts.general.logEvents[activeLogGroup]?.includes(key)} onChange={checked => set('general', data => { const current = data.logEvents[activeLogGroup] || []; data.logEvents[activeLogGroup] = checked ? [...new Set([...current, key])] : current.filter(value => value !== key); return data; })} />)}</div></div>
                 <div className="form-grid">
                   <ChannelSelect id="log-moderation" label="Moderation log" value={drafts.general.logs.moderation} channels={channels} onChange={value => set('general', data => (data.logs.moderation = value, data))} />
                   <ChannelSelect id="log-security" label="Security log" value={drafts.general.logs.security} channels={channels} onChange={value => set('general', data => (data.logs.security = value, data))} />

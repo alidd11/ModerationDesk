@@ -9,7 +9,11 @@ export const SUCCESS_COLOUR = 0x57F287;
 export const WARNING_COLOUR = 0xFEE75C;
 
 export async function sendLog(guild, group, { title, description = '', fields = [], colour = BRAND_COLOUR, footer = '' }) {
-  const channelId = getGuildConfig(guild.id).logs[group];
+  const cfg = getGuildConfig(guild.id);
+  const eventKey = String(title || group).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+  const configuredEvents = cfg.logEvents?.[group];
+  if (Array.isArray(configuredEvents) && configuredEvents.length && !configuredEvents.includes(eventKey)) return null;
+  const channelId = cfg.logs[group];
   if (!channelId) return null;
   const channel = guild.channels.cache.get(channelId);
   if (!channel?.isTextBased()) return null;

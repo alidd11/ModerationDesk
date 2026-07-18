@@ -13,6 +13,7 @@ export const DEFAULT_GUILD = Object.freeze({
   welcome: { enabled: false, channelId: '', message: 'Welcome {user} to **{server}**. You are member **#{count}**.' },
   goodbye: { enabled: false, channelId: '', message: 'Goodbye **{username}**.' },
   logs: { member: '', moderation: '', messages: '', server: '', security: '', appeals: '' },
+  logEvents: { member: [], moderation: [], messages: [], server: [], security: [], appeals: [] },
   automod: {
     enabled: false,
     action: 'delete',

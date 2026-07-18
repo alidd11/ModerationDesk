@@ -245,6 +245,7 @@ async function applySettings(guild, section, body) {
         security: channel(data.logs?.security),
         appeals: channel(data.logs?.appeals)
       },
+      logEvents: Object.fromEntries(['member', 'moderation', 'messages', 'server', 'security', 'appeals'].map(group => [group, [...new Set((Array.isArray(data.logEvents?.[group]) ? data.logEvents[group] : []).map(value => String(value).toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 64)).filter(Boolean))].slice(0, 100)])),
       welcome: {
         enabled: bool(data.welcome?.enabled),
         channelId: channel(data.welcome?.channelId),
