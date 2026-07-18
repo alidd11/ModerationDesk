@@ -9,7 +9,31 @@ import { productAreas } from '../content/productAreas';
 export default function Shell({ children, compact = false, wide = false }) {
   const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [hash, setHash] = useState('');
   const pathname = usePathname();
+  const dashboardContext = pathname.startsWith('/dashboard');
+  const dashboardGuildId = pathname.split('/')[2] || '';
+  const dashboardHref = dashboardGuildId ? `/dashboard/${dashboardGuildId}` : '/dashboard';
+  const dashboardLinks = dashboardGuildId ? [
+    ['Overview', '#overview'],
+    ['Cases', '#cases'],
+    ['Appeals', '#appeals'],
+    ['Staff access', '#staff-access'],
+    ['Commands', '#commands'],
+    ['Logging', '#logging'],
+    ['Roles', '#roles'],
+    ['AutoMod', '#automod'],
+    ['Anti-raid', '#anti-raid'],
+    ['Verification', '#verification'],
+    ['Billing', '#billing']
+  ] : [];
+
+  useEffect(() => {
+    const syncHash = () => setHash(window.location.hash);
+    syncHash();
+    window.addEventListener('hashchange', syncHash);
+    return () => window.removeEventListener('hashchange', syncHash);
+  }, [pathname]);
 
   useEffect(() => {
     fetch('/api/auth/session', { cache: 'no-store' })
@@ -70,18 +94,36 @@ export default function Shell({ children, compact = false, wide = false }) {
               <button className="menu-close" type="button" aria-label="Close navigation menu" autoFocus onClick={() => setMenuOpen(false)}>×</button>
             </div>
             <nav className="drawer-navigation">
-              <div className="drawer-group">
-                <span className="drawer-label">Navigate</span>
-                <Link className={pathname === '/' ? 'active' : ''} href="/" onClick={() => setMenuOpen(false)}><span>Home</span><i aria-hidden="true">→</i></Link>
-                <Link className={pathname.startsWith('/dashboard') ? 'active' : ''} href="/dashboard" onClick={() => setMenuOpen(false)}><span>Dashboard</span><i aria-hidden="true">→</i></Link>
-              </div>
-              <div className="drawer-group">
-                <span className="drawer-label">Product</span>
-                {productAreas.map(area => {
-                  const href = `/platform/${area.id}`;
-                  return <Link className={pathname === href ? 'active' : ''} href={href} onClick={() => setMenuOpen(false)} key={area.id}><small>{area.number}</small><span>{area.label}</span><i aria-hidden="true">→</i></Link>;
-                })}
-              </div>
+              {dashboardContext ? (
+                <>
+                  <div className="drawer-group">
+                    <span className="drawer-label">Server</span>
+                    <Link className={pathname === '/dashboard' ? 'active' : ''} href="/dashboard" onClick={() => setMenuOpen(false)}><span>All servers</span><i aria-hidden="true">→</i></Link>
+                    {dashboardLinks.map(([label, targetHash]) => <Link className={pathname === dashboardHref && hash === targetHash ? 'active' : ''} href={`${dashboardHref}${targetHash}`} onClick={() => setMenuOpen(false)} key={targetHash}><span>{label}</span><i aria-hidden="true">→</i></Link>)}
+                  </div>
+                  <div className="drawer-group">
+                    <span className="drawer-label">Account</span>
+                    <Link href="/#plans" onClick={() => setMenuOpen(false)}><span>Plans</span><i aria-hidden="true">→</i></Link>
+                    <Link href="/privacy" onClick={() => setMenuOpen(false)}><span>Privacy</span><i aria-hidden="true">→</i></Link>
+                    <Link href="/terms" onClick={() => setMenuOpen(false)}><span>Terms</span><i aria-hidden="true">→</i></Link>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="drawer-group">
+                    <span className="drawer-label">Navigate</span>
+                    <Link className={pathname === '/' ? 'active' : ''} href="/" onClick={() => setMenuOpen(false)}><span>Home</span><i aria-hidden="true">→</i></Link>
+                    <Link className={pathname.startsWith('/dashboard') ? 'active' : ''} href="/dashboard" onClick={() => setMenuOpen(false)}><span>Dashboard</span><i aria-hidden="true">→</i></Link>
+                  </div>
+                  <div className="drawer-group">
+                    <span className="drawer-label">Product</span>
+                    {productAreas.map(area => {
+                      const href = `/platform/${area.id}`;
+                      return <Link className={pathname === href ? 'active' : ''} href={href} onClick={() => setMenuOpen(false)} key={area.id}><small>{area.number}</small><span>{area.label}</span><i aria-hidden="true">→</i></Link>;
+                    })}
+                  </div>
+                </>
+              )}
               <div className="drawer-group">
                 <span className="drawer-label">Company</span>
                 <Link href="/#plans" onClick={() => setMenuOpen(false)}><span>Plans</span><i aria-hidden="true">→</i></Link>
