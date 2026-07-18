@@ -31,7 +31,7 @@ export default function DashboardPage() {
             {state.guilds.map(guild => (
               <article className="card guild-card" key={guild.id}>
                 {guild.icon ? <img className="guild-icon" src={guild.icon} alt="" /> : <div className="guild-icon">{guild.name.slice(0, 2).toUpperCase()}</div>}
-                <div className="grow"><div className="guild-title"><h3>{guild.name}</h3>{guild.installed && <span className="connection online">Connected</span>}</div><p>{guild.installed ? 'Open the server configuration.' : 'Install ModerationDesk to start configuring this server.'}</p></div>
+                <div className="grow"><div className="guild-title"><h3>{guild.name}</h3>{guild.installed && <span className="connection online">Connected</span>}</div>{guild.installed && <p>Open the server configuration.</p>}</div>
                 {guild.installed ? <Link className="button small" href={`/dashboard/${guild.id}`}>Open settings <span>→</span></Link> : <a className="button secondary small" href={botInviteUrl(guild.id)} target="_blank" rel="noreferrer">Invite bot <span aria-hidden="true">↗</span></a>}
               </article>
             ))}
