@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import Shell from '../../components/Shell';
 import { api } from '../../lib/api';
 
+const botInviteUrl = guildId => `https://discord.com/oauth2/authorize?client_id=1528046559923666944&permissions=1099914374358&scope=bot%20applications.commands&guild_id=${guildId}&disable_guild_select=true`;
+
 export default function DashboardPage() {
   const [state, setState] = useState({ loading: true, guilds: [], error: '' });
 
@@ -29,8 +31,8 @@ export default function DashboardPage() {
             {state.guilds.map(guild => (
               <article className="card guild-card" key={guild.id}>
                 {guild.icon ? <img className="guild-icon" src={guild.icon} alt="" /> : <div className="guild-icon">{guild.name.slice(0, 2).toUpperCase()}</div>}
-                <div className="grow"><div className="guild-title"><h3>{guild.name}</h3><span className={`connection ${guild.installed ? 'online' : ''}`}>{guild.installed ? 'Connected' : 'Not installed'}</span></div><p>{guild.installed ? 'Open the server configuration.' : 'Install ModerationDesk before configuring this server.'}</p></div>
-                {guild.installed ? <Link className="button small" href={`/dashboard/${guild.id}`}>Open settings <span>→</span></Link> : <span className="badge warning">Not installed</span>}
+                <div className="grow"><div className="guild-title"><h3>{guild.name}</h3>{guild.installed && <span className="connection online">Connected</span>}</div><p>{guild.installed ? 'Open the server configuration.' : 'Install ModerationDesk to start configuring this server.'}</p></div>
+                {guild.installed ? <Link className="button small" href={`/dashboard/${guild.id}`}>Open settings <span>→</span></Link> : <a className="button secondary small" href={botInviteUrl(guild.id)} target="_blank" rel="noreferrer">Invite bot <span aria-hidden="true">↗</span></a>}
               </article>
             ))}
             {!state.guilds.length && <div className="card"><h3>No manageable servers found</h3><p>Discord did not return a server where this account has Manage Server permission.</p></div>}
