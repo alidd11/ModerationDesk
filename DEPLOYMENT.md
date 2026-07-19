@@ -111,22 +111,16 @@ Then test:
 
 ## 6. Register Discord commands
 
-For fast testing in one server, set this on Railway:
+ModerationDesk provisions the server-specific slash-command set when it joins a server. This makes commands available immediately and lets an owner use the dashboard to rename, describe or disable individual command groups.
 
-```env
-DEV_GUILD_ID=YOUR_TEST_SERVER_ID
-```
-
-Run from a local clone or Railway shell:
+For a manual recovery or a first global registration, run from a local clone or Railway shell:
 
 ```bash
 cd backend
 npm run deploy-commands
 ```
 
-For global registration, remove `DEV_GUILD_ID` and run the command again. Global command propagation can take longer than guild command registration.
-
-You may instead set `REGISTER_COMMANDS_ON_START=true` for one deployment, then return it to `false` to avoid unnecessary registrations on every restart.
+Set `DEV_GUILD_ID=YOUR_TEST_SERVER_ID` first if you want to register only into one test server. Remove it for global registration; global commands can take longer to appear. `REGISTER_COMMANDS_ON_START=true` remains an optional one-deployment recovery switch and should normally be returned to `false` afterwards.
 
 ## 7. Invite and permission checks
 
