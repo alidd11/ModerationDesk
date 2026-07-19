@@ -692,6 +692,15 @@ html[data-theme="light"] .dashboard-overview .overview-stats article { backgroun
 html[data-theme="light"] .dashboard-overview .overview-columns:not(.lower) { border-color: #e1e3ea; background: #fff; }
 html[data-theme="light"] .dashboard-overview .overview-columns:not(.lower) .overview-panel + .overview-panel { border-left-color: #e1e3ea; }
 html[data-theme="light"] .overview-panel.stack-panel, html[data-theme="light"] .discipline-step, html[data-theme="light"] .log-coverage-card { background: #fff; border-color: #dfe1e8; }
+html[data-theme="light"] .notice { border-color: #d7d1fb; background: #f3f1ff; color: #363a51; }
+html[data-theme="light"] .billing-summary { border-color: #dfe1e8; background: #f7f8fb; }
+html[data-theme="light"] .billing-summary span, html[data-theme="light"] .billing-summary small { color: #667080; }
+html[data-theme="light"] .billing-plan-grid article { border-color: #dfe1e8; background: #fff; }
+html[data-theme="light"] .billing-plan-grid article.current { border-color: #a79af1; background: #f5f3ff; }
+html[data-theme="light"] .billing-plan-grid span, html[data-theme="light"] .billing-plan-grid small { color: #687181; }
+html[data-theme="light"] .billing-plan-grid strong { color: #1d212a; }
+html[data-theme="light"] .billing-plan-grid p { color: #5f6775; }
+html[data-theme="light"] .billing-plan-grid b { color: #5140ba; }
 html[data-theme="light"] .health-summary, html[data-theme="light"] .module-status-list, html[data-theme="light"] .compact-records, html[data-theme="light"] .setup-checks > a, html[data-theme="light"] .sidebar-server, html[data-theme="light"] .sidebar-group + .sidebar-group { border-color: #e7e8ee; }
 html[data-theme="light"] .permission-grid span, html[data-theme="light"] .module-status-list small, html[data-theme="light"] .health-summary span, html[data-theme="light"] .compact-records small, html[data-theme="light"] .overview-stats span, html[data-theme="light"] .overview-stats small { color: #697180; }
 html[data-theme="light"] .feature-status.enabled { color: #3d4654; }
@@ -724,4 +733,6 @@ html[data-theme="light"] .text-link:hover { color: #4f3fc0; border-color: #604ad
   html[data-theme="light"] .module-surface { box-shadow: none; }
   html[data-theme="light"] .module-surface > .settings-header { background: #fff; }
   html[data-theme="light"] .logging-summary > div, html[data-theme="light"] .logging-summary > div + div, html[data-theme="light"] .logging-summary > div:last-child { border-color: #e4e6ec; }
+  .command-customisation-row summary { min-height: 62px; padding: 11px 13px; }
+  .command-customisation-row summary > span:last-child { gap: 7px; font-size: 9px; }
 }
