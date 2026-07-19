@@ -92,7 +92,7 @@ export default function Shell({ children, compact = false, wide = false }) {
                     <span className="drawer-label">Servers</span>
                     <Link className={pathname === '/dashboard' ? 'active' : ''} href="/dashboard" onClick={() => setMenuOpen(false)}><span>All servers</span><i aria-hidden="true">→</i></Link>
                   </div>
-                  {dashboardNavigation.map(group => <div className="drawer-group" key={group.label}><span className="drawer-label">{group.label}</span>{group.items.map(item => <Link className={pathname === `${dashboardHref}/${item.id}` || (item.id === 'overview' && pathname === dashboardHref) ? 'active' : ''} href={`${dashboardHref}/${item.id}`} onClick={() => setMenuOpen(false)} key={item.id}><span>{item.label}</span><i aria-hidden="true">→</i></Link>)}</div>)}
+                  {dashboardNavigation.map(group => <div className="drawer-group" key={group.label}><span className="drawer-label">{group.label}</span>{group.items.map(item => <Link className={pathname === `${dashboardHref}/${item.id}` || (item.id === 'overview' && pathname === dashboardHref) ? 'active' : ''} href={`${dashboardHref}/${item.id}`} onClick={() => setMenuOpen(false)} key={item.id}><span>{item.label}</span><span className="drawer-item-meta">{item.plan && <span className="nav-plan" aria-label={`${item.plan} feature`}><i className="nav-plan-icon" aria-hidden="true" /><em>{item.plan}</em></span>}<i aria-hidden="true">→</i></span></Link>)}</div>)}
                 </>
               ) : (
                 <>

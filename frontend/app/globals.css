@@ -62,6 +62,7 @@ button { color: inherit; }
 .drawer-group > a:has(small) { grid-template-columns: 31px minmax(0,1fr) auto; }
 .drawer-group > a small { color: #626773; font: 9px ui-monospace, SFMono-Regular, monospace; }
 .drawer-group > a i { color: #5f636e; font-style: normal; }
+.drawer-item-meta { display: inline-flex; align-items: center; gap: 11px; }.drawer-item-meta .nav-plan { color: #aaa0ff; }.drawer-item-meta .nav-plan-icon { flex: 0 0 auto; }
 .drawer-group > a:hover { background: #18191f; color: white; }
 .drawer-group > a.active { background: #202029; color: white; }
 .drawer-group > a.active small, .drawer-group > a.active i { color: #988eff; }
