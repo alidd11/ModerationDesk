@@ -13,6 +13,7 @@ import { mountApi } from './api.js';
 import { mountBillingWebhook } from './billing.js';
 import { attachDiscordBilling, syncAllDiscordEntitlements, syncGuildDiscordEntitlements } from './discordBilling.js';
 import { commands } from './commands.js';
+import { syncGuildCommands } from './commandSync.js';
 import { constantTimeEqual } from './utils.js';
 import { deleteGuildData, exportGuildData, getGuildConfig, setPlan, snapshot, updateGuildConfig } from './store.js';
 
@@ -46,7 +47,15 @@ attachDiscordBilling(client);
 client.once('ready', async readyClient => {
   logger.info('ModerationDesk connected', { user: readyClient.user.tag, guilds: readyClient.guilds.cache.size });
   for (const guildId of config.enterpriseGuildIds) setPlan(guildId, 'enterprise');
-  for (const guild of readyClient.guilds.cache.values()) getGuildConfig(guild.id);
+  for (const guild of readyClient.guilds.cache.values()) {
+    const guildConfig = getGuildConfig(guild.id);
+    // Guild commands are immediately available and are the source of truth for
+    // per-server command names, descriptions and enabled states. Only provision
+    // a guild that has never been synced; later dashboard changes sync explicitly.
+    if (!guildConfig.commandSettings?.syncedAt) {
+      await syncGuildCommands(guild.id).catch(error => logger.warn('Initial guild command sync failed', { guildId: guild.id, error: error.message }));
+    }
+  }
   await syncAllDiscordEntitlements(readyClient);
   if (config.registerCommandsOnStart) {
     const rest = new REST({ version: '10' }).setToken(config.token);
@@ -60,6 +69,7 @@ client.once('ready', async readyClient => {
 });
 client.on('guildCreate', guild => {
   getGuildConfig(guild.id);
+  syncGuildCommands(guild.id).catch(error => logger.warn('New guild command sync failed', { guildId: guild.id, error: error.message }));
   syncGuildDiscordEntitlements(client, guild.id).catch(error => logger.warn('Unable to check new guild Discord entitlement', { guildId: guild.id, error: error.message }));
 });
 client.on('error', error => logger.error('Discord client error', { error: error.stack || error.message }));

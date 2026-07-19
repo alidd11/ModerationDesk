@@ -406,7 +406,7 @@ export function mountApi(app, client) {
   app.get('/api/meta', (req, res) => res.json({
     ok: true,
     name: 'ModerationDesk',
-    version: '1.1.0',
+    version: '1.2.0',
     botReady: client.isReady(),
     links: config.links
   }));

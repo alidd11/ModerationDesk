@@ -20,7 +20,9 @@ export async function handleChannelCommand(interaction) {
       return true;
     }).first(count);
     const deleted = await interaction.channel.bulkDelete(selected, true);
-    recordCase({ guildId: interaction.guildId, userId: user?.id || 'multiple', moderatorId: interaction.user.id, action: 'purge', reason: `Deleted ${deleted.size} messages in #${interaction.channel.name}`, metadata: { channelId: interaction.channelId } });
+    const reason = `Deleted ${deleted.size} messages in #${interaction.channel.name}`;
+    recordCase({ guildId: interaction.guildId, userId: user?.id || 'multiple', moderatorId: interaction.user.id, action: 'purge', reason, metadata: { channelId: interaction.channelId } });
+    await sendLog(interaction.guild, 'moderation', { title: 'Messages purged', eventKey: 'moderation_case', description: `${reason} by <@${interaction.user.id}>.`, colour: WARNING_COLOUR });
     return success(interaction, `Deleted ${deleted.size} recent message${deleted.size === 1 ? '' : 's'}. Messages older than 14 days cannot be bulk-deleted.`);
   }
 
@@ -28,13 +30,14 @@ export async function handleChannelCommand(interaction) {
     const locked = subcommand === 'lock';
     const reason = interaction.options.getString('reason') || `${subcommand} by ${interaction.user.tag}`;
     await interaction.channel.permissionOverwrites.edit(interaction.guild.roles.everyone, { SendMessages: locked ? false : null }, { reason });
-    await sendLog(interaction.guild, 'moderation', { title: `Channel ${locked ? 'locked' : 'unlocked'}`, description: `<#${interaction.channelId}> by <@${interaction.user.id}>\nReason: ${reason}`, colour: WARNING_COLOUR });
+    await sendLog(interaction.guild, 'moderation', { title: `Channel ${locked ? 'locked' : 'unlocked'}`, eventKey: 'moderation_case', description: `<#${interaction.channelId}> by <@${interaction.user.id}>\nReason: ${reason}`, colour: WARNING_COLOUR });
     return success(interaction, `Channel ${locked ? 'locked' : 'unlocked'}.`);
   }
 
   if (subcommand === 'slowmode') {
     const seconds = interaction.options.getInteger('seconds', true);
     await interaction.channel.setRateLimitPerUser(seconds, `Changed by ${interaction.user.tag}`);
+    await sendLog(interaction.guild, 'moderation', { title: 'Slowmode updated', eventKey: 'moderation_case', description: `<#${interaction.channelId}> set to ${seconds} seconds by <@${interaction.user.id}>.`, colour: WARNING_COLOUR });
     return success(interaction, `Slowmode set to ${seconds} second${seconds === 1 ? '' : 's'}.`);
   }
 
@@ -45,4 +48,5 @@ export async function handleChannelCommand(interaction) {
   await clone.setPosition(oldChannel.position);
   await oldChannel.delete(`Channel nuked by ${interaction.user.tag}`);
   await clone.send({ content: `Channel recreated by <@${interaction.user.id}>.`, allowedMentions: { users: [interaction.user.id] } });
+  await sendLog(interaction.guild, 'moderation', { title: 'Channel replaced', eventKey: 'moderation_case', description: `${oldChannel.name} was replaced by <@${interaction.user.id}>.`, colour: WARNING_COLOUR });
 }

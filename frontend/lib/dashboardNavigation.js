@@ -33,6 +33,7 @@ export const dashboardNavigation = [
       { id: 'staff-access', label: 'Staff permissions', keywords: 'moderators administrators permissions' },
       { id: 'roles', label: 'Role management', keywords: 'autoroles sticky roles member roles' },
       { id: 'commands', label: 'Commands', keywords: 'slash rename hide customise' },
+      { id: 'migration', label: 'Migration', keywords: 'server move role restore oauth continuity', plan: 'Pro+' },
       { id: 'logging', label: 'Action log', keywords: 'log channels events audit' },
       { id: 'member-messages', label: 'Welcome & goodbye', keywords: 'welcome goodbye greeting' }
     ]

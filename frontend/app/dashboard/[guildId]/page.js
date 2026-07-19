@@ -109,6 +109,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
           security: { ...cfg.security, joinGate: { ...cfg.security.joinGate, blockedTerms: (cfg.security.joinGate?.blockedTerms || []).join('\n') } },
           moderation: cfg.moderation,
           verification: cfg.verification,
+          migration: cfg.migration,
           commands: cfg.commandSettings || { overrides: {}, syncedAt: '' }
         });
       })
@@ -245,6 +246,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
     'anti-raid': drafts.security.antiRaid.enabled,
     'anti-nuke': drafts.security.antiNuke.enabled,
     verification: drafts.verification.enabled,
+    migration: drafts.migration.enabled,
     billing: plan !== 'free'
   };
 
@@ -620,13 +622,27 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
               <SettingsSection id="verification" className="module-surface access-surface" title="Verification" description="Publish a verification panel and assign member roles safely." guildId={guildId} csrf={session.csrf} section="verification" data={drafts.verification} headerControl={<ModuleToggle label="Enable verification" checked={drafts.verification.enabled} onChange={value => set('verification', data => (data.enabled = value, data))} />}>
                 <div className="workspace-summary access-summary"><div><span className="workspace-summary-label">Member access</span><strong className={drafts.verification.enabled ? 'summary-good' : 'summary-muted'}>{drafts.verification.enabled ? 'Enabled' : 'Not enabled'}</strong><p>{drafts.verification.enabled ? 'New members can complete the configured verification flow.' : 'Members currently join without a ModerationDesk verification gate.'}</p></div><div><span className="workspace-summary-label">Method</span><strong>{drafts.verification.mode === 'oauth' ? 'Discord OAuth' : 'Button'}</strong><p>How members complete verification.</p></div><div><span className="workspace-summary-label">Verified role</span><strong>{roles.find(role => role.id === drafts.verification.verifiedRoleId)?.name || 'Not selected'}</strong><p>Applied after completion.</p></div></div>
                 <div className="form-grid">
-                  <div><Select label="Mode" value={drafts.verification.mode} onChange={value => set('verification', data => (data.mode = value, data))}><option value="button">Discord button</option><option value="oauth">Discord OAuth</option></Select></div>
+                  <div><Select label="Mode" help={plan === 'free' ? 'Discord OAuth verification is available with Pro.' : undefined} value={drafts.verification.mode} onChange={value => set('verification', data => (data.mode = value, data))}><option value="button">Discord button</option><option value="oauth" disabled={plan === 'free'}>Discord OAuth {plan === 'free' ? '(Pro)' : ''}</option></Select></div>
                   <ChannelSelect label="Verification channel" value={drafts.verification.channelId} channels={channels} onChange={value => set('verification', data => (data.channelId = value, data))} />
                   <RoleSelect label="Verified role" value={drafts.verification.verifiedRoleId} roles={roles} onChange={value => set('verification', data => (data.verifiedRoleId = value, data))} />
                   <RoleSelect label="Unverified role" value={drafts.verification.unverifiedRoleId} roles={roles} onChange={value => set('verification', data => (data.unverifiedRoleId = value, data))} />
                   <div className="full"><Area label="Panel message" value={drafts.verification.message} onChange={value => set('verification', data => (data.message = value, data))} /></div>
                 </div>
               </SettingsSection>
+            )}
+
+            {activeSection === 'migration' && (
+              <section className="card settings-section module-surface access-surface" id="migration">
+                <div className="settings-header"><div><span className="settings-kicker">Continuity</span><h2>Server migration</h2><p>Restore mapped roles after a member independently joins the new server and completes Discord OAuth verification.</p></div><span className="badge">Pro+</span></div>
+                <div className="settings-body">
+                  <div className="workspace-summary access-summary">
+                    <div><span className="workspace-summary-label">Campaign</span><strong className={drafts.migration.enabled ? 'summary-good' : 'summary-muted'}>{drafts.migration.enabled ? 'Active' : 'Not started'}</strong><p>No member is transferred automatically.</p></div>
+                    <div><span className="workspace-summary-label">Source server</span><strong>{drafts.migration.sourceGuildId ? 'Connected' : 'Not selected'}</strong><p>{drafts.migration.sourceGuildId || 'Choose this in Discord.'}</p></div>
+                    <div><span className="workspace-summary-label">Role mappings</span><strong>{Object.keys(drafts.migration.roleMappings || {}).length}</strong><p>{Number(stats.migrated || 0).toLocaleString()} members restored.</p></div>
+                  </div>
+                  {plan !== 'enterprise' ? <div className="upgrade-preview"><div className="upgrade-preview-content"><span className="badge">Pro+</span><h3>Plan a compliant migration</h3><p>Keep member consent at the centre: members join the destination themselves, then authorise identity verification before mapped roles are restored.</p><a className="button" href={proPlusStore} target="_blank" rel="noreferrer">View Pro+ in Discord <span aria-hidden="true">↗</span></a></div></div> : <div className="migration-steps"><div><b>1</b><span><strong>Choose the source</strong><small>Use <code>/migration setup</code> in the destination server.</small></span></div><div><b>2</b><span><strong>Map roles</strong><small>Use <code>/migration role-map</code> for each source-to-destination role.</small></span></div><div><b>3</b><span><strong>Start verification</strong><small>Use <code>/migration start</code> to publish the consent-based restore panel.</small></span></div></div>}
+                </div>
+              </section>
             )}
 
             {activeSection === 'billing' && (
