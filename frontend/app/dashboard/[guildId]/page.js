@@ -29,6 +29,7 @@ const LOG_EVENT_OPTIONS = {
 const dateFormatter = new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeStyle: 'short' });
 const formatDate = value => value ? dateFormatter.format(new Date(value)) : '—';
 const titleCase = value => String(value || '').replaceAll('_', ' ').replace(/\b\w/g, letter => letter.toUpperCase());
+const planLabel = plan => plan === 'enterprise' ? 'Pro+' : titleCase(plan);
 const AUTOMOD_PRESETS = {
   community: { label: 'Community', description: 'Invites, spam, duplicates and mass mentions. A sensible starting point for active public servers.', values: { enabled: true, action: 'delete', antiInvites: true, antiLinks: false, antiSpam: true, antiDuplicates: true, antiMassMentions: true, antiCaps: false, maxMentions: 5, spamMaxMessages: 6, spamWindowSeconds: 8, duplicateMax: 3 } },
   strict: { label: 'Strict', description: 'Adds link and capitals checks with a quicker spam threshold for high-volume communities.', values: { enabled: true, action: 'warn', antiInvites: true, antiLinks: true, antiSpam: true, antiDuplicates: true, antiMassMentions: true, antiCaps: true, maxMentions: 4, spamMaxMessages: 5, spamWindowSeconds: 8, duplicateMax: 3 } },
@@ -75,6 +76,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
         const cfg = guildData.guild.config;
         setDrafts({
           general: {
+            locale: cfg.locale || 'en-GB',
             staffRoleIds: cfg.staffRoleIds,
             adminRoleIds: cfg.adminRoleIds,
             logs: cfg.logs,
@@ -417,6 +419,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                 <div className="form-grid">
                   <Multi label="Staff roles" help="Roles allowed to use staff-level commands." values={drafts.general.staffRoleIds} options={roles} onChange={value => set('general', data => (data.staffRoleIds = value, data))} />
                   <Multi label="Administrator roles" help="Roles allowed to change protected configuration." values={drafts.general.adminRoleIds} options={roles} onChange={value => set('general', data => (data.adminRoleIds = value, data))} />
+                  <Select label="Bot response language" help="Default for server-generated messages. Private prompts can use a member’s Discord language when it is supported." value={drafts.general.locale} onChange={value => set('general', data => (data.locale = value, data))}><option value="en-GB">English (United Kingdom)</option><option value="en-US">English (United States)</option><option value="es-ES">Español</option><option value="fr">Français</option><option value="de">Deutsch</option></Select>
                 </div>
               </SettingsSection>
             )}
@@ -572,7 +575,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'anti-nuke' && (
-              <SettingsSection id="anti-nuke" title="Anti-nuke" description="Watch high-risk audit events, stop an executor and preserve a clear incident record." guildId={guildId} csrf={session.csrf} section="security" data={drafts.security} headerControl={<ModuleToggle label="Enable anti-nuke" detail={plan !== 'enterprise' ? 'Enterprise required' : 'Enable module'} checked={drafts.security.antiNuke.enabled} disabled={plan !== 'enterprise'} onChange={value => set('security', data => (data.antiNuke.enabled = value, data))} />}>
+              <SettingsSection id="anti-nuke" title="Anti-nuke" description="Watch high-risk audit events, stop an executor and preserve a clear incident record." guildId={guildId} csrf={session.csrf} section="security" data={drafts.security} headerControl={<ModuleToggle label="Enable anti-nuke" detail={plan !== 'enterprise' ? 'Pro+ required' : 'Enable module'} checked={drafts.security.antiNuke.enabled} disabled={plan !== 'enterprise'} onChange={value => set('security', data => (data.antiNuke.enabled = value, data))} />}>
                 <div className="workspace-summary protection-summary"><div><span className="workspace-summary-label">Server integrity</span><strong className={drafts.security.antiNuke.enabled ? 'summary-good' : 'summary-muted'}>{drafts.security.antiNuke.enabled ? 'Protected' : 'Not protected'}</strong><p>Watches destructive changes and dangerous permission escalation.</p></div><div><span className="workspace-summary-label">Response</span><strong>{drafts.security.antiNuke.action === 'ban' ? 'Ban executor' : 'Strip roles'}</strong><p>Action taken when a policy threshold is reached.</p></div><div><span className="workspace-summary-label">Panic response</span><strong>{drafts.security.antiNuke.panicMode ? 'Lockdown' : 'Controlled'}</strong><p>{drafts.security.antiNuke.panicMode ? 'Immediately locks messaging as part of enforcement.' : 'Uses your configured containment policy.'}</p></div></div>
                 <div className="form-grid">
                   <div>
@@ -597,7 +600,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                   <Text label="Bot additions" type="number" min="1" max="10" value={drafts.security.antiNuke.thresholds.botAdd} onChange={value => set('security', data => (data.antiNuke.thresholds.botAdd = value, data))} />
                   <Text label="Server setting changes" type="number" min="1" max="25" value={drafts.security.antiNuke.thresholds.guildUpdate} onChange={value => set('security', data => (data.antiNuke.thresholds.guildUpdate = value, data))} />
                 </div>
-                {plan !== 'enterprise' && <div className="notice form-divider">Anti-nuke enforcement is available on Enterprise. Your settings will be kept if you configure them before upgrading.</div>}
+                {plan !== 'enterprise' && <div className="notice form-divider">Anti-nuke enforcement is available on Pro+. Your settings will be kept if you configure them before upgrading.</div>}
               </SettingsSection>
             )}
 
@@ -616,10 +619,14 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
 
             {activeSection === 'billing' && (
               <section className="card settings-section" id="billing">
-                <div className="settings-header"><div><span className="settings-kicker">Account</span><h2>Billing</h2><p>Manage the plan attached to this Discord server.</p></div><span className="badge">{plan}</span></div>
+                <div className="settings-header"><div><span className="settings-kicker">Account</span><h2>Plan & billing</h2><p>Every subscription belongs to this Discord server, so the full moderation team benefits.</p></div><span className="badge">{planLabel(plan)}</span></div>
                 <div className="settings-body">
-                  <div className="billing-summary"><span>Current plan</span><strong>{plan.toUpperCase()}</strong><small>Billing status: {guild.config.billing.status || 'not linked'}</small></div>
-                  {guild.billingConfigured ? <div className="form-actions">{guild.config.billing.linked ? <button className="button secondary" disabled={billingBusy} onClick={() => billing('portal')}>Manage billing</button> : <><button className="button" disabled={billingBusy} onClick={() => billing('checkout', { plan: 'pro' })}>Subscribe to Pro</button><button className="button secondary" disabled={billingBusy} onClick={() => billing('checkout', { plan: 'enterprise' })}>Subscribe to Enterprise</button></>}</div> : <div className="notice">Billing is not yet connected. Plans can still be assigned through the protected administration service.</div>}
+                  <div className="billing-summary"><span>Current plan</span><strong>{planLabel(plan)}</strong><small>{guild.config.billing.provider === 'discord' ? 'Managed securely through Discord' : 'No Discord subscription linked yet'}</small></div>
+                  {guild.discordBilling?.configured ? <div className="billing-plan-grid">
+                    <article className={plan === 'free' ? 'current' : ''}><div><span>Free</span><strong>$0</strong><small>Essential controls</small></div><p>Cases, structured logs, welcome messages and basic message screening.</p>{plan === 'free' ? <b>Current plan</b> : <a className="button ghost small" href={guild.discordBilling.store} target="_blank" rel="noreferrer">Manage in Discord</a>}</article>
+                    <article className={plan === 'pro' ? 'current' : ''}><div><span>Pro</span><strong>$3.99</strong><small>per server / month</small></div><p>Advanced screening, anti-raid, OAuth verification, appeals and granular logs.</p>{plan === 'pro' ? <b>Current plan</b> : <a className="button small" href={guild.discordBilling.pro} target="_blank" rel="noreferrer">Choose Pro</a>}</article>
+                    <article className={plan === 'enterprise' ? 'current' : ''}><div><span>Pro+</span><strong>$7.99</strong><small>per server / month</small></div><p>Anti-nuke enforcement, migration, role restoration and full protection controls.</p>{plan === 'enterprise' ? <b>Current plan</b> : <a className="button secondary small" href={guild.discordBilling.enterprise} target="_blank" rel="noreferrer">Choose Pro+</a>}</article>
+                  </div> : <div className="notice">Discord subscriptions are being prepared. Once the two subscription SKUs are published, this page will link directly to the Discord purchase flow for this server.</div>}
                 </div>
               </section>
             )}

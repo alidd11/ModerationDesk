@@ -3,11 +3,12 @@ import Shell from '../components/Shell';
 import ProductDirectory from '../components/ProductDirectory';
 
 const botInviteUrl = 'https://discord.com/oauth2/authorize?client_id=1528046559923666944&permissions=1099914374358&scope=bot%20applications.commands';
+const discordStoreUrl = 'https://discord.com/application-directory/1528046559923666944/store';
 
 const plans = [
-  { name: 'Free', description: 'The essentials for a growing moderation team.', items: ['Core moderation', 'Cases and warnings', 'Structured logs', 'Basic AutoMod'] },
-  { name: 'Pro', description: 'More automation and stronger member protection.', items: ['Everything in Free', 'Advanced AutoMod', 'Anti-raid', 'OAuth verification', 'Web appeals'] },
-  { name: 'Enterprise', description: 'High-risk protection and managed migrations.', items: ['Everything in Pro', 'Anti-nuke enforcement', 'Consent-based migration', 'Role restoration'] }
+  { name: 'Free', price: '$0', cadence: 'forever', description: 'Everything a new moderation team needs to get organised.', items: ['Core moderation and cases', 'Structured event logs', 'Welcome messages and one auto role', 'Essential message screening'] },
+  { name: 'Pro', price: '$3.99', cadence: 'per server / month', description: 'Automation and protection for active community teams.', items: ['Everything in Free', 'Advanced message screening', 'Anti-raid and Join Gate', 'OAuth verification and appeals', 'Per-event log routing'] },
+  { name: 'Pro+', price: '$7.99', cadence: 'per server / month', description: 'Full protection for communities that need stronger safeguards.', items: ['Everything in Pro', 'Anti-nuke containment', 'Role restoration and migration', 'Full protection policy controls', 'Priority configuration limits'] }
 ];
 
 export default function Home() {
@@ -48,7 +49,7 @@ export default function Home() {
               </div>
               <div className="shot-panel">
                 <div className="shot-panel-head"><strong>Protection status</strong><small>Live configuration</small></div>
-                {[['AutoMod','Enabled'],['Anti-raid','Ready'],['Anti-nuke','Enterprise'],['Verification','Enabled']].map(([name, state], index) => <div className="shot-row" key={name}><span><i className={index === 2 ? 'muted' : ''} />{name}</span><small>{state}</small></div>)}
+                {[['AutoMod','Enabled'],['Anti-raid','Ready'],['Anti-nuke','Pro+'],['Verification','Enabled']].map(([name, state], index) => <div className="shot-row" key={name}><span><i className={index === 2 ? 'muted' : ''} />{name}</span><small>{state}</small></div>)}
               </div>
             </div>
           </div>
@@ -67,7 +68,7 @@ export default function Home() {
       <section className="plans-section" id="plans">
         <div className="section-head"><div><span className="section-kicker">PLANS</span><h2>Start with the controls you need.</h2></div><p>Features are grouped by operational need, with advanced protection kept separate from everyday moderation.</p></div>
         <div className="plan-grid">
-          {plans.map((plan, index) => <article className={index === 1 ? 'featured' : ''} key={plan.name}><div className="plan-name"><h3>{plan.name}</h3>{index === 1 && <span>Most teams</span>}</div><p>{plan.description}</p><ul>{plan.items.map(item => <li key={item}>{item}</li>)}</ul><a className={`button ${index === 1 ? '' : 'ghost'}`} href={index === 0 ? botInviteUrl : '/dashboard'}>{index === 0 ? 'Add to Discord' : `Choose ${plan.name}`}</a></article>)}
+          {plans.map((plan, index) => <article className={index === 1 ? 'featured' : ''} key={plan.name}><div className="plan-name"><h3>{plan.name}</h3>{index === 1 && <span>Most teams</span>}</div><div className="plan-price"><strong>{plan.price}</strong><span>{plan.cadence}</span></div><p>{plan.description}</p><ul>{plan.items.map(item => <li key={item}>{item}</li>)}</ul><a className={`button ${index === 1 ? '' : 'ghost'}`} href={index === 0 ? botInviteUrl : discordStoreUrl} target={index === 0 ? '_blank' : undefined} rel={index === 0 ? 'noreferrer' : undefined}>{index === 0 ? 'Add to Discord' : `Choose ${plan.name}`}</a></article>)}
         </div>
       </section>
 

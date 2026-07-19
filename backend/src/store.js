@@ -8,6 +8,7 @@ const SCHEMA_VERSION = 2;
 
 export const DEFAULT_GUILD = Object.freeze({
   plan: 'free',
+  locale: 'en-GB',
   staffRoleIds: [],
   adminRoleIds: [],
   welcome: { enabled: false, channelId: '', message: 'Welcome {user} to **{server}**. You are member **#{count}**.' },
@@ -118,7 +119,7 @@ export const DEFAULT_GUILD = Object.freeze({
   suggestions: { enabled: false, channelId: '' },
   starboard: { enabled: false, channelId: '', emoji: '⭐', threshold: 3 },
   appeals: { enabled: false, channelId: '' },
-  billing: { stripeCustomerId: '', stripeSubscriptionId: '', status: '', currentPeriodEnd: 0 },
+  billing: { stripeCustomerId: '', stripeSubscriptionId: '', discordEntitlementId: '', discordSkuId: '', provider: '', status: '', currentPeriodEnd: 0 },
   stats: { verified: 0, migrated: 0, automodActions: 0, raidTriggers: 0, antiNukeTriggers: 0 },
   nextCaseId: 1,
   createdAt: '',

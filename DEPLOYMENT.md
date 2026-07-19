@@ -134,31 +134,25 @@ Invite ModerationDesk using Discord's application installation page or `/utility
 
 The bot role must sit above every role and member it needs to manage. Anti-nuke requires **View Audit Log**. Test all destructive actions in a private server before production use.
 
-## 8. Stripe, optional
+## 8. Discord guild subscriptions
 
-Create recurring Stripe prices for Pro and Enterprise, then add these Railway variables:
+Create two **Guild Subscription** SKUs in Discord Developer Portal → **Monetization → Manage SKUs**. Guild subscriptions are applied to one server, so every member of that server's moderation team receives the plan.
+
+| SKU | Price | Plan |
+| --- | --- | --- |
+| ModerationDesk Pro | $3.99/month | Advanced moderation and protection |
+| ModerationDesk Pro Plus | $7.99/month | Anti-nuke and continuity controls |
+
+Publish both to **Store & API**, then add their IDs as Railway variables:
 
 ```env
-STRIPE_SECRET_KEY=...
-STRIPE_WEBHOOK_SECRET=...
-STRIPE_PRO_PRICE_ID=...
-STRIPE_ENTERPRISE_PRICE_ID=...
+DISCORD_PRO_SKU_ID=...
+DISCORD_PRO_PLUS_SKU_ID=...
 ```
 
-Point Stripe directly to Railway, not Vercel:
+On startup and when Discord sends entitlement events, ModerationDesk reconciles the active entitlement for each server. Test the implementation with Discord test entitlements before public launch.
 
-```text
-https://YOUR-RAILWAY-DOMAIN/billing/webhook
-```
-
-Subscribe to:
-
-- `checkout.session.completed`
-- `customer.subscription.created`
-- `customer.subscription.updated`
-- `customer.subscription.deleted`
-
-The webhook uses the raw request body and verifies `Stripe-Signature` before changing a guild plan.
+The exact storefront benefits and copy are in [`docs/DISCORD_GUILD_SUBSCRIPTIONS.md`](docs/DISCORD_GUILD_SUBSCRIPTIONS.md).
 
 ## 9. Production checks
 
@@ -171,6 +165,7 @@ Before launch, verify:
 - `RAILWAY_BACKEND_URL` points to Railway over HTTPS.
 - `FRONTEND_BASE_URL` points to the stable Vercel/custom domain.
 - Both Discord OAuth redirects match exactly.
+- Both Discord SKU IDs are present in Railway and the billing page links to the Discord Store.
 - Cookies are HTTP-only and are set through the Vercel `/api` proxy.
 - GitHub Actions passes both backend and frontend jobs.
 - No secrets are committed.

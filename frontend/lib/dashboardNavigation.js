@@ -48,7 +48,7 @@ export const dashboardNavigation = [
     label: 'Account',
     description: 'Plan and data controls',
     items: [
-      { id: 'billing', label: 'Plan & billing', keywords: 'subscription premium pro enterprise' },
+      { id: 'billing', label: 'Plan & billing', keywords: 'subscription premium pro pro plus discord billing' },
       { id: 'data', label: 'Data & privacy', keywords: 'export delete appeal privacy' }
     ]
   }

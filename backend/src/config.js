@@ -33,6 +33,10 @@ export const config = Object.freeze({
     proPriceId: process.env.STRIPE_PRO_PRICE_ID || '',
     enterprisePriceId: process.env.STRIPE_ENTERPRISE_PRICE_ID || ''
   },
+  discordBilling: {
+    proSkuId: process.env.DISCORD_PRO_SKU_ID || '',
+    proPlusSkuId: process.env.DISCORD_PRO_PLUS_SKU_ID || ''
+  },
   links: {
     privacy: process.env.PRIVACY_URL || '',
     terms: process.env.TERMS_URL || '',

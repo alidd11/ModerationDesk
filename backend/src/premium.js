@@ -1,11 +1,17 @@
 import { getGuildConfig } from './store.js';
+import { guildLocale, t } from './i18n.js';
 
 export const PLAN_ORDER = Object.freeze({ free: 0, pro: 1, enterprise: 2 });
+export const PLAN_LABELS = Object.freeze({ free: 'Free', pro: 'Pro', enterprise: 'Pro+' });
+export const PLAN_PRICES = Object.freeze({ free: '$0', pro: '$3.99', enterprise: '$7.99' });
 export const PLAN_FEATURES = Object.freeze({
-  free: ['Core moderation', 'Cases and warnings', 'Message/member/server logs', 'Welcome and autoroles', 'Basic AutoMod'],
-  pro: ['Everything in Free', 'Advanced AutoMod', 'Anti-raid', 'OAuth verification', 'Web appeals', 'Starboard and sticky roles'],
-  enterprise: ['Everything in Pro', 'Anti-nuke enforcement', 'Consent-based server migration', 'Role restoration', 'Priority configuration limits']
+  free: ['Core moderation and cases', 'Warnings, timeouts and channel controls', 'Structured moderation, server and message logs', 'Welcome messages and one auto role', 'Essential message screening'],
+  pro: ['Everything in Free', 'Advanced message screening with per-rule responses', 'Anti-raid and Join Gate protection', 'Discord OAuth verification and web appeals', 'Sticky roles, starboard and ten auto roles', 'Per-event log routing'],
+  enterprise: ['Everything in Pro', 'Anti-nuke containment and audit response', 'Consent-based server migration', 'Mapped role restoration', 'Priority configuration limits', 'Full protection policy controls']
 });
+
+export const planLabel = plan => PLAN_LABELS[plan] || PLAN_LABELS.free;
+export const planPrice = plan => PLAN_PRICES[plan] || PLAN_PRICES.free;
 
 export function hasPlan(guildId, minimum = 'pro') {
   const current = getGuildConfig(guildId).plan;
@@ -15,7 +21,7 @@ export function hasPlan(guildId, minimum = 'pro') {
 export async function requirePlan(interaction, minimum = 'pro') {
   if (hasPlan(interaction.guildId, minimum)) return true;
   await interaction.reply({
-    content: `This feature requires ModerationDesk ${minimum === 'enterprise' ? 'Enterprise' : 'Pro'}. Use \`/premium features\` for details.`,
+    content: t(guildLocale(interaction.guildId, interaction.locale), `premium.required.${minimum}`),
     ephemeral: true
   }).catch(() => {});
   return false;

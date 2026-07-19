@@ -11,6 +11,7 @@ import { attachSecurity } from './security.js';
 import { attachVerification, ensureAllVerificationPanels, mountVerificationOAuth } from './verification.js';
 import { mountApi } from './api.js';
 import { mountBillingWebhook } from './billing.js';
+import { attachDiscordBilling, syncAllDiscordEntitlements, syncGuildDiscordEntitlements } from './discordBilling.js';
 import { commands } from './commands.js';
 import { constantTimeEqual } from './utils.js';
 import { deleteGuildData, exportGuildData, getGuildConfig, setPlan, snapshot, updateGuildConfig } from './store.js';
@@ -40,11 +41,13 @@ attachSecurity(client);
 attachVerification(client);
 attachRuntime(client);
 attachInteractionHandler(client);
+attachDiscordBilling(client);
 
 client.once('ready', async readyClient => {
   logger.info('ModerationDesk connected', { user: readyClient.user.tag, guilds: readyClient.guilds.cache.size });
   for (const guildId of config.enterpriseGuildIds) setPlan(guildId, 'enterprise');
   for (const guild of readyClient.guilds.cache.values()) getGuildConfig(guild.id);
+  await syncAllDiscordEntitlements(readyClient);
   if (config.registerCommandsOnStart) {
     const rest = new REST({ version: '10' }).setToken(config.token);
     const route = config.devGuildId
@@ -55,7 +58,10 @@ client.once('ready', async readyClient => {
   }
   await ensureAllVerificationPanels(readyClient);
 });
-client.on('guildCreate', guild => getGuildConfig(guild.id));
+client.on('guildCreate', guild => {
+  getGuildConfig(guild.id);
+  syncGuildDiscordEntitlements(client, guild.id).catch(error => logger.warn('Unable to check new guild Discord entitlement', { guildId: guild.id, error: error.message }));
+});
 client.on('error', error => logger.error('Discord client error', { error: error.stack || error.message }));
 client.on('warn', warning => logger.warn('Discord client warning', { warning }));
 client.on('shardError', error => logger.error('Discord shard error', { error: error.stack || error.message }));

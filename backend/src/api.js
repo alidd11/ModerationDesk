@@ -2,6 +2,7 @@ import { PermissionFlagsBits } from 'discord.js';
 import { config } from './config.js';
 import { commandCatalog, sanitiseCommandSettings, syncGuildCommands } from './commandSync.js';
 import { billingConfigured, createCheckoutSession, createPortalSession } from './billing.js';
+import { discordBillingConfigured, discordStoreUrls } from './discordBilling.js';
 import {
   consumeOAuthState,
   createAppeal,
@@ -26,6 +27,7 @@ import { sendLog, WARNING_COLOUR } from './services/logService.js';
 import { logger } from './logger.js';
 import { diagnoseGuild } from './diagnostics.js';
 import { automodActionForRule, inspectAutomodContent } from './automod.js';
+import { normaliseLocale } from './i18n.js';
 
 const SESSION_COOKIE = 'moderationdesk_session';
 const MANAGE_GUILD = PermissionFlagsBits.ManageGuild;
@@ -164,7 +166,8 @@ function publicConfig(cfg) {
     billing: {
       status: cfg.billing.status || '',
       currentPeriodEnd: cfg.billing.currentPeriodEnd || 0,
-      linked: Boolean(cfg.billing.stripeCustomerId)
+      linked: Boolean(cfg.billing.stripeCustomerId || cfg.billing.discordEntitlementId),
+      provider: cfg.billing.provider || (cfg.billing.stripeCustomerId ? 'stripe' : '')
     }
   };
 }
@@ -205,7 +208,11 @@ function guildPayload(guild) {
       highestRole: botMember?.roles.highest?.name || ''
     },
     diagnostics: diagnoseGuild(guild),
-    billingConfigured: billingConfigured(),
+    billingConfigured: discordBillingConfigured() || billingConfigured(),
+    discordBilling: {
+      configured: discordBillingConfigured(),
+      ...discordStoreUrls()
+    },
     appealUrl: frontend(`/appeal/${guild.id}`)
   };
 }
@@ -240,6 +247,7 @@ async function applySettings(guild, section, body) {
 
   if (section === 'general') {
     return updateGuildConfig(guild.id, {
+      locale: normaliseLocale(data.locale),
       staffRoleIds: roleIds(data.staffRoleIds),
       adminRoleIds: roleIds(data.adminRoleIds),
       logs: {
