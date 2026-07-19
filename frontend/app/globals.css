@@ -818,6 +818,12 @@ html[data-theme="light"] .text-link:hover { color: #4f3fc0; border-color: #604ad
 .dashboard-content > .dashboard-overview > .settings-body { padding: 20px 0 0; }
 .dashboard-content > .settings-section > .settings-footer { padding: 14px 0 0; border-top: 1px solid var(--line); background: transparent; box-shadow: none; backdrop-filter: none; }
 .dashboard-content .settings-kicker { margin-bottom: 7px; }
+.module-status-line { display: flex; align-items: stretch; gap: 0; margin: 0 0 18px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.module-status-line > span { min-width: 0; flex: 1 1 0; display: grid; align-content: center; gap: 4px; padding: 13px 16px; border-right: 1px solid var(--line); }
+.module-status-line > span:first-child { padding-left: 0; }
+.module-status-line > span:last-child { padding-right: 0; border-right: 0; }
+.module-status-line b { color: #858a96; font-size: 9px; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
+.module-status-line strong { overflow: hidden; color: #eef0f5; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
 .dashboard-content .workspace-summary { gap: 0; margin-bottom: 20px; padding: 0 0 18px; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; }
 .dashboard-content .workspace-summary > div { min-height: 0; padding: 0 16px; }
 .dashboard-content .workspace-summary > div:first-child { padding-left: 0; }
@@ -869,6 +875,10 @@ html[data-theme="light"] .dashboard-content > .settings-section > .settings-foot
 html[data-theme="light"] .dashboard-content .workspace-summary,
 html[data-theme="light"] .dashboard-content .split-settings .setting-block,
 html[data-theme="light"] .dashboard-content .settings-disclosure { border-color: #dfe1e8; background: transparent; }
+html[data-theme="light"] .module-status-line,
+html[data-theme="light"] .module-status-line > span { border-color: #dfe1e8; }
+html[data-theme="light"] .module-status-line b { color: #737a87; }
+html[data-theme="light"] .module-status-line strong { color: #242936; }
 
 /* Public product pages need their own light theme surfaces; they must not inherit a dark panel. */
 html[data-theme="light"] .product-detail-page { border-color: #dfe1e8; background: #fff; }
@@ -916,6 +926,11 @@ html[data-theme="light"] .product-page-pagination strong { color: #303541; }
   .dashboard-content .workspace-summary > div:nth-child(even) { padding-right: 0; border-right: 0; }
   .dashboard-content .workspace-summary > div:last-child { grid-column: 1 / -1; padding-bottom: 0; border-bottom: 0; }
   .dashboard-content .split-settings .setting-block { padding: 18px 0; }
+  .module-status-line { display: grid; grid-template-columns: 1fr 1fr; margin-bottom: 16px; }
+  .module-status-line > span { min-height: 58px; padding: 10px; border-bottom: 1px solid var(--line); }
+  .module-status-line > span:first-child { padding-left: 0; }
+  .module-status-line > span:nth-child(2) { padding-right: 0; border-right: 0; }
+  .module-status-line > span:last-child { grid-column: 1 / -1; padding-bottom: 10px; border-bottom: 0; }
   .product-route-shell { padding: 16px 0 42px; }
   .product-detail-page { padding: 0 18px 24px; border-radius: 7px; }
   .product-detail-hero { min-height: 0; padding: 42px 0 36px; }
