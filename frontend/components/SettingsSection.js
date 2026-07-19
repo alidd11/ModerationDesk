@@ -40,7 +40,6 @@ export default function SettingsSection({ id, title, description, guildId, csrf,
     <section className={`card settings-section ${className}`} id={id}>
       <div className="settings-header">
         <div>
-          <span className="settings-kicker">Configuration</span>
           <h2>{title}</h2>
           <p>{description}</p>
         </div>

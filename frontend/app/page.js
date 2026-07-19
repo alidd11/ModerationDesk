@@ -62,13 +62,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="trust-strip" aria-label="Platform principles">
-        <span>Command-level accountability</span>
-        <span>Real-time protection controls</span>
-        <span>Member access management</span>
-        <span>One server workspace</span>
-      </section>
-
       <section className="operating-principles" id="platform">
         <div className="operating-principles-intro">
           <span className="section-kicker">THE MODERATIONDESK APPROACH</span>

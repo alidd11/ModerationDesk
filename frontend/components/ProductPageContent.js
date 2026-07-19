@@ -12,7 +12,7 @@ export default function ProductPageContent({ area }) {
         <span className="product-page-kicker">{area.number} / {area.kicker}</span>
         <h1>{area.title}</h1>
         <p>{area.description}</p>
-        <div className="hero-actions"><Link className="button button-large" href="/dashboard">Open dashboard <span aria-hidden="true">→</span></Link><Link className="button ghost button-large" href="/">Back to home</Link></div>
+        <div className="hero-actions"><a className="button button-large" href="https://discord.com/oauth2/authorize?client_id=1528046559923666944&permissions=1099914374358&scope=bot%20applications.commands" target="_blank" rel="noreferrer">Install on Discord <span aria-hidden="true">→</span></a><Link className="button ghost button-large" href="/dashboard">Open dashboard</Link></div>
       </header>
 
       <section className="product-capability-section" aria-labelledby="capability-heading">

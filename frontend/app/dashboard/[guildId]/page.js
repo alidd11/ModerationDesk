@@ -273,7 +273,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
         <section className="dashboard-context" aria-label="Current server">
           <div className="dashboard-context-server">
             {guild.icon ? <img className="dashboard-context-icon" src={guild.icon} alt="" /> : <div className="dashboard-context-icon">{guild.name.slice(0, 2).toUpperCase()}</div>}
-            <div><span>Server workspace</span><strong>{guild.name}</strong><small>{guild.memberCount.toLocaleString()} members <i aria-hidden="true">·</i> <b className={health.connected ? 'online' : ''}>{health.connected ? 'Connected' : 'Offline'}</b> <i aria-hidden="true">·</i> {planLabel(plan)} plan</small></div>
+            <div><strong>{guild.name}</strong><small><b className={health.connected ? 'online' : ''}>{health.connected ? 'Connected' : 'Offline'}</b><i aria-hidden="true">·</i>{guild.memberCount.toLocaleString()} members</small></div>
           </div>
           <div className="dashboard-context-actions">
             <a href="/dashboard">All servers</a>
@@ -283,19 +283,6 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
 
         <div className="dashboard-layout">
           <aside className="sidebar" aria-label="Server settings">
-            <div className="sidebar-server">
-              {guild.icon ? <img className="sidebar-server-icon" src={guild.icon} alt="" /> : <div className="sidebar-server-icon">{guild.name.slice(0, 2).toUpperCase()}</div>}
-              <div className="sidebar-server-copy">
-                <span>Current server</span>
-                <strong>{guild.name}</strong>
-                <small>{guild.memberCount.toLocaleString()} members <i aria-hidden="true">·</i> <b className={health.connected ? 'online' : ''}>{health.connected ? 'Connected' : 'Offline'}</b></small>
-              </div>
-              <div className="sidebar-server-actions">
-                <a href="/dashboard">Switch server</a>
-                <a href={`https://discord.com/channels/${guildId}`} target="_blank" rel="noreferrer">Discord <span aria-hidden="true">↗</span></a>
-              </div>
-            </div>
-            <button className="sidebar-find" type="button" onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true }))}><span><i aria-hidden="true">⌕</i> Find a setting</span><kbd>⌘K</kbd></button>
             {navigation.map(group => (
               <details className="sidebar-group" key={group.label} open={group.label === 'Home' || group.items.some(item => item.id === activeSection)}>
                 <summary className="sidebar-label"><span>{group.label}</span><small>{group.description}</small><i aria-hidden="true">⌄</i></summary>

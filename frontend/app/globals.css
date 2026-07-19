@@ -801,6 +801,32 @@ html[data-theme="light"] .text-link:hover { color: #4f3fc0; border-color: #604ad
 }
 
 /* Deliberately restrained product system: structure and type do the work, not decoration. */
+.dashboard-context { display: flex; min-height: 62px; padding: 0 0 14px; }
+.dashboard-layout { grid-template-columns: 198px minmax(0, 1fr); gap: 34px; padding-top: 22px; }
+.sidebar { padding: 0; border: 0; border-radius: 0; background: transparent; }
+.sidebar-group { padding: 11px 0; }
+.sidebar-group + .sidebar-group { border-top: 1px solid var(--line); }
+.sidebar-label { padding: 0 8px 7px; }
+.sidebar a { min-height: 36px; padding: 7px 8px; border-radius: 5px; }
+.dashboard-content > .settings-section,
+.dashboard-content > .dashboard-overview { border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.dashboard-content > .settings-section > .settings-header,
+.dashboard-content > .dashboard-overview > .settings-header { min-height: 0; padding: 0 0 18px; border-bottom: 1px solid var(--line); background: transparent; }
+.dashboard-content > .settings-section > .settings-header h2,
+.dashboard-content > .dashboard-overview > .settings-header h2 { margin: 0 0 6px; font-size: 24px; letter-spacing: -.035em; }
+.dashboard-content > .settings-section > .settings-body,
+.dashboard-content > .dashboard-overview > .settings-body { padding: 20px 0 0; }
+.dashboard-content > .settings-section > .settings-footer { padding: 14px 0 0; border-top: 1px solid var(--line); background: transparent; box-shadow: none; backdrop-filter: none; }
+.dashboard-content .settings-kicker { margin-bottom: 7px; }
+.dashboard-content .workspace-summary { gap: 0; margin-bottom: 20px; padding: 0 0 18px; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; }
+.dashboard-content .workspace-summary > div { min-height: 0; padding: 0 16px; }
+.dashboard-content .workspace-summary > div:first-child { padding-left: 0; }
+.dashboard-content .workspace-summary > div:last-child { padding-right: 0; }
+.dashboard-content .split-settings .setting-block { padding: 18px 0; border: 0; border-top: 1px solid var(--line); border-radius: 0; background: transparent; }
+.dashboard-content .split-settings .setting-block:first-child { border-top: 0; padding-top: 0; }
+.dashboard-content .settings-disclosure { border: 0; border-top: 1px solid var(--line); border-radius: 0; background: transparent; }
+.dashboard-content .settings-disclosure summary { padding-inline: 0; background: transparent; }
+.dashboard-content .settings-disclosure-content { padding: 16px 0 0; }
 .dashboard-overview, .module-surface, .security-surface, .access-surface, .audit-surface { box-shadow: none; }
 .workspace-summary, .automod-surface .workspace-summary, .security-surface .workspace-summary, .access-surface .workspace-summary, .audit-surface .workspace-summary { background: #121318; }
 .dashboard-product-shot, .product-window { box-shadow: 0 14px 34px rgba(0,0,0,.22); }
@@ -834,3 +860,36 @@ html[data-theme="light"] .button { border-color: #6553cc; background: #5f4bc8; }
 html[data-theme="light"] .button:hover { border-color: #5140ba; background: #5140ba; }
 html[data-theme="light"] .button.ghost { border-color: #cdd0da; background: #fff; color: #303541; }
 html[data-theme="light"] .button.ghost:hover { border-color: #aaaeba; background: #f7f7f9; }
+html[data-theme="light"] .sidebar { background: transparent; border: 0; }
+html[data-theme="light"] .dashboard-content > .settings-section,
+html[data-theme="light"] .dashboard-content > .dashboard-overview { background: transparent; border: 0; }
+html[data-theme="light"] .dashboard-content > .settings-section > .settings-header,
+html[data-theme="light"] .dashboard-content > .dashboard-overview > .settings-header { background: transparent; border-bottom-color: #dfe1e8; }
+html[data-theme="light"] .dashboard-content > .settings-section > .settings-footer { border-top-color: #dfe1e8; background: transparent; }
+html[data-theme="light"] .dashboard-content .workspace-summary,
+html[data-theme="light"] .dashboard-content .split-settings .setting-block,
+html[data-theme="light"] .dashboard-content .settings-disclosure { border-color: #dfe1e8; background: transparent; }
+
+@media (max-width: 860px) {
+  .dashboard-layout { grid-template-columns: 1fr; gap: 0; padding-top: 14px; }
+}
+
+@media (max-width: 620px) {
+  .dashboard-context { min-height: 54px; padding: 4px 0 12px; }
+  .dashboard-context-server strong { font-size: 16px; }
+  .dashboard-context-server small { font-size: 10px; }
+  .dashboard-content > .settings-section > .settings-header,
+  .dashboard-content > .dashboard-overview > .settings-header { padding-bottom: 15px; }
+  .dashboard-content > .settings-section > .settings-header h2,
+  .dashboard-content > .dashboard-overview > .settings-header h2 { font-size: 22px; }
+  .dashboard-content > .settings-section > .settings-body,
+  .dashboard-content > .dashboard-overview > .settings-body { padding-top: 16px; }
+  .dashboard-content > .settings-section > .settings-footer { position: static; padding: 16px 0 0; }
+  .dashboard-content > .settings-section > .settings-footer .button { width: 100%; }
+  .dashboard-content .workspace-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-bottom: 16px; padding: 0 0 14px; }
+  .dashboard-content .workspace-summary > div { min-height: 0; padding: 11px 10px; border-bottom: 1px solid var(--line); }
+  .dashboard-content .workspace-summary > div:nth-child(odd) { padding-left: 0; }
+  .dashboard-content .workspace-summary > div:nth-child(even) { padding-right: 0; border-right: 0; }
+  .dashboard-content .workspace-summary > div:last-child { grid-column: 1 / -1; padding-bottom: 0; border-bottom: 0; }
+  .dashboard-content .split-settings .setting-block { padding: 18px 0; }
+}
