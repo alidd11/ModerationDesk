@@ -514,7 +514,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'automod' && (
-              <SettingsSection id="automod" title="AutoMod" description="Screen risky messages as they are sent and apply an immediate response." guildId={guildId} csrf={session.csrf} section="automod" data={drafts.automod} headerControl={<ModuleToggle label="Enable AutoMod" checked={drafts.automod.enabled} onChange={value => set('automod', data => (data.enabled = value, data))} />}>
+              <SettingsSection id="automod" className="module-surface automod-surface" title="AutoMod" description="Screen risky messages as they are sent and apply an immediate response." guildId={guildId} csrf={session.csrf} section="automod" data={drafts.automod} headerControl={<ModuleToggle label="Enable AutoMod" checked={drafts.automod.enabled} onChange={value => set('automod', data => (data.enabled = value, data))} />}>
                 <div className="workspace-summary">
                   <div><span className="workspace-summary-label">Screening status</span><strong className={drafts.automod.enabled ? 'summary-good' : 'summary-muted'}>{drafts.automod.enabled ? 'Active' : 'Not active'}</strong><p>{drafts.automod.enabled ? 'Messages are checked before they remain visible.' : 'Turn screening on when you are ready to enforce message rules.'}</p></div>
                   <div><span className="workspace-summary-label">Message checks</span><strong>{[drafts.automod.antiInvites, drafts.automod.antiLinks, drafts.automod.antiSpam, drafts.automod.antiDuplicates, drafts.automod.antiMassMentions, drafts.automod.antiCaps].filter(Boolean).length}<small> / 6</small></strong><p>Content patterns currently monitored.</p></div>

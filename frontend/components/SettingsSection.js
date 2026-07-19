@@ -18,7 +18,7 @@ function UpgradeGate({ upgrade, children }) {
   );
 }
 
-export default function SettingsSection({ id, title, description, guildId, csrf, section, data, children, onSaved, headerControl, upgrade }) {
+export default function SettingsSection({ id, title, description, guildId, csrf, section, data, children, onSaved, headerControl, upgrade, className = '' }) {
   const [status, setStatus] = useState({ busy: false, message: '', bad: false });
 
   async function save() {
@@ -37,7 +37,7 @@ export default function SettingsSection({ id, title, description, guildId, csrf,
   }
 
   return (
-    <section className="card settings-section" id={id}>
+    <section className={`card settings-section ${className}`} id={id}>
       <div className="settings-header">
         <div>
           <span className="settings-kicker">Configuration</span>
