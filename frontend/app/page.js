@@ -26,8 +26,8 @@ export default function Home() {
           <h1>Moderation that holds up when the server gets busy.</h1>
           <p>Give your team a clear view of cases, protection and member access—so they can respond with confidence and explain what happened later.</p>
           <div className="hero-actions">
-            <a className="button button-large" href={botInviteUrl} target="_blank" rel="noreferrer">Add ModerationDesk <span aria-hidden="true">→</span></a>
-            <a className="button ghost button-large" href="/dashboard">View your workspace</a>
+            <a className="button button-large" href={botInviteUrl} target="_blank" rel="noreferrer">Install on Discord <span aria-hidden="true">→</span></a>
+            <a className="button ghost button-large" href="/dashboard">Open workspace</a>
           </div>
           <div className="hero-assurances"><span>Secure Discord OAuth</span><span>No user tokens</span><span>Built-in data controls</span></div>
         </div>
@@ -84,7 +84,7 @@ export default function Home() {
       <section className="plans-section" id="plans">
         <div className="section-head"><div><span className="section-kicker">PLANS</span><h2>Pricing that stays straightforward.</h2></div><p>Start with the essentials, then add proactive protection only when your community needs it.</p></div>
         <div className="plan-grid">
-          {plans.map((plan, index) => <article className={index === 1 ? 'featured' : ''} key={plan.name}><div className="plan-name"><h3>{plan.name}</h3>{index === 1 && <span>Most teams</span>}</div><div className="plan-price"><strong>{plan.price}</strong><span>{plan.cadence}</span></div><p>{plan.description}</p><ul>{plan.items.map(item => <li key={item}>{item}</li>)}</ul><a className={`button ${index === 1 ? '' : 'ghost'}`} href={index === 0 ? botInviteUrl : discordStoreUrl} target={index === 0 ? '_blank' : undefined} rel={index === 0 ? 'noreferrer' : undefined}>{index === 0 ? 'Add to Discord' : `Choose ${plan.name}`}</a></article>)}
+          {plans.map((plan, index) => <article className={index === 1 ? 'featured' : ''} key={plan.name}><div className="plan-name"><h3>{plan.name}</h3>{index === 1 && <span>Most teams</span>}</div><div className="plan-price"><strong>{plan.price}</strong><span>{plan.cadence}</span></div><p>{plan.description}</p><ul>{plan.items.map(item => <li key={item}>{item}</li>)}</ul><a className={`button ${index === 1 ? '' : 'ghost'}`} href={index === 0 ? botInviteUrl : discordStoreUrl} target={index === 0 ? '_blank' : undefined} rel={index === 0 ? 'noreferrer' : undefined}>{index === 0 ? 'Install on Discord' : `View ${plan.name} in Discord`}</a></article>)}
         </div>
       </section>
 
@@ -102,7 +102,7 @@ export default function Home() {
 
       <section className="final-cta">
         <div><span className="section-kicker">READY WHEN YOUR TEAM IS</span><h2>Bring your moderation workflow together.</h2><p>Set up the essential controls first, then scale protection as your community grows.</p></div>
-        <div className="hero-actions"><a className="button button-large" href={botInviteUrl} target="_blank" rel="noreferrer">Add ModerationDesk <span aria-hidden="true">→</span></a><a className="button ghost button-large" href="/dashboard">View your workspace</a></div>
+        <div className="hero-actions"><a className="button button-large" href={botInviteUrl} target="_blank" rel="noreferrer">Install on Discord <span aria-hidden="true">→</span></a><a className="button ghost button-large" href="/dashboard">Open workspace</a></div>
       </section>
     </Shell>
   );
