@@ -3,7 +3,22 @@
 import { useState } from 'react';
 import { api } from '../lib/api';
 
-export default function SettingsSection({ id, title, description, guildId, csrf, section, data, children, onSaved, headerControl }) {
+function UpgradeGate({ upgrade, children }) {
+  return (
+    <div className="plan-gate">
+      <div className="plan-gate-preview" inert="" aria-hidden="true">{children}</div>
+      <div className="plan-gate-overlay">
+        <span className="plan-gate-eyebrow">{upgrade.plan} feature</span>
+        <h3>{upgrade.title}</h3>
+        <p>{upgrade.description}</p>
+        <a className="button small" href={upgrade.href} target="_blank" rel="noreferrer">View {upgrade.plan} in Discord <span aria-hidden="true">↗</span></a>
+        <small>Subscriptions are managed securely through Discord for this server.</small>
+      </div>
+    </div>
+  );
+}
+
+export default function SettingsSection({ id, title, description, guildId, csrf, section, data, children, onSaved, headerControl, upgrade }) {
   const [status, setStatus] = useState({ busy: false, message: '', bad: false });
 
   async function save() {
@@ -31,11 +46,11 @@ export default function SettingsSection({ id, title, description, guildId, csrf,
         </div>
         {headerControl && <div className="settings-header-control">{headerControl}</div>}
       </div>
-      <div className="settings-body">{children}</div>
-      <div className="settings-footer">
-        <button className="button" disabled={status.busy} onClick={save}>{status.busy ? 'Saving…' : `Save ${title}`}</button>
-        {status.message && <span className={`status ${status.bad ? 'bad' : 'good'}`} role="status">{status.message}</span>}
-      </div>
+      <div className={`settings-body ${upgrade ? 'settings-body-locked' : ''}`}>{upgrade ? <UpgradeGate upgrade={upgrade}>{children}</UpgradeGate> : children}</div>
+      {!upgrade && <div className="settings-footer">
+          <button className="button" disabled={status.busy} onClick={save}>{status.busy ? 'Saving…' : `Save ${title}`}</button>
+          {status.message && <span className={`status ${status.bad ? 'bad' : 'good'}`} role="status">{status.message}</span>}
+        </div>}
     </section>
   );
 }

@@ -118,6 +118,9 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
 
   const set = (section, updater) => setDrafts(current => ({ ...current, [section]: updater(copy(current[section])) }));
   const plan = guild?.config?.plan || 'free';
+  const discordStore = guild?.discordBilling?.store || 'https://discord.com/application-directory/1528046559923666944/store';
+  const proStore = guild?.discordBilling?.pro || discordStore;
+  const proPlusStore = guild?.discordBilling?.enterprise || discordStore;
 
   async function billing(path, body = {}) {
     setBillingBusy(true);
@@ -535,7 +538,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'anti-raid' && (
-              <SettingsSection id="anti-raid" title="Anti-raid & Join Gate" description="Detect sudden join spikes and inspect risky accounts as they enter your server." guildId={guildId} csrf={session.csrf} section="security" data={drafts.security} headerControl={<ModuleToggle label="Enable anti-raid" detail={plan === 'free' ? 'Pro plan required' : 'Enable module'} checked={drafts.security.antiRaid.enabled} disabled={plan === 'free'} onChange={value => set('security', data => (data.antiRaid.enabled = value, data))} />}>
+              <SettingsSection id="anti-raid" title="Anti-raid & Join Gate" description="Detect sudden join spikes and inspect risky accounts as they enter your server." guildId={guildId} csrf={session.csrf} section="security" data={drafts.security} headerControl={<ModuleToggle label="Enable anti-raid" detail={plan === 'free' ? 'Pro plan required' : 'Enable module'} checked={drafts.security.antiRaid.enabled} disabled={plan === 'free'} onChange={value => set('security', data => (data.antiRaid.enabled = value, data))} />} upgrade={plan === 'free' ? { plan: 'Pro', title: 'Turn on join protection', description: 'See how anti-raid thresholds and Join Gate work together, then activate the module for this server with ModerationDesk Pro.', href: proStore } : null}>
                 <div className="workspace-summary protection-summary"><div><span className="workspace-summary-label">Join protection</span><strong className={drafts.security.antiRaid.enabled ? 'summary-good' : 'summary-muted'}>{drafts.security.antiRaid.enabled ? 'Active' : 'Not active'}</strong><p>Protects the server when joins spike.</p></div><div><span className="workspace-summary-label">Trigger</span><strong>{drafts.security.antiRaid.joinThreshold}<small> joins / {drafts.security.antiRaid.windowSeconds}s</small></strong><p>Detection window.</p></div><div><span className="workspace-summary-label">Recovery</span><strong>{drafts.security.antiRaid.autoUnlockMinutes}<small> min</small></strong><p>Automatic unlock delay.</p></div></div>
                 <div className="form-grid form-divider">
                   <Text label="Join threshold" type="number" min="3" max="100" value={drafts.security.antiRaid.joinThreshold} onChange={value => set('security', data => (data.antiRaid.joinThreshold = value, data))} />
@@ -559,7 +562,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'anti-nuke' && (
-              <SettingsSection id="anti-nuke" title="Anti-nuke" description="Watch high-risk audit events, stop an executor and preserve a clear incident record." guildId={guildId} csrf={session.csrf} section="security" data={drafts.security} headerControl={<ModuleToggle label="Enable anti-nuke" detail={plan !== 'enterprise' ? 'Pro+ required' : 'Enable module'} checked={drafts.security.antiNuke.enabled} disabled={plan !== 'enterprise'} onChange={value => set('security', data => (data.antiNuke.enabled = value, data))} />}>
+              <SettingsSection id="anti-nuke" title="Anti-nuke" description="Watch high-risk audit events, stop an executor and preserve a clear incident record." guildId={guildId} csrf={session.csrf} section="security" data={drafts.security} headerControl={<ModuleToggle label="Enable anti-nuke" detail={plan !== 'enterprise' ? 'Pro+ required' : 'Enable module'} checked={drafts.security.antiNuke.enabled} disabled={plan !== 'enterprise'} onChange={value => set('security', data => (data.antiNuke.enabled = value, data))} />} upgrade={plan !== 'enterprise' ? { plan: 'Pro+', title: 'Protect against destructive actions', description: 'Preview the containment, recovery and audit-response policy below. Upgrade this server to activate anti-nuke enforcement.', href: proPlusStore } : null}>
                 <div className="workspace-summary protection-summary"><div><span className="workspace-summary-label">Server integrity</span><strong className={drafts.security.antiNuke.enabled ? 'summary-good' : 'summary-muted'}>{drafts.security.antiNuke.enabled ? 'Protected' : 'Not protected'}</strong><p>Watches destructive changes and dangerous permission escalation.</p></div><div><span className="workspace-summary-label">Response</span><strong>{drafts.security.antiNuke.action === 'ban' ? 'Ban executor' : 'Strip roles'}</strong><p>Action taken when a policy threshold is reached.</p></div><div><span className="workspace-summary-label">Panic response</span><strong>{drafts.security.antiNuke.panicMode ? 'Lockdown' : 'Controlled'}</strong><p>{drafts.security.antiNuke.panicMode ? 'Immediately locks messaging as part of enforcement.' : 'Uses your configured containment policy.'}</p></div></div>
                 <div className="form-grid">
                   <div>
