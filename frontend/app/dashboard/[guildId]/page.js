@@ -41,6 +41,16 @@ function Status({ enabled, children }) {
   return <span className={`feature-status ${enabled ? 'enabled' : ''}`}><i aria-hidden="true" />{children}</span>;
 }
 
+function SettingsDisclosure({ title, description, badge, children }) {
+  return <details className="settings-disclosure">
+    <summary>
+      <span><strong>{title}</strong><small>{description}</small></span>
+      <span className="settings-disclosure-meta">{badge && <b>{badge}</b>}<i aria-hidden="true">⌄</i></span>
+    </summary>
+    <div className="settings-disclosure-content">{children}</div>
+  </details>;
+}
+
 export default function GuildDashboardPage({ initialSection = 'overview' }) {
   const { guildId } = useParams();
   const pathname = usePathname();
@@ -309,14 +319,15 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                     <div className="overview-panel stack-panel">
                       <div className="panel-heading"><div><h3>Protection status</h3><p>Each layer is configured independently.</p></div><span className="badge">{plan}</span></div>
                       <div className="module-status-list">
-                        <a href="#automod" onClick={() => setActiveSection('automod')}><span><b>Message protection</b><small>Message-time screening and immediate actions</small></span><Status enabled={drafts.automod.enabled}>{drafts.automod.enabled ? 'Enabled' : 'Disabled'}</Status></a>
-                        <a href="#anti-raid" onClick={() => setActiveSection('anti-raid')}><span><b>Anti-raid</b><small>Join-spike detection and quarantine</small></span><Status enabled={drafts.security.antiRaid.enabled}>{drafts.security.antiRaid.enabled ? 'Enabled' : 'Disabled'}</Status></a>
-                        <a href="#anti-nuke" onClick={() => setActiveSection('anti-nuke')}><span><b>Anti-nuke</b><small>Destructive-action response</small></span><Status enabled={drafts.security.antiNuke.enabled}>{drafts.security.antiNuke.enabled ? 'Enabled' : 'Disabled'}</Status></a>
+                        <a href="#automod" onClick={() => setActiveSection('automod')}><span><b>AutoMod</b><small>Message screening and immediate actions</small></span><Status enabled={drafts.automod.enabled}>{drafts.automod.enabled ? 'Enabled' : 'Disabled'}</Status></a>
+                        <a href="#anti-raid" onClick={() => setActiveSection('anti-raid')}><span><b>Anti-Raid</b><small>Join-spike detection and quarantine</small></span><Status enabled={drafts.security.antiRaid.enabled}>{drafts.security.antiRaid.enabled ? 'Enabled' : 'Disabled'}</Status></a>
+                        <a href="#anti-nuke" onClick={() => setActiveSection('anti-nuke')}><span><b>Anti-Nuke</b><small>Destructive-action response</small></span><Status enabled={drafts.security.antiNuke.enabled}>{drafts.security.antiNuke.enabled ? 'Enabled' : 'Disabled'}</Status></a>
                         <a href="#verification" onClick={() => setActiveSection('verification')}><span><b>Verification</b><small>Controlled member access</small></span><Status enabled={drafts.verification.enabled}>{drafts.verification.enabled ? 'Enabled' : 'Disabled'}</Status></a>
                       </div>
                     </div>
                   </div>
 
+                  <SettingsDisclosure title="More workspace details" description="Review recent cases, configuration activity and readiness checks without leaving this page.">
                   <div className="overview-columns lower">
                     <div className="overview-panel stack-panel">
                       <div className="panel-heading"><div><h3>Recent cases</h3><p>The latest actions recorded by the moderation system.</p></div><a href="#cases" onClick={() => setActiveSection('cases')}>View all</a></div>
@@ -329,9 +340,9 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                       <div className="panel-heading"><div><h3>Setup checklist</h3><p>Core configuration for a working moderation setup.</p></div><strong>{setupSignals.filter(Boolean).length}/{setupSignals.length}</strong></div>
                       <div className="setup-progress"><i style={{ width: `${setupProgress}%` }} /></div>
                       <div className="setup-checks">
-                        <a href="#staff-access" onClick={() => setActiveSection('staff-access')}><span>Staff access</span><Status enabled={drafts.general.staffRoleIds.length > 0}>{drafts.general.staffRoleIds.length ? 'Configured' : 'Required'}</Status></a>
-                        <a href="#logging" onClick={() => setActiveSection('logging')}><span>Logging</span><Status enabled={configuredLogs > 0}>{configuredLogs ? `${configuredLogs} channels` : 'Required'}</Status></a>
-                        <a href="#automod" onClick={() => setActiveSection('automod')}><span>Message protection</span><Status enabled={drafts.automod.enabled}>{drafts.automod.enabled ? 'Enabled' : 'Optional'}</Status></a>
+                        <a href="#staff-access" onClick={() => setActiveSection('staff-access')}><span>Staff permissions</span><Status enabled={drafts.general.staffRoleIds.length > 0}>{drafts.general.staffRoleIds.length ? 'Configured' : 'Required'}</Status></a>
+                        <a href="#logging" onClick={() => setActiveSection('logging')}><span>Action log</span><Status enabled={configuredLogs > 0}>{configuredLogs ? `${configuredLogs} channels` : 'Required'}</Status></a>
+                        <a href="#automod" onClick={() => setActiveSection('automod')}><span>AutoMod</span><Status enabled={drafts.automod.enabled}>{drafts.automod.enabled ? 'Enabled' : 'Optional'}</Status></a>
                         <a href="#verification" onClick={() => setActiveSection('verification')}><span>Verification</span><Status enabled={drafts.verification.enabled}>{drafts.verification.enabled ? 'Enabled' : 'Optional'}</Status></a>
                       </div>
                     </div>
@@ -350,13 +361,14 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                       </div>
                     </div>
                   </div>
+                  </SettingsDisclosure>
                 </div>
               </section>
             )}
 
             {activeSection === 'activity' && (
               <section className="card settings-section" id="activity">
-                <div className="settings-header"><div><span className="settings-kicker">Accountability</span><h2>Activity Centre</h2><p>Investigate configuration, moderation and security activity in one auditable timeline.</p></div><span className="record-count">{filteredActivity.length} shown</span></div>
+                <div className="settings-header"><div><span className="settings-kicker">Accountability</span><h2>Activity log</h2><p>Review configuration, moderation and security activity in one audit trail.</p></div><span className="record-count">{filteredActivity.length} shown</span></div>
                 <div className="settings-body record-section">
                   <div className="activity-filters"><Select label="Area" value={activityCategory} onChange={setActivityCategory}><option value="">All activity</option><option value="configuration">Configuration</option><option value="logging">Logging</option><option value="moderation">Moderation</option><option value="security">Security</option></Select><Text label="Search activity" value={activityQuery} onChange={setActivityQuery} placeholder="Actor, action or detail" /></div>
                   {filteredActivity.length ? <div className="record-table-wrap"><table className="record-table activity-table"><thead><tr><th>When</th><th>Person</th><th>Area</th><th>Change</th></tr></thead><tbody>{filteredActivity.map(item => <tr key={item.id}><td><time>{formatDate(item.createdAt)}</time></td><td><strong>{item.actorName || 'System'}</strong><br /><span className="mono">{item.actorId || '—'}</span></td><td><span className="record-status closed">{titleCase(item.category)}</span></td><td className="record-reason"><strong>{titleCase(item.action)}</strong><br />{item.summary || 'Activity recorded.'}</td></tr>)}</tbody></table></div> : <div className="empty-state"><strong>No matching activity</strong><p>Adjust the area or search filters to review another part of the investigation trail.</p></div>}
@@ -385,7 +397,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'policies' && (
-              <SettingsSection id="policies" title="Escalation policy" description="Build a consequence ladder from staff-issued warnings—not from message-time filters." guildId={guildId} csrf={session.csrf} section="moderation" data={drafts.moderation} headerControl={<ModuleToggle label="Enable escalation policy" checked={drafts.moderation.escalation.enabled} onChange={value => set('moderation', data => (data.escalation.enabled = value, data))} />}>
+              <SettingsSection id="policies" title="Warning actions" description="Set automatic consequences when staff warnings add up. AutoMod actions are managed separately." guildId={guildId} csrf={session.csrf} section="moderation" data={drafts.moderation} headerControl={<ModuleToggle label="Enable warning actions" checked={drafts.moderation.escalation.enabled} onChange={value => set('moderation', data => (data.escalation.enabled = value, data))} />}>
                 <div className="discipline-intro"><span className="workspace-summary-label">How it works</span><strong>Staff warning <i aria-hidden="true">→</i> warning count <i aria-hidden="true">→</i> consequence</strong><p>Only a staff member using <code>/mod warn</code> advances this ladder. AutoMod can remove or act on a message immediately, but never triggers a discipline step.</p></div>
                 <div className="discipline-ladder">
                   <article className="discipline-step">
@@ -406,7 +418,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'staff-access' && (
-              <SettingsSection id="staff-access" title="Staff access" description="Choose who can moderate the server and who can change protected settings." guildId={guildId} csrf={session.csrf} section="general" data={drafts.general}>
+              <SettingsSection id="staff-access" title="Staff permissions" description="Choose which roles can use moderation commands and manage dashboard settings." guildId={guildId} csrf={session.csrf} section="general" data={drafts.general}>
                 <div className="form-grid">
                   <Multi label="Staff roles" help="Roles allowed to use staff-level commands." values={drafts.general.staffRoleIds} options={roles} onChange={value => set('general', data => (data.staffRoleIds = value, data))} />
                   <Multi label="Administrator roles" help="Roles allowed to change protected configuration." values={drafts.general.adminRoleIds} options={roles} onChange={value => set('general', data => (data.adminRoleIds = value, data))} />
@@ -420,28 +432,32 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                 <div className="command-customisation-list">
                   <div className="notice">Command names must be lowercase and use letters, numbers, hyphens or underscores. Subcommands stay the same, so your team can change the top-level wording without losing functionality.</div>
                   {Object.entries(drafts.commands.overrides).map(([key, value]) => (
-                    <div className="command-customisation-row" key={key}>
-                      <div><strong>/{key}</strong><small>Top-level command</small></div>
-                      <Text label="Command name" value={value.name || key} onChange={next => set('commands', data => (data.overrides[key] = { ...data.overrides[key], name: next }, data))} />
-                      <Text label="Description" value={value.description || ''} onChange={next => set('commands', data => (data.overrides[key] = { ...data.overrides[key], description: next }, data))} />
-                      <Check label="Show in Discord" checked={value.enabled !== false} onChange={next => set('commands', data => (data.overrides[key] = { ...data.overrides[key], enabled: next }, data))} />
-                    </div>
+                    <details className="command-customisation-row" key={key}>
+                      <summary><span><strong>/{value.name || key}</strong><small>{value.enabled !== false ? 'Available in Discord' : 'Hidden from Discord'}</small></span><span>{value.enabled !== false ? 'Shown' : 'Hidden'}<i aria-hidden="true">⌄</i></span></summary>
+                      <div className="command-customisation-fields">
+                        <Text label="Command name" value={value.name || key} onChange={next => set('commands', data => (data.overrides[key] = { ...data.overrides[key], name: next }, data))} />
+                        <Text label="Description" value={value.description || ''} onChange={next => set('commands', data => (data.overrides[key] = { ...data.overrides[key], description: next }, data))} />
+                        <Check label="Show in Discord" checked={value.enabled !== false} onChange={next => set('commands', data => (data.overrides[key] = { ...data.overrides[key], enabled: next }, data))} />
+                      </div>
+                    </details>
                   ))}
                 </div>
               </SettingsSection>
             )}
 
             {activeSection === 'logging' && (
-              <SettingsSection id="logging" title="Logging" description="Send each type of server activity to the right staff channel." guildId={guildId} csrf={session.csrf} section="general" data={drafts.general}>
+              <SettingsSection id="logging" title="Action log" description="Route moderation, security and server events to the right staff channels." guildId={guildId} csrf={session.csrf} section="general" data={drafts.general}>
                 <div className="workspace-summary logging-summary"><div><span className="workspace-summary-label">Audit coverage</span><strong>{Object.values(drafts.general.logs).filter(Boolean).length}<small> / 6 routed</small></strong><p>Event families currently connected to a Discord channel.</p></div><div><span className="workspace-summary-label">Event types</span><strong>20+</strong><p>Member, message, server and moderation events.</p></div><div><span className="workspace-summary-label">Delivery</span><strong className={Object.values(drafts.general.logs).some(Boolean) ? 'summary-good' : 'summary-muted'}>{Object.values(drafts.general.logs).some(Boolean) ? 'Configured' : 'Not configured'}</strong><p>Logs are sent as staff-only embeds.</p></div></div>
                 <div className="log-coverage-grid">{Object.entries({ moderation: ['Moderation', 'Warnings, bans, kicks and case actions.'], security: ['Security', 'AutoMod, raid and anti-nuke events.'], messages: ['Messages', 'Deleted, edited and bulk-deleted messages.'], member: ['Members', 'Joins, leaves and role changes.'], server: ['Server', 'Channel and role changes.'], appeals: ['Appeals', 'Submissions and decisions.'] }).map(([group, [label, description]]) => <button type="button" className={`log-coverage-card ${activeLogGroup === group ? 'selected' : ''}`} onClick={() => { setActiveLogGroup(group); document.getElementById(`log-${group}`)?.focus(); }} key={group}><strong>{label}</strong><span>{description}</span></button>)}</div>
-                <div className="log-event-panel"><div><span className="workspace-summary-label">{activeLogGroup} events</span><p>Choose the actions routed to this category’s channel. Add an override only when one event needs a different channel.</p></div><div className="log-event-options">{(LOG_EVENT_OPTIONS[activeLogGroup] || []).map(([key, label]) => <div className="log-event-row" key={key}><Check label={label} checked={drafts.general.logEvents[activeLogGroup]?.length === 0 || drafts.general.logEvents[activeLogGroup]?.includes(key)} onChange={checked => set('general', data => { const current = data.logEvents[activeLogGroup] || []; data.logEvents[activeLogGroup] = checked ? [...new Set([...current, key])] : current.filter(value => value !== key); if (!checked) delete data.logEventChannels[activeLogGroup][key]; return data; })} /><ChannelSelect label="Override channel" value={drafts.general.logEventChannels[activeLogGroup]?.[key] || ''} channels={channels} onChange={value => set('general', data => { data.logEventChannels[activeLogGroup][key] = value; return data; })} /></div>)}</div></div>
+                <SettingsDisclosure title={`Choose ${titleCase(activeLogGroup)} events`} description="All events use this category’s channel by default. Expand only when an event needs a different destination.">
+                  <div className="log-event-options">{(LOG_EVENT_OPTIONS[activeLogGroup] || []).map(([key, label]) => <div className="log-event-row" key={key}><Check label={label} checked={drafts.general.logEvents[activeLogGroup]?.length === 0 || drafts.general.logEvents[activeLogGroup]?.includes(key)} onChange={checked => set('general', data => { const current = data.logEvents[activeLogGroup] || []; data.logEvents[activeLogGroup] = checked ? [...new Set([...current, key])] : current.filter(value => value !== key); if (!checked) delete data.logEventChannels[activeLogGroup][key]; return data; })} /><ChannelSelect label="Override channel" value={drafts.general.logEventChannels[activeLogGroup]?.[key] || ''} channels={channels} onChange={value => set('general', data => { data.logEventChannels[activeLogGroup][key] = value; return data; })} /></div>)}</div>
+                </SettingsDisclosure>
                 <div className="log-channel-panel"><div><span className="workspace-summary-label">{activeLogGroup} channel</span><p>Only {activeLogGroup} events will be sent here.</p>{logTestResult && <small className="log-test-result">{logTestResult}</small>}</div><div className="log-channel-actions"><ChannelSelect id={`log-${activeLogGroup}`} label={`${titleCase(activeLogGroup)} log channel`} value={drafts.general.logs[activeLogGroup]} channels={channels} onChange={value => set('general', data => (data.logs[activeLogGroup] = value, data))} /><button type="button" className="button ghost small" disabled={!drafts.general.logs[activeLogGroup] || logTestBusy} onClick={() => testLogDelivery(activeLogGroup)}>{logTestBusy ? 'Sending…' : 'Test delivery'}</button></div></div>
               </SettingsSection>
             )}
 
             {activeSection === 'member-messages' && (
-              <SettingsSection id="member-messages" title="Member messages" description="Control the messages sent when members join or leave." guildId={guildId} csrf={session.csrf} section="general" data={drafts.general}>
+              <SettingsSection id="member-messages" title="Welcome & goodbye" description="Choose what members see when they join or leave your server." guildId={guildId} csrf={session.csrf} section="general" data={drafts.general}>
                 <div className="split-settings">
                   <div className="setting-block">
                     <h3>Welcome message</h3>
@@ -460,7 +476,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'roles' && (
-              <SettingsSection id="roles" title="Roles" description="Assign roles automatically and restore selected roles when members rejoin." guildId={guildId} csrf={session.csrf} section="general" data={drafts.general}>
+              <SettingsSection id="roles" title="Role management" description="Assign roles automatically and restore selected roles when members rejoin." guildId={guildId} csrf={session.csrf} section="general" data={drafts.general}>
                 <div className="form-grid">
                   <Multi label="Auto roles" help="Free supports one role. Paid plans support up to ten." values={drafts.general.autoroles} options={roles} onChange={value => set('general', data => (data.autoroles = value, data))} />
                   <div>
@@ -472,7 +488,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'community' && (
-              <SettingsSection id="community" title="Community tools" description="Manage suggestions, appeals and the server starboard." guildId={guildId} csrf={session.csrf} section="general" data={drafts.general}>
+              <SettingsSection id="community" title="Community" description="Manage suggestions, appeals and your server starboard." guildId={guildId} csrf={session.csrf} section="general" data={drafts.general}>
                 <div className="split-settings three">
                   <div className="setting-block">
                     <h3>Suggestions</h3>
@@ -498,7 +514,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'automod' && (
-              <SettingsSection id="automod" title="Message screening" description="Stop risky content at the moment it is sent, before it reaches your community." guildId={guildId} csrf={session.csrf} section="automod" data={drafts.automod} headerControl={<ModuleToggle label="Enable message screening" checked={drafts.automod.enabled} onChange={value => set('automod', data => (data.enabled = value, data))} />}>
+              <SettingsSection id="automod" title="AutoMod" description="Screen risky messages as they are sent and apply an immediate response." guildId={guildId} csrf={session.csrf} section="automod" data={drafts.automod} headerControl={<ModuleToggle label="Enable AutoMod" checked={drafts.automod.enabled} onChange={value => set('automod', data => (data.enabled = value, data))} />}>
                 <div className="workspace-summary">
                   <div><span className="workspace-summary-label">Screening status</span><strong className={drafts.automod.enabled ? 'summary-good' : 'summary-muted'}>{drafts.automod.enabled ? 'Active' : 'Not active'}</strong><p>{drafts.automod.enabled ? 'Messages are checked before they remain visible.' : 'Turn screening on when you are ready to enforce message rules.'}</p></div>
                   <div><span className="workspace-summary-label">Message checks</span><strong>{[drafts.automod.antiInvites, drafts.automod.antiLinks, drafts.automod.antiSpam, drafts.automod.antiDuplicates, drafts.automod.antiMassMentions, drafts.automod.antiCaps].filter(Boolean).length}<small> / 6</small></strong><p>Content patterns currently monitored.</p></div>
@@ -523,26 +539,31 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                     <Text label="Timeout seconds" type="number" min="10" max="2419200" value={drafts.automod.timeoutSeconds} onChange={value => set('automod', data => (data.timeoutSeconds = value, data))} />
                   </div>
                 </div>
-                <div className="form-grid form-divider">
-                  <Text label="Maximum mentions" type="number" min="2" max="50" value={drafts.automod.maxMentions} onChange={value => set('automod', data => (data.maxMentions = value, data))} />
-                  <Text label="Spam messages" type="number" min="3" max="30" value={drafts.automod.spamMaxMessages} onChange={value => set('automod', data => (data.spamMaxMessages = value, data))} />
-                  <Text label="Spam window seconds" type="number" min="2" max="60" value={drafts.automod.spamWindowSeconds} onChange={value => set('automod', data => (data.spamWindowSeconds = value, data))} />
-                  <Text label="Duplicate limit" type="number" min="2" max="10" value={drafts.automod.duplicateMax} onChange={value => set('automod', data => (data.duplicateMax = value, data))} />
-                  <Area label="Blocked words" help="One entry per line." value={drafts.automod.blockedWords} onChange={value => set('automod', data => (data.blockedWords = value, data))} />
-                  <Area label="Allowed domains" help="One domain per line." value={drafts.automod.allowedDomains} onChange={value => set('automod', data => (data.allowedDomains = value, data))} />
-                  <Multi label="Exempt roles" values={drafts.automod.exemptRoleIds} options={roles} onChange={value => set('automod', data => (data.exemptRoleIds = value, data))} />
-                  <Multi label="Exempt channels" values={drafts.automod.exemptChannelIds} options={channels} onChange={value => set('automod', data => (data.exemptChannelIds = value, data))} />
-                </div>
-                <div className="form-divider rule-policy-grid">
-                  <div className="settings-subhead"><div><h3>Rule-specific handling</h3><p>Keep the default immediate response, or make a higher-risk message rule stricter and route it to a dedicated log channel.</p></div><span className="badge">Pro</span></div>
-                  {[['invites', 'Discord invites'], ['links', 'External links'], ['spam', 'Message spam'], ['duplicates', 'Repeated messages'], ['mentions', 'Mass mentions'], ['caps', 'Excessive capitals'], ['blockedWords', 'Blocked words']].map(([rule, label]) => <div className="rule-policy-row" key={rule}><strong>{label}</strong><Select label={`${label} action`} value={drafts.automod.ruleActions?.[rule] || 'inherit'} onChange={value => set('automod', data => (data.ruleActions[rule] = value, data))}><option value="inherit">Use global response</option><option value="delete">Delete only</option><option value="warn">Delete and warn</option><option value="timeout">Delete and timeout</option></Select><ChannelSelect label={`${label} log channel`} value={drafts.automod.ruleLogChannels?.[rule] || ''} channels={channels} onChange={value => set('automod', data => (data.ruleLogChannels[rule] = value, data))} /></div>)}
-                </div>
-                <div className="automod-test-panel form-divider"><div><span className="workspace-summary-label">Rule test</span><h3>Test saved direct-content rules</h3><p>Paste a sample message to check links, invites, blocked words, mentions and capitals without posting anything to Discord.</p></div><div><Area label="Sample message" value={automodTest} onChange={setAutomodTest} placeholder="Paste a message to evaluate…" /><button type="button" className="button secondary small" disabled={!automodTest.trim() || automodTestBusy} onClick={testAutomodRules}>{automodTestBusy ? 'Testing…' : 'Test message'}</button>{automodTestResult && <div className={`automod-test-result ${automodTestResult.error ? 'bad' : automodTestResult.detection ? 'matched' : 'clear'}`}>{automodTestResult.error ? automodTestResult.error : automodTestResult.detection ? <><strong>{titleCase(automodTestResult.detection.rule)} matched</strong><span>{automodTestResult.detection.reason} · saved action: {automodTestResult.action}</span></> : <><strong>No direct-content rule matched</strong><span>{automodTestResult.note}</span></>}</div>}</div></div>
+                <SettingsDisclosure title="Advanced AutoMod settings" description="Tune thresholds, word lists and exemptions only when the defaults need adjusting.">
+                  <div className="form-grid">
+                    <Text label="Maximum mentions" type="number" min="2" max="50" value={drafts.automod.maxMentions} onChange={value => set('automod', data => (data.maxMentions = value, data))} />
+                    <Text label="Spam messages" type="number" min="3" max="30" value={drafts.automod.spamMaxMessages} onChange={value => set('automod', data => (data.spamMaxMessages = value, data))} />
+                    <Text label="Spam window seconds" type="number" min="2" max="60" value={drafts.automod.spamWindowSeconds} onChange={value => set('automod', data => (data.spamWindowSeconds = value, data))} />
+                    <Text label="Duplicate limit" type="number" min="2" max="10" value={drafts.automod.duplicateMax} onChange={value => set('automod', data => (data.duplicateMax = value, data))} />
+                    <Area label="Blocked words" help="One entry per line." value={drafts.automod.blockedWords} onChange={value => set('automod', data => (data.blockedWords = value, data))} />
+                    <Area label="Allowed domains" help="One domain per line." value={drafts.automod.allowedDomains} onChange={value => set('automod', data => (data.allowedDomains = value, data))} />
+                    <Multi label="Exempt roles" values={drafts.automod.exemptRoleIds} options={roles} onChange={value => set('automod', data => (data.exemptRoleIds = value, data))} />
+                    <Multi label="Exempt channels" values={drafts.automod.exemptChannelIds} options={channels} onChange={value => set('automod', data => (data.exemptChannelIds = value, data))} />
+                  </div>
+                </SettingsDisclosure>
+                <SettingsDisclosure title="Per-rule actions" description="Override the default response or send a specific AutoMod rule to a dedicated channel." badge="Pro">
+                  <div className="rule-policy-grid">
+                    {[['invites', 'Discord invites'], ['links', 'External links'], ['spam', 'Message spam'], ['duplicates', 'Repeated messages'], ['mentions', 'Mass mentions'], ['caps', 'Excessive capitals'], ['blockedWords', 'Blocked words']].map(([rule, label]) => <div className="rule-policy-row" key={rule}><strong>{label}</strong><Select label={`${label} action`} value={drafts.automod.ruleActions?.[rule] || 'inherit'} onChange={value => set('automod', data => (data.ruleActions[rule] = value, data))}><option value="inherit">Use global response</option><option value="delete">Delete only</option><option value="warn">Delete and warn</option><option value="timeout">Delete and timeout</option></Select><ChannelSelect label={`${label} log channel`} value={drafts.automod.ruleLogChannels?.[rule] || ''} channels={channels} onChange={value => set('automod', data => (data.ruleLogChannels[rule] = value, data))} /></div>)}
+                  </div>
+                </SettingsDisclosure>
+                <SettingsDisclosure title="Test a message" description="Check how your saved direct-content rules respond before enabling them in Discord.">
+                  <div className="automod-test-panel"><div><span className="workspace-summary-label">Rule test</span><h3>Test saved direct-content rules</h3><p>Paste a sample message to check links, invites, blocked words, mentions and capitals without posting anything to Discord.</p></div><div><Area label="Sample message" value={automodTest} onChange={setAutomodTest} placeholder="Paste a message to evaluate…" /><button type="button" className="button secondary small" disabled={!automodTest.trim() || automodTestBusy} onClick={testAutomodRules}>{automodTestBusy ? 'Testing…' : 'Test message'}</button>{automodTestResult && <div className={`automod-test-result ${automodTestResult.error ? 'bad' : automodTestResult.detection ? 'matched' : 'clear'}`}>{automodTestResult.error ? automodTestResult.error : automodTestResult.detection ? <><strong>{titleCase(automodTestResult.detection.rule)} matched</strong><span>{automodTestResult.detection.reason} · saved action: {automodTestResult.action}</span></> : <><strong>No direct-content rule matched</strong><span>{automodTestResult.note}</span></>}</div>}</div></div>
+                </SettingsDisclosure>
               </SettingsSection>
             )}
 
             {activeSection === 'anti-raid' && (
-              <SettingsSection id="anti-raid" title="Anti-raid & Join Gate" description="Detect sudden join spikes and inspect risky accounts as they enter your server." guildId={guildId} csrf={session.csrf} section="security" data={drafts.security} headerControl={<ModuleToggle label="Enable anti-raid" detail={plan === 'free' ? 'Pro plan required' : 'Enable module'} checked={drafts.security.antiRaid.enabled} disabled={plan === 'free'} onChange={value => set('security', data => (data.antiRaid.enabled = value, data))} />} upgrade={plan === 'free' ? { plan: 'Pro', title: 'Turn on join protection', description: 'See how anti-raid thresholds and Join Gate work together, then activate the module for this server with ModerationDesk Pro.', href: proStore } : null}>
+              <SettingsSection id="anti-raid" title="Anti-Raid" description="Detect sudden join spikes and respond before a raid overwhelms your server." guildId={guildId} csrf={session.csrf} section="security" data={drafts.security} headerControl={<ModuleToggle label="Enable Anti-Raid" detail={plan === 'free' ? 'Pro plan required' : 'Enable module'} checked={drafts.security.antiRaid.enabled} disabled={plan === 'free'} onChange={value => set('security', data => (data.antiRaid.enabled = value, data))} />} upgrade={plan === 'free' ? { plan: 'Pro', title: 'Turn on Anti-Raid', description: 'See how raid detection and Join Gate work together, then activate the module for this server with ModerationDesk Pro.', href: proStore } : null}>
                 <div className="workspace-summary protection-summary"><div><span className="workspace-summary-label">Join protection</span><strong className={drafts.security.antiRaid.enabled ? 'summary-good' : 'summary-muted'}>{drafts.security.antiRaid.enabled ? 'Active' : 'Not active'}</strong><p>Protects the server when joins spike.</p></div><div><span className="workspace-summary-label">Trigger</span><strong>{drafts.security.antiRaid.joinThreshold}<small> joins / {drafts.security.antiRaid.windowSeconds}s</small></strong><p>Detection window.</p></div><div><span className="workspace-summary-label">Recovery</span><strong>{drafts.security.antiRaid.autoUnlockMinutes}<small> min</small></strong><p>Automatic unlock delay.</p></div></div>
                 <div className="form-grid form-divider">
                   <Text label="Join threshold" type="number" min="3" max="100" value={drafts.security.antiRaid.joinThreshold} onChange={value => set('security', data => (data.antiRaid.joinThreshold = value, data))} />
@@ -551,22 +572,23 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                   <Text label="Minimum account age days" type="number" min="0" max="3650" value={drafts.security.antiRaid.minimumAccountAgeDays} onChange={value => set('security', data => (data.antiRaid.minimumAccountAgeDays = value, data))} />
                   <RoleSelect label="Quarantine role" value={drafts.security.antiRaid.quarantineRoleId} roles={roles} onChange={value => set('security', data => (data.antiRaid.quarantineRoleId = value, data))} />
                 </div>
-                <div className="settings-subhead form-divider"><div><h3>Join Gate</h3><p>Apply a separate action to accounts that match your entry-risk policy, even when there is no join spike.</p></div><span className="badge">Pro</span></div>
-                <div className="workspace-summary join-gate-summary"><div><span className="workspace-summary-label">Gate status</span><strong className={drafts.security.joinGate.enabled ? 'summary-good' : 'summary-muted'}>{drafts.security.joinGate.enabled ? 'Active' : 'Not active'}</strong><p>Evaluated when a non-bot account joins.</p></div><div><span className="workspace-summary-label">Minimum age</span><strong>{drafts.security.joinGate.minimumAccountAgeDays}<small> days</small></strong><p>Accounts younger than this trigger the gate.</p></div><div><span className="workspace-summary-label">Response</span><strong>{titleCase(drafts.security.joinGate.action)}</strong><p>Applied when any selected signal matches.</p></div></div>
-                <Check label="Enable Join Gate" checked={drafts.security.joinGate.enabled} onChange={value => set('security', data => (data.joinGate.enabled = value, data))} />
-                <div className="form-grid form-divider">
-                  <Text label="Minimum account age days" type="number" min="0" max="3650" value={drafts.security.joinGate.minimumAccountAgeDays} onChange={value => set('security', data => (data.joinGate.minimumAccountAgeDays = value, data))} />
-                  <Select label="Join Gate action" value={drafts.security.joinGate.action} onChange={value => set('security', data => (data.joinGate.action = value, data))}><option value="quarantine">Quarantine</option><option value="timeout">Timeout</option><option value="kick">Kick</option><option value="ban">Ban</option></Select>
-                  <Text label="Timeout minutes" help="Used only when the Join Gate action is timeout." type="number" min="1" max="40320" value={drafts.security.joinGate.timeoutMinutes} onChange={value => set('security', data => (data.joinGate.timeoutMinutes = value, data))} />
-                  <RoleSelect label="Join Gate quarantine role" value={drafts.security.joinGate.quarantineRoleId} roles={roles} onChange={value => set('security', data => (data.joinGate.quarantineRoleId = value, data))} />
-                  <Area label="Blocked identity terms" help="One word or phrase per line. Names containing a term trigger the gate." value={drafts.security.joinGate.blockedTerms} onChange={value => set('security', data => (data.joinGate.blockedTerms = value, data))} />
-                  <div className="setting-block"><h3>Additional signal</h3><Check label="Require a custom avatar" checked={drafts.security.joinGate.requireAvatar} onChange={value => set('security', data => (data.joinGate.requireAvatar = value, data))} /></div>
-                </div>
+                <SettingsDisclosure title="Join Gate" description="Optionally screen individual accounts that match an entry-risk policy, even without a join spike." badge="Pro">
+                  <div className="workspace-summary join-gate-summary"><div><span className="workspace-summary-label">Gate status</span><strong className={drafts.security.joinGate.enabled ? 'summary-good' : 'summary-muted'}>{drafts.security.joinGate.enabled ? 'Active' : 'Not active'}</strong><p>Evaluated when a non-bot account joins.</p></div><div><span className="workspace-summary-label">Minimum age</span><strong>{drafts.security.joinGate.minimumAccountAgeDays}<small> days</small></strong><p>Accounts younger than this trigger the gate.</p></div><div><span className="workspace-summary-label">Response</span><strong>{titleCase(drafts.security.joinGate.action)}</strong><p>Applied when any selected signal matches.</p></div></div>
+                  <Check label="Enable Join Gate" checked={drafts.security.joinGate.enabled} onChange={value => set('security', data => (data.joinGate.enabled = value, data))} />
+                  <div className="form-grid form-divider">
+                    <Text label="Minimum account age days" type="number" min="0" max="3650" value={drafts.security.joinGate.minimumAccountAgeDays} onChange={value => set('security', data => (data.joinGate.minimumAccountAgeDays = value, data))} />
+                    <Select label="Join Gate action" value={drafts.security.joinGate.action} onChange={value => set('security', data => (data.joinGate.action = value, data))}><option value="quarantine">Quarantine</option><option value="timeout">Timeout</option><option value="kick">Kick</option><option value="ban">Ban</option></Select>
+                    <Text label="Timeout minutes" help="Used only when the Join Gate action is timeout." type="number" min="1" max="40320" value={drafts.security.joinGate.timeoutMinutes} onChange={value => set('security', data => (data.joinGate.timeoutMinutes = value, data))} />
+                    <RoleSelect label="Join Gate quarantine role" value={drafts.security.joinGate.quarantineRoleId} roles={roles} onChange={value => set('security', data => (data.joinGate.quarantineRoleId = value, data))} />
+                    <Area label="Blocked identity terms" help="One word or phrase per line. Names containing a term trigger the gate." value={drafts.security.joinGate.blockedTerms} onChange={value => set('security', data => (data.joinGate.blockedTerms = value, data))} />
+                    <div className="setting-block"><h3>Additional signal</h3><Check label="Require a custom avatar" checked={drafts.security.joinGate.requireAvatar} onChange={value => set('security', data => (data.joinGate.requireAvatar = value, data))} /></div>
+                  </div>
+                </SettingsDisclosure>
               </SettingsSection>
             )}
 
             {activeSection === 'anti-nuke' && (
-              <SettingsSection id="anti-nuke" title="Anti-nuke" description="Watch high-risk audit events, stop an executor and preserve a clear incident record." guildId={guildId} csrf={session.csrf} section="security" data={drafts.security} headerControl={<ModuleToggle label="Enable anti-nuke" detail={plan !== 'enterprise' ? 'Pro+ required' : 'Enable module'} checked={drafts.security.antiNuke.enabled} disabled={plan !== 'enterprise'} onChange={value => set('security', data => (data.antiNuke.enabled = value, data))} />} upgrade={plan !== 'enterprise' ? { plan: 'Pro+', title: 'Protect against destructive actions', description: 'Preview the containment, recovery and audit-response policy below. Upgrade this server to activate anti-nuke enforcement.', href: proPlusStore } : null}>
+              <SettingsSection id="anti-nuke" title="Anti-Nuke" description="Watch high-risk audit events, contain an executor and preserve a clear incident record." guildId={guildId} csrf={session.csrf} section="security" data={drafts.security} headerControl={<ModuleToggle label="Enable Anti-Nuke" detail={plan !== 'enterprise' ? 'Pro+ required' : 'Enable module'} checked={drafts.security.antiNuke.enabled} disabled={plan !== 'enterprise'} onChange={value => set('security', data => (data.antiNuke.enabled = value, data))} />} upgrade={plan !== 'enterprise' ? { plan: 'Pro+', title: 'Protect against destructive actions', description: 'Preview the containment, recovery and audit-response policy below. Upgrade this server to activate Anti-Nuke enforcement.', href: proPlusStore } : null}>
                 <div className="workspace-summary protection-summary"><div><span className="workspace-summary-label">Server integrity</span><strong className={drafts.security.antiNuke.enabled ? 'summary-good' : 'summary-muted'}>{drafts.security.antiNuke.enabled ? 'Protected' : 'Not protected'}</strong><p>Watches destructive changes and dangerous permission escalation.</p></div><div><span className="workspace-summary-label">Response</span><strong>{drafts.security.antiNuke.action === 'ban' ? 'Ban executor' : 'Strip roles'}</strong><p>Action taken when a policy threshold is reached.</p></div><div><span className="workspace-summary-label">Panic response</span><strong>{drafts.security.antiNuke.panicMode ? 'Lockdown' : 'Controlled'}</strong><p>{drafts.security.antiNuke.panicMode ? 'Immediately locks messaging as part of enforcement.' : 'Uses your configured containment policy.'}</p></div></div>
                 <div className="form-grid">
                   <div>
@@ -578,7 +600,8 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                   <Multi label="Trusted roles" values={drafts.security.antiNuke.trustedRoleIds} options={roles} onChange={value => set('security', data => (data.antiNuke.trustedRoleIds = value, data))} />
                   <RoleSelect label="Quarantine role" value={drafts.security.antiNuke.quarantineRoleId} roles={roles} onChange={value => set('security', data => (data.antiNuke.quarantineRoleId = value, data))} />
                 </div>
-                <div className="form-grid form-divider">
+                <SettingsDisclosure title="Detection thresholds" description="Set the number of actions allowed in the detection window before Anti-Nuke responds.">
+                <div className="form-grid">
                   <Text label="Detection window (seconds)" type="number" min="5" max="300" value={drafts.security.antiNuke.windowSeconds} onChange={value => set('security', data => (data.antiNuke.windowSeconds = value, data))} />
                   <Text label="Channel deletions" type="number" min="1" max="25" value={drafts.security.antiNuke.thresholds.channelDelete} onChange={value => set('security', data => (data.antiNuke.thresholds.channelDelete = value, data))} />
                   <Text label="Channel creations" type="number" min="1" max="50" value={drafts.security.antiNuke.thresholds.channelCreate} onChange={value => set('security', data => (data.antiNuke.thresholds.channelCreate = value, data))} />
@@ -591,6 +614,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                   <Text label="Bot additions" type="number" min="1" max="10" value={drafts.security.antiNuke.thresholds.botAdd} onChange={value => set('security', data => (data.antiNuke.thresholds.botAdd = value, data))} />
                   <Text label="Server setting changes" type="number" min="1" max="25" value={drafts.security.antiNuke.thresholds.guildUpdate} onChange={value => set('security', data => (data.antiNuke.thresholds.guildUpdate = value, data))} />
                 </div>
+                </SettingsDisclosure>
                 {plan !== 'enterprise' && <div className="notice form-divider">Anti-nuke enforcement is available on Pro+. Your settings will be kept if you configure them before upgrading.</div>}
               </SettingsSection>
             )}
