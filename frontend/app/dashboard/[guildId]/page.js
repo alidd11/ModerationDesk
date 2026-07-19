@@ -340,25 +340,26 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                     <article><span>Open appeals</span><strong>{openAppeals.length.toLocaleString()}</strong><small>Awaiting staff review</small></article>
                   </div>
 
-                  <div className="overview-columns">
-                    <div className="overview-panel stack-panel">
-                      <div className="panel-heading"><div><h3>Service health</h3><p>Connection status, permissions and role hierarchy.</p></div><Status enabled={health.connected}>{health.connected ? 'Connected' : 'Offline'}</Status></div>
-                      <div className="health-summary"><strong>{health.granted} / {health.total}</strong><span>required permissions granted</span></div>
-                      <div className="permission-grid">
-                        {health.permissions.map(permission => <span key={permission.name} className={permission.granted ? 'granted' : 'missing'}><i aria-hidden="true">{permission.granted ? '✓' : '!'}</i>{permission.name}</span>)}
+                  <div className="overview-details">
+                    <details className="overview-detail">
+                      <summary><span><strong>Service health</strong><small>Connection, permissions and role hierarchy</small></span><Status enabled={health.connected}>{health.connected ? 'Connected' : 'Offline'}</Status><i aria-hidden="true">⌄</i></summary>
+                      <div className="overview-detail-content">
+                        <div className="health-summary"><strong>{health.granted} / {health.total}</strong><span>required permissions granted</span></div>
+                        <div className="permission-grid">
+                          {health.permissions.map(permission => <span key={permission.name} className={permission.granted ? 'granted' : 'missing'}><i aria-hidden="true">{permission.granted ? '✓' : '!'}</i>{permission.name}</span>)}
+                        </div>
+                        {health.total > 0 && health.granted !== health.total && <div className="notice">Some features may fail until the missing Discord permissions are restored.</div>}
                       </div>
-                      {health.total > 0 && health.granted !== health.total && <div className="notice">Some features may fail until the missing Discord permissions are restored.</div>}
-                    </div>
-
-                    <div className="overview-panel stack-panel">
-                      <div className="panel-heading"><div><h3>Protection coverage</h3><p>Each layer can be configured independently.</p></div><span className="badge">{plan}</span></div>
-                      <div className="module-status-list">
+                    </details>
+                    <details className="overview-detail">
+                      <summary><span><strong>Protection coverage</strong><small>AutoMod, anti-raid, anti-nuke and verification</small></span><span className="badge">{plan}</span><i aria-hidden="true">⌄</i></summary>
+                      <div className="overview-detail-content module-status-list">
                         <a href="#automod" onClick={() => setActiveSection('automod')}><span><b>AutoMod</b><small>Message screening and immediate actions</small></span><Status enabled={drafts.automod.enabled}>{drafts.automod.enabled ? 'Enabled' : 'Disabled'}</Status></a>
                         <a href="#anti-raid" onClick={() => setActiveSection('anti-raid')}><span><b>Anti-Raid</b><small>Join-spike detection and quarantine</small></span><Status enabled={drafts.security.antiRaid.enabled}>{drafts.security.antiRaid.enabled ? 'Enabled' : 'Disabled'}</Status></a>
                         <a href="#anti-nuke" onClick={() => setActiveSection('anti-nuke')}><span><b>Anti-Nuke</b><small>Destructive-action response</small></span><Status enabled={drafts.security.antiNuke.enabled}>{drafts.security.antiNuke.enabled ? 'Enabled' : 'Disabled'}</Status></a>
                         <a href="#verification" onClick={() => setActiveSection('verification')}><span><b>Verification</b><small>Controlled member access</small></span><Status enabled={drafts.verification.enabled}>{drafts.verification.enabled ? 'Enabled' : 'Disabled'}</Status></a>
                       </div>
-                    </div>
+                    </details>
                   </div>
 
                   <SettingsDisclosure title="More workspace details" description="Review recent cases, configuration activity and readiness checks without leaving this page.">
@@ -414,8 +415,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
               <section className="card settings-section" id="cases">
                 <div className="settings-header"><div><span className="settings-kicker">Moderation</span><h2>Moderation cases</h2><p>Review the actions recorded for this server and the members involved.</p></div><span className="record-count">{records.cases.length} shown</span></div>
                 <div className="settings-body record-section">
-                  <div className="workspace-summary moderation-summary"><div><span className="workspace-summary-label">Recorded cases</span><strong>{records.cases.length}</strong><p>Recent moderation actions available in this workspace.</p></div><div><span className="workspace-summary-label">Active</span><strong>{records.cases.filter(item => item.active !== false).length}</strong><p>Cases still open in the audit trail.</p></div><div><span className="workspace-summary-label">Latest action</span><strong>{records.cases[0] ? titleCase(records.cases[0].action) : 'None yet'}</strong><p>{records.cases[0] ? formatDate(records.cases[0].createdAt) : 'Actions will appear here.'}</p></div></div>
-                  {records.cases.length ? <div className="record-table-wrap"><table className="record-table"><thead><tr><th>Case</th><th>Member</th><th>Action</th><th>Reason</th><th>Date</th><th>Status</th></tr></thead><tbody>{records.cases.map(item => <tr key={item.id}><td className="record-index">#{item.id}</td><td className="mono">{item.userId || '—'}</td><td><strong>{titleCase(item.action)}</strong></td><td className="record-reason">{item.reason || 'No reason supplied'}</td><td><time>{formatDate(item.createdAt)}</time></td><td><span className={`record-status ${item.active === false ? 'closed' : ''}`}>{item.active === false ? 'Voided' : 'Active'}</span></td></tr>)}</tbody></table></div> : <div className="empty-state"><strong>No cases recorded yet</strong><p>Warnings, timeouts, kicks and bans created through ModerationDesk will appear here.</p></div>}
+                  {records.cases.length ? <><div className="workspace-summary moderation-summary"><div><span className="workspace-summary-label">Recorded cases</span><strong>{records.cases.length}</strong><p>Recent moderation actions available in this workspace.</p></div><div><span className="workspace-summary-label">Active</span><strong>{records.cases.filter(item => item.active !== false).length}</strong><p>Cases still open in the audit trail.</p></div><div><span className="workspace-summary-label">Latest action</span><strong>{titleCase(records.cases[0].action)}</strong><p>{formatDate(records.cases[0].createdAt)}</p></div></div><div className="record-table-wrap"><table className="record-table"><thead><tr><th>Case</th><th>Member</th><th>Action</th><th>Reason</th><th>Date</th><th>Status</th></tr></thead><tbody>{records.cases.map(item => <tr key={item.id}><td className="record-index">#{item.id}</td><td className="mono">{item.userId || '—'}</td><td><strong>{titleCase(item.action)}</strong></td><td className="record-reason">{item.reason || 'No reason supplied'}</td><td><time>{formatDate(item.createdAt)}</time></td><td><span className={`record-status ${item.active === false ? 'closed' : ''}`}>{item.active === false ? 'Voided' : 'Active'}</span></td></tr>)}</tbody></table></div></> : <div className="empty-state cases-empty"><span className="empty-state-kicker">No moderation history</span><strong>No cases recorded yet</strong><p>Warnings, timeouts, kicks and bans will appear here as soon as your staff use ModerationDesk.</p><a href={`/${guildId ? `dashboard/${guildId}/` : 'dashboard/'}logging`} onClick={() => setActiveSection('logging')}>Set up event logging <span aria-hidden="true">→</span></a></div>}
                 </div>
               </section>
             )}
