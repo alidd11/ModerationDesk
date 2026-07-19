@@ -12,64 +12,54 @@ const plans = [
 ];
 
 const operationalPrinciples = [
-  ['01', 'Respond with context', 'Cases, staff actions and the relevant history stay connected, so moderators do not need to piece an incident together from multiple bots.'],
-  ['02', 'Configure protection deliberately', 'Message screening, raid response and destructive-action protection remain separate controls with a clear role for each.'],
-  ['03', 'Keep member access predictable', 'Verification, roles and appeals are part of the same workspace—not another set of disconnected workflows.']
+  ['01', 'See the whole incident', 'Cases, staff actions and the relevant history stay in one record, so a moderator can understand what happened without hunting through several bots.'],
+  ['02', 'Choose the right safeguard', 'Message screening, raid response and destructive-action protection are separate controls with a clear purpose and owner.'],
+  ['03', 'Give members a predictable route in', 'Verification, roles and appeals live alongside moderation—not as another disconnected workflow.']
 ];
 
 export default function Home() {
   return (
     <Shell>
-      <section className="home-hero">
-        <div className="hero-copy">
-          <span className="eyebrow"><i aria-hidden="true" /> MODERATIONDESK FOR DISCORD</span>
-          <h1>Moderation that holds up when the server gets busy.</h1>
-          <p>Give your team a clear view of cases, protection and member access—so they can respond with confidence and explain what happened later.</p>
-          <div className="hero-actions">
-            <a className="button button-large" href={botInviteUrl} target="_blank" rel="noreferrer">Install on Discord <span aria-hidden="true">→</span></a>
-            <a className="button ghost button-large" href="/dashboard">Open workspace</a>
+      <section className="landing-hero">
+        <div className="landing-hero-copy">
+          <div className="landing-overline"><span>ModerationDesk</span><i aria-hidden="true" /><span>A DeskLabs product</span></div>
+          <h1>A clearer way to run a Discord community.</h1>
+          <p>Moderation, prevention and member access in one operating workspace—so your team can act quickly and leave a record that makes sense later.</p>
+          <div className="landing-actions">
+            <a className="button button-large" href={botInviteUrl} target="_blank" rel="noreferrer">Add to Discord <span aria-hidden="true">→</span></a>
+            <Link className="landing-link" href="/dashboard">Explore the dashboard <span aria-hidden="true">→</span></Link>
           </div>
-          <div className="hero-assurances"><span>Secure Discord OAuth</span><span>No user tokens</span><span>Built-in data controls</span></div>
+          <dl className="landing-signals">
+            <div><dt>Built for</dt><dd>Staff teams</dd></div>
+            <div><dt>Identity</dt><dd>Discord OAuth</dd></div>
+            <div><dt>Data</dt><dd>Clear controls</dd></div>
+          </dl>
         </div>
 
-        <div className="dashboard-product-shot" aria-label="Illustrative ModerationDesk dashboard preview">
-          <div className="shot-topbar">
-            <div className="shot-brand"><Image src="/brand/moderationdesk-mark.png" width={28} height={28} alt="" /><span>ModerationDesk</span></div>
-            <span className="shot-preview-label">Product preview</span>
+        <div className="workspace-preview" aria-label="Illustrative ModerationDesk workspace preview">
+          <div className="workspace-preview-bar">
+            <div className="workspace-preview-brand"><Image src="/brand/moderationdesk-mark.png" width={28} height={28} alt="" /><span>ModerationDesk</span></div>
+            <span>LIVE WORKSPACE</span>
           </div>
-          <div className="shot-layout">
-            <aside className="shot-sidebar">
-              <small>SERVER</small>
-              <div className="active">Overview</div>
-              <small>SETUP</small>
-              <div>Staff access</div><div>Logging</div><div>Roles</div>
-              <small>PROTECTION</small>
-              <div>AutoMod</div><div>Anti-raid</div><div>Verification</div>
-            </aside>
-            <div className="shot-content">
-              <div className="shot-heading"><div><small>YOUR COMMUNITY</small><strong>Server overview</strong></div><span><i /> Connected</span></div>
-              <div className="shot-metrics">
-                <article><span>BOT PERMISSIONS</span><strong>8 / 8</strong><small>Ready</small></article>
-                <article><span>AUTOMOD</span><strong>On</strong><small>Message protection</small></article>
-                <article><span>VERIFICATION</span><strong>On</strong><small>Member access</small></article>
-              </div>
-              <div className="shot-panel">
-                <div className="shot-panel-head"><strong>Protection status</strong><small>Live configuration</small></div>
-                {[['AutoMod','Enabled'],['Anti-raid','Ready'],['Anti-nuke','Pro+'],['Verification','Enabled']].map(([name, state], index) => <div className="shot-row" key={name}><span><i className={index === 2 ? 'muted' : ''} />{name}</span><small>{state}</small></div>)}
-              </div>
+          <div className="workspace-preview-main">
+            <div className="workspace-preview-heading"><div><small>SERVER</small><strong>DeskLab</strong><span><i aria-hidden="true" /> Connected</span></div><button type="button">Open Discord ↗</button></div>
+            <div className="workspace-preview-score"><div><span>Workspace readiness</span><strong>4 of 5</strong></div><p>One essential control remains before this server is fully configured.</p></div>
+            <div className="workspace-preview-list">
+              {[['Staff access', 'Ready'], ['Event logging', 'Ready'], ['AutoMod', 'Set up'], ['Verification', 'Ready']].map(([name, state]) => <div key={name}><span><i className={state === 'Set up' ? 'pending' : ''} aria-hidden="true" />{name}</span><strong>{state}</strong></div>)}
             </div>
+            <div className="workspace-preview-event"><span>Latest activity</span><p><b>AutoMod</b> removed an invite link <small>8m ago</small></p></div>
           </div>
         </div>
       </section>
 
-      <section className="operating-principles" id="platform">
-        <div className="operating-principles-intro">
-          <span className="section-kicker">THE MODERATIONDESK APPROACH</span>
-          <h2>A calmer way to run a complex community.</h2>
-          <p>ModerationDesk is designed around the decisions your team makes every day, not a long list of disconnected features.</p>
-          <Link className="text-link" href="/platform/overview">Explore the platform <span aria-hidden="true">→</span></Link>
+      <section className="landing-approach" id="platform">
+        <div className="landing-approach-intro">
+          <span className="section-kicker">ONE WORKSPACE, NOT A BOT PILE</span>
+          <h2>Everything your staff needs to make the next good decision.</h2>
+          <p>ModerationDesk is organised around everyday operations—not a long command list, and not a collection of features that have to be stitched together.</p>
+          <Link className="landing-link" href="/platform/overview">See how it fits together <span aria-hidden="true">→</span></Link>
         </div>
-        <div className="operating-principles-list">
+        <div className="landing-approach-list">
           {operationalPrinciples.map(([number, title, description]) => <article key={number}><span>{number}</span><div><h3>{title}</h3><p>{description}</p></div></article>)}
         </div>
       </section>
@@ -93,9 +83,9 @@ export default function Home() {
         <div className="desklabs-product-points" aria-label="TicketDesk highlights"><span>Private support tickets</span><span>Structured staff workflows</span><span>Built for Discord communities</span></div>
       </section>
 
-      <section className="final-cta">
-        <div><span className="section-kicker">READY WHEN YOUR TEAM IS</span><h2>Bring your moderation workflow together.</h2><p>Set up the essential controls first, then scale protection as your community grows.</p></div>
-        <div className="hero-actions"><a className="button button-large" href={botInviteUrl} target="_blank" rel="noreferrer">Install on Discord <span aria-hidden="true">→</span></a><a className="button ghost button-large" href="/dashboard">Open workspace</a></div>
+      <section className="landing-close">
+        <div><span className="section-kicker">READY WHEN YOUR TEAM IS</span><h2>Set the essentials once. Run the server with confidence.</h2><p>Start with a dependable operational baseline, then add stronger protection as your community grows.</p></div>
+        <div className="landing-actions"><a className="button button-large" href={botInviteUrl} target="_blank" rel="noreferrer">Add to Discord <span aria-hidden="true">→</span></a><Link className="landing-link" href="/dashboard">Explore the dashboard <span aria-hidden="true">→</span></Link></div>
       </section>
     </Shell>
   );
