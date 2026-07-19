@@ -1,6 +1,6 @@
 export const dashboardNavigation = [
   {
-    label: 'Home',
+    label: 'Workspace',
     description: 'Your server at a glance',
     items: [
       { id: 'overview', label: 'Overview', keywords: 'home health status' },
@@ -26,7 +26,7 @@ export const dashboardNavigation = [
     ]
   },
   {
-    label: 'Server setup',
+    label: 'Configure',
     description: 'Access, behaviour and integrations',
     items: [
       { id: 'verification', label: 'Verification', keywords: 'member access oauth button' },

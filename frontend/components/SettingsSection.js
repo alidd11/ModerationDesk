@@ -37,7 +37,7 @@ export default function SettingsSection({ id, title, description, guildId, csrf,
   }
 
   return (
-    <section className={`card settings-section ${className}`} id={id}>
+    <section className={`settings-section ${className}`} id={id}>
       <div className="settings-header">
         <div>
           <h2>{title}</h2>
