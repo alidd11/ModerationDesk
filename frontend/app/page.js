@@ -88,6 +88,18 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="desklabs-product" aria-labelledby="ticketdesk-title">
+        <div>
+          <span className="section-kicker">ANOTHER DESKLABS PRODUCT</span>
+          <h2 id="ticketdesk-title">Support conversations deserve the same clarity.</h2>
+        </div>
+        <div className="desklabs-product-copy">
+          <p>TicketDesk gives Discord teams a focused support workspace for private tickets, structured hand-offs and clear customer history.</p>
+          <a className="text-link" href="https://ticketdesk.tech/" target="_blank" rel="noreferrer">Explore TicketDesk <span aria-hidden="true">↗</span></a>
+        </div>
+        <div className="desklabs-product-points" aria-label="TicketDesk highlights"><span>Private support tickets</span><span>Structured staff workflows</span><span>Built for Discord communities</span></div>
+      </section>
+
       <section className="final-cta">
         <div><span className="section-kicker">READY WHEN YOUR TEAM IS</span><h2>Bring your moderation workflow together.</h2><p>Set up the essential controls first, then scale protection as your community grows.</p></div>
         <div className="hero-actions"><a className="button button-large" href={botInviteUrl} target="_blank" rel="noreferrer">Add ModerationDesk <span aria-hidden="true">→</span></a><a className="button ghost button-large" href="/dashboard">View your workspace</a></div>
