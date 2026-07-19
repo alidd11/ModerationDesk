@@ -1,7 +1,7 @@
 export const dashboardNavigation = [
   {
-    label: 'Workspace',
-    description: 'Monitor your server',
+    label: 'Home',
+    description: 'Your server at a glance',
     items: [
       { id: 'overview', label: 'Overview', keywords: 'home health status' },
       { id: 'activity', label: 'Activity log', keywords: 'history audit timeline events' }
@@ -9,11 +9,11 @@ export const dashboardNavigation = [
   },
   {
     label: 'Moderation',
-    description: 'Review people and actions',
+    description: 'People, cases and policies',
     items: [
       { id: 'cases', label: 'Cases', keywords: 'warnings punishments history' },
       { id: 'appeals', label: 'Appeals', keywords: 'member review decisions' },
-      { id: 'policies', label: 'Warning actions', keywords: 'staff warnings timeout kick ban repeat behaviour ladder' }
+      { id: 'policies', label: 'Escalation policy', keywords: 'staff warnings timeout kick ban repeat behaviour ladder' }
     ]
   },
   {
@@ -26,27 +26,21 @@ export const dashboardNavigation = [
     ]
   },
   {
-    label: 'Configure',
-    description: 'Access and server setup',
+    label: 'Server setup',
+    description: 'Access, behaviour and integrations',
     items: [
       { id: 'verification', label: 'Verification', keywords: 'member access oauth button' },
-      { id: 'staff-access', label: 'Staff permissions', keywords: 'moderators administrators permissions' },
-      { id: 'roles', label: 'Role management', keywords: 'autoroles sticky roles member roles' },
+      { id: 'staff-access', label: 'Staff access', keywords: 'moderators administrators permissions' },
+      { id: 'roles', label: 'Roles & automation', keywords: 'autoroles sticky roles member roles' },
       { id: 'commands', label: 'Commands', keywords: 'slash rename hide customise' },
       { id: 'migration', label: 'Migration', keywords: 'server move role restore oauth continuity', plan: 'Pro+' },
-      { id: 'logging', label: 'Action log', keywords: 'log channels events audit' },
-      { id: 'member-messages', label: 'Welcome & goodbye', keywords: 'welcome goodbye greeting' }
+      { id: 'logging', label: 'Logging', keywords: 'log channels events audit' },
+      { id: 'member-messages', label: 'Welcome & goodbye', keywords: 'welcome goodbye greeting' },
+      { id: 'community', label: 'Community tools', keywords: 'suggestions polls giveaways starboard' }
     ]
   },
   {
-    label: 'Community',
-    description: 'Member-facing features',
-    items: [
-      { id: 'community', label: 'Community', keywords: 'suggestions polls giveaways starboard' }
-    ]
-  },
-  {
-    label: 'Manage',
+    label: 'Account',
     description: 'Plan and data controls',
     items: [
       { id: 'billing', label: 'Billing', keywords: 'subscription premium pro pro plus discord billing' },
