@@ -311,7 +311,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             {activeSection === 'overview' && (
               <section className="card dashboard-overview" id="overview">
                 <div className="settings-header">
-                  <div><span className="settings-kicker">Server overview</span><h2>Operations at a glance</h2><p>Monitor service health, protection coverage and recent moderation activity from one place.</p></div>
+                  <div><span className="settings-kicker">Server overview</span><h2>Server overview</h2><p>See what needs attention, check bot health and review recent moderation activity.</p></div>
                   <div className="setup-score"><span>{setupProgress}%</span><small>configured</small></div>
                 </div>
                 <div className="settings-body">
@@ -359,7 +359,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                       </div>
                     </div>
                     <div className="overview-panel stack-panel">
-                      <div className="panel-heading"><div><h3>Setup progress</h3><p>The essential controls for a working moderation setup.</p></div><strong>{setupSignals.filter(Boolean).length}/{setupSignals.length}</strong></div>
+                      <div className="panel-heading"><div><h3>Setup progress</h3><p>The essential controls your server still needs.</p></div><strong>{setupSignals.filter(Boolean).length}/{setupSignals.length}</strong></div>
                       <div className="setup-progress"><i style={{ width: `${setupProgress}%` }} /></div>
                       <div className="setup-checks">
                         <a href="#staff-access" onClick={() => setActiveSection('staff-access')}><span>Staff permissions</span><Status enabled={drafts.general.staffRoleIds.length > 0}>{drafts.general.staffRoleIds.length ? 'Configured' : 'Required'}</Status></a>
@@ -390,7 +390,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
 
             {activeSection === 'activity' && (
               <section className="settings-section" id="activity">
-                <div className="settings-header"><div><span className="settings-kicker">Accountability</span><h2>Audit trail</h2><p>Search configuration, moderation and security activity in one complete record.</p></div><span className="record-count">{filteredActivity.length} shown</span></div>
+                <div className="settings-header"><div><span className="settings-kicker">Accountability</span><h2>Audit trail</h2><p>Review configuration, moderation and security changes in one timeline.</p></div><span className="record-count">{filteredActivity.length} shown</span></div>
                 <div className="settings-body record-section">
                   <div className="activity-filters"><Select label="Area" value={activityCategory} onChange={setActivityCategory}><option value="">All activity</option><option value="configuration">Configuration</option><option value="logging">Logging</option><option value="moderation">Moderation</option><option value="security">Security</option></Select><Text label="Search activity" value={activityQuery} onChange={setActivityQuery} placeholder="Actor, action or detail" /></div>
                   {filteredActivity.length ? <div className="record-table-wrap"><table className="record-table activity-table"><thead><tr><th>When</th><th>Person</th><th>Area</th><th>Change</th></tr></thead><tbody>{filteredActivity.map(item => <tr key={item.id}><td><time>{formatDate(item.createdAt)}</time></td><td><strong>{item.actorName || 'System'}</strong><br /><span className="mono">{item.actorId || '—'}</span></td><td><span className="record-status closed">{titleCase(item.category)}</span></td><td className="record-reason"><strong>{titleCase(item.action)}</strong><br />{item.summary || 'Activity recorded.'}</td></tr>)}</tbody></table></div> : <div className="empty-state"><strong>No matching activity</strong><p>Adjust the area or search filters to review another part of the investigation trail.</p></div>}
@@ -400,7 +400,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
 
             {activeSection === 'cases' && (
               <section className="settings-section" id="cases">
-                <div className="settings-header"><div><span className="settings-kicker">Moderation</span><h2>Moderation cases</h2><p>Review the actions recorded for this server and the members involved.</p></div><span className="record-count">{records.cases.length} shown</span></div>
+                <div className="settings-header"><div><span className="settings-kicker">Moderation</span><h2>Moderation cases</h2><p>Review each action, its reason and the member it applies to.</p></div><span className="record-count">{records.cases.length} shown</span></div>
                 <div className="settings-body record-section">
                   {records.cases.length ? <><div className="workspace-summary moderation-summary"><div><span className="workspace-summary-label">Recorded cases</span><strong>{records.cases.length}</strong><p>Recent moderation actions available in this workspace.</p></div><div><span className="workspace-summary-label">Active</span><strong>{records.cases.filter(item => item.active !== false).length}</strong><p>Cases still open in the audit trail.</p></div><div><span className="workspace-summary-label">Latest action</span><strong>{titleCase(records.cases[0].action)}</strong><p>{formatDate(records.cases[0].createdAt)}</p></div></div><div className="record-table-wrap"><table className="record-table"><thead><tr><th>Case</th><th>Member</th><th>Action</th><th>Reason</th><th>Date</th><th>Status</th></tr></thead><tbody>{records.cases.map(item => <tr key={item.id}><td className="record-index">#{item.id}</td><td className="mono">{item.userId || '—'}</td><td><strong>{titleCase(item.action)}</strong></td><td className="record-reason">{item.reason || 'No reason supplied'}</td><td><time>{formatDate(item.createdAt)}</time></td><td><span className={`record-status ${item.active === false ? 'closed' : ''}`}>{item.active === false ? 'Voided' : 'Active'}</span></td></tr>)}</tbody></table></div></> : <div className="empty-state cases-empty"><span className="empty-state-kicker">No moderation history</span><strong>No cases recorded yet</strong><p>Warnings, timeouts, kicks and bans will appear here as soon as your staff use ModerationDesk.</p><a href={`/${guildId ? `dashboard/${guildId}/` : 'dashboard/'}logging`} onClick={() => setActiveSection('logging')}>Set up event logging <span aria-hidden="true">→</span></a></div>}
                 </div>
@@ -409,7 +409,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
 
             {activeSection === 'appeals' && (
               <section className="settings-section" id="appeals">
-                <div className="settings-header"><div><span className="settings-kicker">Moderation</span><h2>Appeal queue</h2><p>Review member appeals submitted through your public Discord form.</p></div><span className="record-count">{openAppeals.length} open</span></div>
+                <div className="settings-header"><div><span className="settings-kicker">Moderation</span><h2>Appeal queue</h2><p>Review and resolve appeals submitted through your public form.</p></div><span className="record-count">{openAppeals.length} open</span></div>
                 <div className="settings-body record-section">
                   <div className="data-action appeal-page-link"><div><h3>Public appeal form</h3><p>Share this page with members who need to appeal a moderation action.</p></div><a className="button ghost small" href={guild.appealUrl} target="_blank" rel="noreferrer">Open public page</a></div>
                   {records.appeals.length ? <div className="record-table-wrap appeals-table"><table className="record-table"><thead><tr><th>Appeal</th><th>Member</th><th>Case</th><th>Reason</th><th>Submitted</th><th>Status</th></tr></thead><tbody>{records.appeals.map(item => <tr key={item.id}><td className="record-index mono">{item.id}</td><td className="mono">{item.userId || '—'}</td><td>{item.caseId ? `#${item.caseId}` : '—'}</td><td className="record-reason">{item.reason || 'No reason supplied'}</td><td><time>{formatDate(item.createdAt)}</time></td><td><span className={`record-status ${item.status !== 'open' ? 'closed' : ''}`}>{titleCase(item.status)}</span></td></tr>)}</tbody></table></div> : <div className="empty-state"><strong>No appeals submitted</strong><p>New appeals will appear here when the public appeal form is enabled.</p></div>}
@@ -418,7 +418,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'policies' && (
-              <SettingsSection id="policies" title="Escalation policy" description="Set consistent consequences when staff warnings accumulate. AutoMod is managed separately." guildId={guildId} csrf={session.csrf} section="moderation" data={drafts.moderation} headerControl={<ModuleToggle label="Enable escalation policy" checked={drafts.moderation.escalation.enabled} onChange={value => set('moderation', data => (data.escalation.enabled = value, data))} />}>
+              <SettingsSection id="policies" title="Escalation policy" description="Choose the consequences for repeat staff warnings. AutoMod rules stay separate." guildId={guildId} csrf={session.csrf} section="moderation" data={drafts.moderation} headerControl={<ModuleToggle label="Enable escalation policy" checked={drafts.moderation.escalation.enabled} onChange={value => set('moderation', data => (data.escalation.enabled = value, data))} />}>
                 <div className="discipline-intro"><span className="workspace-summary-label">How it works</span><strong>Staff warning <i aria-hidden="true">→</i> warning count <i aria-hidden="true">→</i> consequence</strong><p>Only a staff member using <code>/mod warn</code> advances this ladder. AutoMod can remove or act on a message immediately, but never triggers a discipline step.</p></div>
                 <div className="discipline-ladder">
                   <article className="discipline-step">
@@ -439,7 +439,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'staff-access' && (
-              <SettingsSection id="staff-access" title="Staff access" description="Choose which roles can use moderation commands and manage protected settings." guildId={guildId} csrf={session.csrf} section="general" data={drafts.general}>
+              <SettingsSection id="staff-access" title="Staff access" description="Choose who can moderate members and who can change protected settings." guildId={guildId} csrf={session.csrf} section="general" data={drafts.general}>
                 <div className="form-grid">
                   <Multi label="Staff roles" help="Roles allowed to use staff-level commands." values={drafts.general.staffRoleIds} options={roles} onChange={value => set('general', data => (data.staffRoleIds = value, data))} />
                   <Multi label="Administrator roles" help="Roles allowed to change protected configuration." values={drafts.general.adminRoleIds} options={roles} onChange={value => set('general', data => (data.adminRoleIds = value, data))} />
@@ -449,7 +449,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'commands' && (
-              <SettingsSection id="commands" title="Command management" description="Rename, describe or hide ModerationDesk commands for this server. Changes apply only to this Discord server." guildId={guildId} csrf={session.csrf} section="commands" data={drafts.commands}>
+              <SettingsSection id="commands" title="Command management" description="Change how ModerationDesk commands appear in this server. These changes affect this server only." guildId={guildId} csrf={session.csrf} section="commands" data={drafts.commands}>
                 <div className="command-customisation-list">
                   <div className="notice">Command names must be lowercase and use letters, numbers, hyphens or underscores. Subcommands stay the same, so your team can change the top-level wording without losing functionality.</div>
                   {Object.entries(drafts.commands.overrides).map(([key, value]) => (
@@ -467,7 +467,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'logging' && (
-              <SettingsSection id="logging" className="module-surface audit-surface" title="Event logging" description="Choose what gets recorded and where your staff sees it." guildId={guildId} csrf={session.csrf} section="general" data={drafts.general}>
+              <SettingsSection id="logging" className="module-surface audit-surface" title="Event logging" description="Choose which events are recorded and where your team receives them." guildId={guildId} csrf={session.csrf} section="general" data={drafts.general}>
                 <div className="workspace-summary logging-summary"><div><span className="workspace-summary-label">Coverage</span><strong>{Object.values(drafts.general.logs).filter(Boolean).length}<small> of 6 areas</small></strong><p>Connected to a staff channel.</p></div><div><span className="workspace-summary-label">Events available</span><strong>20+</strong><p>Moderation, security and server activity.</p></div><div><span className="workspace-summary-label">Delivery</span><strong className={Object.values(drafts.general.logs).some(Boolean) ? 'summary-good' : 'summary-muted'}>{Object.values(drafts.general.logs).some(Boolean) ? 'Ready' : 'Needs a channel'}</strong><p>Sent in clear staff-only embeds.</p></div></div>
                 <div className="log-coverage-grid" aria-label="Log category">{Object.entries({ moderation: ['Moderation', 'Warnings, bans, kicks and case actions.'], security: ['Security', 'AutoMod, raid and anti-nuke events.'], messages: ['Messages', 'Deleted, edited and bulk-deleted messages.'], member: ['Members', 'Joins, leaves and role changes.'], server: ['Server', 'Channel and role changes.'], appeals: ['Appeals', 'Submissions and decisions.'] }).map(([group, [label, description]]) => <button type="button" aria-pressed={activeLogGroup === group} className={`log-coverage-card ${activeLogGroup === group ? 'selected' : ''}`} onClick={() => { setActiveLogGroup(group); document.getElementById(`log-${group}`)?.focus(); }} key={group}><strong>{label}</strong><span>{description}</span></button>)}</div>
                 <div className="log-channel-panel"><div><span className="workspace-summary-label">{titleCase(activeLogGroup)} destination</span><h3>{titleCase(activeLogGroup)} log channel</h3><p>All enabled {activeLogGroup} events are sent here unless you set an override below.</p>{logTestResult && <small className="log-test-result">{logTestResult}</small>}</div><div className="log-channel-actions"><ChannelSelect id={`log-${activeLogGroup}`} label="Discord channel" value={drafts.general.logs[activeLogGroup]} channels={channels} onChange={value => set('general', data => (data.logs[activeLogGroup] = value, data))} /><button type="button" className="button ghost small" disabled={!drafts.general.logs[activeLogGroup] || logTestBusy} onClick={() => testLogDelivery(activeLogGroup)}>{logTestBusy ? 'Sending…' : 'Send test'}</button></div></div>
@@ -479,7 +479,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'member-messages' && (
-              <SettingsSection id="member-messages" title="Member messages" description="Choose what members see when they join or leave your server." guildId={guildId} csrf={session.csrf} section="general" data={drafts.general}>
+              <SettingsSection id="member-messages" title="Member messages" description="Set the messages members see when they join or leave your server." guildId={guildId} csrf={session.csrf} section="general" data={drafts.general}>
                 <div className="split-settings">
                   <div className="setting-block">
                     <h3>Welcome message</h3>
@@ -510,7 +510,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'community' && (
-              <SettingsSection id="community" title="Community tools" description="Manage suggestions, appeals and your server starboard." guildId={guildId} csrf={session.csrf} section="general" data={drafts.general}>
+              <SettingsSection id="community" title="Community tools" description="Set up suggestions, appeals and a starboard without adding another bot." guildId={guildId} csrf={session.csrf} section="general" data={drafts.general}>
                 <div className="community-disclosures">
                   <SettingsDisclosure title="Suggestions" description="Collect member ideas in a dedicated channel.">
                     <Check label="Enable suggestions" checked={drafts.general.suggestions.enabled} onChange={value => set('general', data => (data.suggestions.enabled = value, data))} />
@@ -533,7 +533,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'automod' && (
-              <SettingsSection id="automod" className="module-surface automod-surface" title="AutoMod" description="Screen risky messages as they are sent and apply an immediate response." guildId={guildId} csrf={session.csrf} section="automod" data={drafts.automod} headerControl={<ModuleToggle label="Enable AutoMod" checked={drafts.automod.enabled} onChange={value => set('automod', data => (data.enabled = value, data))} />}>
+              <SettingsSection id="automod" className="module-surface automod-surface" title="AutoMod" description="Block risky messages with rules your team can understand and control." guildId={guildId} csrf={session.csrf} section="automod" data={drafts.automod} headerControl={<ModuleToggle label="Enable AutoMod" checked={drafts.automod.enabled} onChange={value => set('automod', data => (data.enabled = value, data))} />}>
                 <div className="module-status-line"><span><b>Status</b><strong className={drafts.automod.enabled ? 'summary-good' : 'summary-muted'}>{drafts.automod.enabled ? 'Active' : 'Not active'}</strong></span><span><b>Checks</b><strong>{[drafts.automod.antiInvites, drafts.automod.antiLinks, drafts.automod.antiSpam, drafts.automod.antiDuplicates, drafts.automod.antiMassMentions, drafts.automod.antiCaps].filter(Boolean).length} of 6</strong></span><span><b>Response</b><strong>{drafts.automod.action === 'delete' ? 'Remove only' : drafts.automod.action === 'warn' ? 'Remove + warn' : 'Remove + timeout'}</strong></span></div>
                 <div className="automod-boundary"><span>AutoMod acts on a message immediately. Use <a href={`/${guildId ? `dashboard/${guildId}/` : 'dashboard/'}policies`}>Warning actions</a> for consequences after staff warnings.</span></div>
                 <SettingsDisclosure title="Quick setup" description="Choose a policy, decide what to scan and set the immediate response." badge="Recommended">
@@ -580,7 +580,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'anti-raid' && (
-              <SettingsSection id="anti-raid" className="module-surface security-surface anti-raid-surface" title="Anti-Raid" description="Detect sudden join spikes and respond before a raid overwhelms your server." guildId={guildId} csrf={session.csrf} section="security" data={drafts.security} headerControl={<ModuleToggle label="Enable Anti-Raid" detail={plan === 'free' ? 'Pro plan required' : 'Enable module'} checked={drafts.security.antiRaid.enabled} disabled={plan === 'free'} onChange={value => set('security', data => (data.antiRaid.enabled = value, data))} />} upgrade={plan === 'free' ? { plan: 'Pro', title: 'Turn on Anti-Raid', description: 'See how raid detection and Join Gate work together, then activate the module for this server with ModerationDesk Pro.', href: proStore } : null}>
+              <SettingsSection id="anti-raid" className="module-surface security-surface anti-raid-surface" title="Anti-Raid" description="Spot unusual join spikes and protect your server before staff are overwhelmed." guildId={guildId} csrf={session.csrf} section="security" data={drafts.security} headerControl={<ModuleToggle label="Enable Anti-Raid" detail={plan === 'free' ? 'Pro plan required' : 'Enable module'} checked={drafts.security.antiRaid.enabled} disabled={plan === 'free'} onChange={value => set('security', data => (data.antiRaid.enabled = value, data))} />} upgrade={plan === 'free' ? { plan: 'Pro', title: 'Turn on Anti-Raid', description: 'See how raid detection and Join Gate work together, then activate this protection for your server with ModerationDesk Pro.', href: proStore } : null}>
                 <div className="module-status-line"><span><b>Status</b><strong className={drafts.security.antiRaid.enabled ? 'summary-good' : 'summary-muted'}>{drafts.security.antiRaid.enabled ? 'Active' : 'Not active'}</strong></span><span><b>Trigger</b><strong>{drafts.security.antiRaid.joinThreshold} joins / {drafts.security.antiRaid.windowSeconds}s</strong></span><span><b>Recovery</b><strong>{drafts.security.antiRaid.autoUnlockMinutes} minutes</strong></span></div>
                 <div className="module-configuration-grid form-divider">
                   <section className="module-configuration-group"><div className="module-configuration-head"><h3>Detection</h3><p>Define the join spike that needs attention.</p></div><div className="form-grid"><Text label="Join threshold" type="number" min="3" max="100" value={drafts.security.antiRaid.joinThreshold} onChange={value => set('security', data => (data.antiRaid.joinThreshold = value, data))} /><Text label="Window seconds" type="number" min="5" max="300" value={drafts.security.antiRaid.windowSeconds} onChange={value => set('security', data => (data.antiRaid.windowSeconds = value, data))} /><Text label="Minimum account age days" type="number" min="0" max="3650" value={drafts.security.antiRaid.minimumAccountAgeDays} onChange={value => set('security', data => (data.antiRaid.minimumAccountAgeDays = value, data))} /></div></section>
@@ -602,7 +602,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'anti-nuke' && (
-              <SettingsSection id="anti-nuke" className="module-surface security-surface anti-nuke-surface" title="Anti-Nuke" description="Watch high-risk audit events, contain an executor and preserve a clear incident record." guildId={guildId} csrf={session.csrf} section="security" data={drafts.security} headerControl={<ModuleToggle label="Enable Anti-Nuke" detail={plan !== 'enterprise' ? 'Pro+ required' : 'Enable module'} checked={drafts.security.antiNuke.enabled} disabled={plan !== 'enterprise'} onChange={value => set('security', data => (data.antiNuke.enabled = value, data))} />} upgrade={plan !== 'enterprise' ? { plan: 'Pro+', title: 'Protect against destructive actions', description: 'Preview the containment, recovery and audit-response policy below. Upgrade this server to activate Anti-Nuke enforcement.', href: proPlusStore } : null}>
+              <SettingsSection id="anti-nuke" className="module-surface security-surface anti-nuke-surface" title="Anti-Nuke" description="Detect destructive changes, contain the person behind them and keep a clear incident record." guildId={guildId} csrf={session.csrf} section="security" data={drafts.security} headerControl={<ModuleToggle label="Enable Anti-Nuke" detail={plan !== 'enterprise' ? 'Pro+ required' : 'Enable module'} checked={drafts.security.antiNuke.enabled} disabled={plan !== 'enterprise'} onChange={value => set('security', data => (data.antiNuke.enabled = value, data))} />} upgrade={plan !== 'enterprise' ? { plan: 'Pro+', title: 'Protect against destructive actions', description: 'Preview the containment, recovery and audit-response policy below. Upgrade this server to activate Anti-Nuke protection.', href: proPlusStore } : null}>
                 <div className="module-status-line"><span><b>Status</b><strong className={drafts.security.antiNuke.enabled ? 'summary-good' : 'summary-muted'}>{drafts.security.antiNuke.enabled ? 'Protected' : 'Not protected'}</strong></span><span><b>Enforcement</b><strong>{drafts.security.antiNuke.action === 'ban' ? 'Ban executor' : 'Strip roles'}</strong></span><span><b>Containment</b><strong>{drafts.security.antiNuke.panicMode ? 'Lockdown' : 'Controlled'}</strong></span></div>
                 <div className="module-configuration-grid">
                   <section className="module-configuration-group"><div className="module-configuration-head"><h3>Response</h3><p>Set the action taken against an untrusted executor.</p></div><div className="module-check-stack">
@@ -632,7 +632,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'verification' && (
-              <SettingsSection id="verification" className="module-surface access-surface" title="Verification" description="Publish a verification panel and assign member roles safely." guildId={guildId} csrf={session.csrf} section="verification" data={drafts.verification} headerControl={<ModuleToggle label="Enable verification" checked={drafts.verification.enabled} onChange={value => set('verification', data => (data.enabled = value, data))} />}>
+              <SettingsSection id="verification" className="module-surface access-surface" title="Verification" description="Give members a clear way to verify and receive the right role." guildId={guildId} csrf={session.csrf} section="verification" data={drafts.verification} headerControl={<ModuleToggle label="Enable verification" checked={drafts.verification.enabled} onChange={value => set('verification', data => (data.enabled = value, data))} />}>
                 <div className="module-status-line"><span><b>Status</b><strong className={drafts.verification.enabled ? 'summary-good' : 'summary-muted'}>{drafts.verification.enabled ? 'Enabled' : 'Not enabled'}</strong></span><span><b>Method</b><strong>{drafts.verification.mode === 'oauth' ? 'Discord OAuth' : 'Discord button'}</strong></span><span><b>Verified role</b><strong>{roles.find(role => role.id === drafts.verification.verifiedRoleId)?.name || 'Not selected'}</strong></span></div>
                 <div className="module-configuration-grid">
                   <section className="module-configuration-group"><div className="module-configuration-head"><h3>Verification flow</h3><p>Choose where members begin and how they confirm their identity.</p></div><div className="form-grid"><Select label="Mode" help={plan === 'free' ? 'Discord OAuth verification is available with Pro.' : undefined} value={drafts.verification.mode} onChange={value => set('verification', data => (data.mode = value, data))}><option value="button">Discord button</option><option value="oauth" disabled={plan === 'free'}>Discord OAuth {plan === 'free' ? '(Pro)' : ''}</option></Select><ChannelSelect label="Verification channel" value={drafts.verification.channelId} channels={channels} onChange={value => set('verification', data => (data.channelId = value, data))} /></div></section>
@@ -644,7 +644,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
 
             {activeSection === 'migration' && (
               <section className="settings-section module-surface access-surface" id="migration">
-                <div className="settings-header"><div><span className="settings-kicker">Continuity</span><h2>Server migration</h2><p>Restore mapped roles after a member independently joins the new server and completes Discord OAuth verification.</p></div><span className="badge">Pro+</span></div>
+                <div className="settings-header"><div><span className="settings-kicker">Continuity</span><h2>Server migration</h2><p>Restore mapped roles after a member joins the new server and verifies with Discord.</p></div><span className="badge">Pro+</span></div>
                 <div className="settings-body">
                   <div className="workspace-summary access-summary">
                     <div><span className="workspace-summary-label">Campaign</span><strong className={drafts.migration.enabled ? 'summary-good' : 'summary-muted'}>{drafts.migration.enabled ? 'Active' : 'Not started'}</strong><p>No member is transferred automatically.</p></div>
@@ -658,7 +658,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
 
             {activeSection === 'billing' && (
               <section className="settings-section" id="billing">
-                <div className="settings-header"><div><span className="settings-kicker">Account</span><h2>Plan & billing</h2><p>Every subscription belongs to this Discord server, so the full moderation team benefits.</p></div><span className="badge">{planLabel(plan)}</span></div>
+                <div className="settings-header"><div><span className="settings-kicker">Account</span><h2>Plan & billing</h2><p>Subscriptions apply to this server, so the whole team has access.</p></div><span className="badge">{planLabel(plan)}</span></div>
                 <div className="settings-body">
                   <div className="billing-summary"><span>Current plan</span><strong>{planLabel(plan)}</strong><small>{guild.config.billing.provider === 'discord' ? 'Managed securely through Discord' : 'No Discord subscription linked yet'}</small></div>
                   {guild.discordBilling?.configured ? <div className="billing-plan-grid">
@@ -672,7 +672,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
 
             {activeSection === 'data' && (
               <section className="settings-section" id="data">
-                <div className="settings-header"><div><span className="settings-kicker">Account</span><h2>Data & privacy</h2><p>Export or remove the server data stored by ModerationDesk.</p></div></div>
+                <div className="settings-header"><div><span className="settings-kicker">Account</span><h2>Data & privacy</h2><p>Download or remove the data ModerationDesk keeps for this server.</p></div></div>
                 <div className="settings-body">
                   <div className="data-action">
                     <div><h3>Export server data</h3><p>Download configuration, moderation records, appeals and migration records as JSON.</p></div>

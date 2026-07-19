@@ -16,14 +16,14 @@ export default function ProductPageContent({ area }) {
       </header>
 
       <section className="product-capability-section" aria-labelledby="capability-heading">
-        <div className="product-detail-section-head"><span>WHAT IT COVERS</span><h2 id="capability-heading">The controls in {area.label.toLowerCase()}.</h2></div>
+        <div className="product-detail-section-head"><span>WHAT IT COVERS</span><h2 id="capability-heading">What you can manage here.</h2></div>
         <div className="product-detail-grid">
           {area.capabilities.map(([title, text], index) => <article key={title}><span>{String(index + 1).padStart(2, '0')}</span><h3>{title}</h3><p>{text}</p></article>)}
         </div>
       </section>
 
       <section className="product-process-section" aria-labelledby="process-heading">
-        <div className="product-detail-section-head"><span>HOW IT WORKS</span><h2 id="process-heading">A straightforward operating flow.</h2></div>
+        <div className="product-detail-section-head"><span>HOW IT WORKS</span><h2 id="process-heading">A simple way to get started.</h2></div>
         <ol>{area.steps.map((step, index) => <li key={step}><span>{String(index + 1).padStart(2, '0')}</span><strong>{step}</strong></li>)}</ol>
       </section>
 

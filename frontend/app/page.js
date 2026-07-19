@@ -23,8 +23,8 @@ export default function Home() {
       <section className="landing-hero">
         <div className="landing-hero-copy">
           <div className="landing-overline"><span>ModerationDesk</span><i aria-hidden="true" /><span>A DeskLabs product</span></div>
-          <h1>A clearer way to run a Discord community.</h1>
-          <p>Moderation, prevention and member access in one operating workspace—so your team can act quickly and leave a record that makes sense later.</p>
+          <h1>Moderation that stays clear when the server gets busy.</h1>
+          <p>One workspace for moderation, protection and member access. Your team can see what happened, what needs attention and what to do next.</p>
           <div className="landing-actions">
             <a className="button button-large" href={botInviteUrl} target="_blank" rel="noreferrer">Add to Discord <span aria-hidden="true">→</span></a>
             <Link className="landing-link" href="/dashboard">Explore the dashboard <span aria-hidden="true">→</span></Link>
@@ -55,8 +55,8 @@ export default function Home() {
       <section className="landing-approach" id="platform">
         <div className="landing-approach-intro">
           <span className="section-kicker">ONE WORKSPACE, NOT A BOT PILE</span>
-          <h2>Everything your staff needs to make the next good decision.</h2>
-          <p>ModerationDesk is organised around everyday operations—not a long command list, and not a collection of features that have to be stitched together.</p>
+          <h2>Everything your staff needs, in the order they need it.</h2>
+          <p>ModerationDesk follows the work your team already does. It is not a long command list or another collection of tools to piece together.</p>
           <Link className="landing-link" href="/platform/overview">See how it fits together <span aria-hidden="true">→</span></Link>
         </div>
         <div className="landing-approach-list">
@@ -84,7 +84,7 @@ export default function Home() {
       </section>
 
       <section className="landing-close">
-        <div><span className="section-kicker">READY WHEN YOUR TEAM IS</span><h2>Set the essentials once. Run the server with confidence.</h2><p>Start with a dependable operational baseline, then add stronger protection as your community grows.</p></div>
+        <div><span className="section-kicker">READY WHEN YOUR TEAM IS</span><h2>Set the essentials once. Keep the server under control.</h2><p>Start with a dependable baseline, then add stronger protection when your community needs it.</p></div>
         <div className="landing-actions"><a className="button button-large" href={botInviteUrl} target="_blank" rel="noreferrer">Add to Discord <span aria-hidden="true">→</span></a><Link className="landing-link" href="/dashboard">Explore the dashboard <span aria-hidden="true">→</span></Link></div>
       </section>
     </Shell>

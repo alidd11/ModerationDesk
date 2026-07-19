@@ -1103,3 +1103,131 @@ html[data-theme="light"] .dashboard-context { border-color: #dfe1e8; }
 @media (max-width: 620px) {
   .site, .site.wide, .site.compact { width: min(calc(100% - 32px), 1180px); }.nav { min-height: 68px; }.landing-hero { min-height: 0; gap: 36px; padding: 46px 0 56px; }.landing-overline { margin-bottom: 18px; font-size: 9px; }.landing-hero h1 { font-size: clamp(39px, 11.5vw, 53px); line-height: 1.01; }.landing-hero-copy > p { margin-top: 19px; font-size: 15px; line-height: 1.64; }.landing-actions { gap: 16px; margin-top: 25px; }.landing-signals { gap: 8px; margin-top: 31px; }.landing-signals dd { font-size: 10px; }.workspace-preview-main { min-height: 420px; padding: 20px; }.workspace-preview-heading { padding-bottom: 18px; }.workspace-preview-heading strong { font-size: 19px; }.workspace-preview-heading button { display: none; }.workspace-preview-score { grid-template-columns: 1fr; gap: 8px; padding: 18px 0; }.workspace-preview-score strong { font-size: 24px; }.workspace-preview-list { grid-template-columns: 1fr; gap: 0; padding-top: 6px; }.workspace-preview-list > div { min-height: 39px; }.workspace-preview-event { margin-top: 15px; }.landing-approach { gap: 30px; padding: 60px 0; }.landing-approach h2 { font-size: 34px; }.landing-approach-list article { grid-template-columns: 34px minmax(0,1fr); gap: 12px; min-height: 0; padding: 18px 0; }.landing-approach-list h3 { font-size: 15px; }.landing-approach-list p { font-size: 12px; }.landing-close { min-height: 0; align-items: flex-start; flex-direction: column; gap: 24px; padding: 52px 0; }.landing-close h2 { font-size: 34px; }.landing-close .landing-actions { margin-top: 0; }.dashboard-shell { padding-top: 15px; }.dashboard-context { min-height: 54px; padding-bottom: 13px; }.dashboard-context-actions a { min-height: 33px; }.dashboard-layout { padding-top: 16px; }.dashboard-content > .settings-section > .settings-header h2, .dashboard-content > .dashboard-overview > .settings-header h2 { font-size: 23px; }
 }
+
+/* Reading system: one calm hierarchy across public pages, forms and the workspace. */
+html { text-rendering: optimizeLegibility; }
+body { letter-spacing: -.008em; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+p { letter-spacing: -.01em; }
+.section-kicker,
+.settings-kicker,
+.workspace-summary-label,
+.product-detail-section-head > span,
+.product-page-kicker,
+.landing-overline,
+.plan-gate-eyebrow { font-size: 10px; font-weight: 780; letter-spacing: .095em; }
+
+.landing-hero-copy > p,
+.landing-approach-intro > p,
+.landing-close p { max-width: 59ch; color: #b2b6c1; font-size: 16px; line-height: 1.7; }
+.landing-approach-list h3 { font-size: 18px; font-weight: 730; }
+.landing-approach-list p { color: #adb1bb; font-size: 14px; line-height: 1.6; }
+.landing-signals dt { font-size: 10px; letter-spacing: .08em; }
+.landing-signals dd { color: #e1e3e9; font-size: 12px; font-weight: 650; }
+.landing-link { min-height: 38px; font-size: 13px; font-weight: 720; }
+
+.product-detail-hero > p,
+.product-detail-grid p,
+.product-process-section li,
+.product-outcome p { line-height: 1.62; }
+.product-detail-hero > p { max-width: 59ch; color: #b0b4bf; font-size: 16px; }
+.product-detail-section-head > span { color: #9a91ff; }
+.product-detail-grid h3 { font-size: 16px; font-weight: 730; }
+.product-detail-grid p { color: #a9aeb9; font-size: 13px; }
+.product-process-section li strong { font-size: 14px; font-weight: 700; }
+
+.dashboard-content > .settings-section > .settings-header h2,
+.dashboard-content > .dashboard-overview > .settings-header h2 { font-size: 27px; font-weight: 740; line-height: 1.14; letter-spacing: -.04em; }
+.dashboard-content > .settings-section > .settings-header p,
+.dashboard-content > .dashboard-overview > .settings-header p { color: #b0b5c0; font-size: 14px; line-height: 1.58; }
+.dashboard-content .workspace-summary-label,
+.dashboard-content .module-status-line b { color: #9da2ae; font-size: 10px; letter-spacing: .085em; }
+.dashboard-content .workspace-summary strong { font-size: 20px; font-weight: 730; line-height: 1.18; }
+.dashboard-content .workspace-summary p { color: #aeb3bd; font-size: 12px; line-height: 1.5; }
+.dashboard-content .settings-subhead h3,
+.dashboard-content .module-configuration-head h3,
+.dashboard-content .setting-block h3,
+.dashboard-content .settings-disclosure summary strong { font-size: 15px; font-weight: 720; letter-spacing: -.02em; }
+.dashboard-content .settings-subhead p,
+.dashboard-content .module-configuration-head p,
+.dashboard-content .setting-block p,
+.dashboard-content .settings-disclosure summary small { color: #aeb3bd; font-size: 12px; line-height: 1.52; }
+.dashboard-content label,
+.dashboard-content .multi-field legend { color: #edf0f5; font-size: 13px; font-weight: 700; letter-spacing: -.01em; }
+.dashboard-content label span,
+.dashboard-content .multi-field legend > span { color: #aeb3bd; font-size: 12px; line-height: 1.48; }
+.dashboard-content input,
+.dashboard-content select,
+.dashboard-content textarea { font-size: 14px; line-height: 1.45; }
+.dashboard-content .check { color: #e6e9ee; font-size: 13px; font-weight: 650; line-height: 1.48; }
+.dashboard-content .multi-toolbar > span,
+.dashboard-content .multi-actions button,
+.dashboard-content .multi-option { font-size: 12px; }
+.dashboard-content .empty-state strong { font-size: 19px; font-weight: 730; }
+.dashboard-content .empty-state p { color: #acb1bc; font-size: 13px; line-height: 1.55; }
+.dashboard-content .empty-state a { font-size: 13px; font-weight: 720; }
+.dashboard-content .record-table { font-size: 13px; }
+.dashboard-content .record-table th { color: #9aa0ad; font-size: 10px; letter-spacing: .075em; }
+.dashboard-content .record-table td { color: #dadde5; line-height: 1.45; }
+.dashboard-content .record-reason { color: #b6bbc5; }
+.dashboard-content .module-toggle-copy small { color: #a5aab5; font-size: 10px; letter-spacing: .08em; }
+.dashboard-content .module-toggle-copy strong { font-size: 12px; font-weight: 720; }
+.dashboard-content .button { font-size: 12px; font-weight: 720; letter-spacing: -.012em; }
+
+.card p,
+.legal p,
+.footer,
+.server-directory-head p { color: #afb4be; }
+.legal p { line-height: 1.7; }
+
+html[data-theme="light"] .landing-hero-copy > p,
+html[data-theme="light"] .landing-approach-intro > p,
+html[data-theme="light"] .landing-approach-list p,
+html[data-theme="light"] .landing-close p { color: #4e5664; }
+html[data-theme="light"] .landing-signals dd { color: #252b36; }
+html[data-theme="light"] .product-detail-hero > p,
+html[data-theme="light"] .product-detail-grid p { color: #545d6b; }
+html[data-theme="light"] .dashboard-content > .settings-section > .settings-header p,
+html[data-theme="light"] .dashboard-content > .dashboard-overview > .settings-header p,
+html[data-theme="light"] .dashboard-content .settings-subhead p,
+html[data-theme="light"] .dashboard-content .module-configuration-head p,
+html[data-theme="light"] .dashboard-content .setting-block p,
+html[data-theme="light"] .dashboard-content .settings-disclosure summary small,
+html[data-theme="light"] .dashboard-content label span,
+html[data-theme="light"] .dashboard-content .multi-field legend > span,
+html[data-theme="light"] .dashboard-content .workspace-summary p,
+html[data-theme="light"] .dashboard-content .empty-state p { color: #596270; }
+html[data-theme="light"] .dashboard-content .workspace-summary-label,
+html[data-theme="light"] .dashboard-content .module-status-line b,
+html[data-theme="light"] .dashboard-content .record-table th { color: #697281; }
+html[data-theme="light"] .dashboard-content label,
+html[data-theme="light"] .dashboard-content .multi-field legend,
+html[data-theme="light"] .dashboard-content .check,
+html[data-theme="light"] .dashboard-content .record-table td { color: #252b36; }
+html[data-theme="light"] .dashboard-content .record-reason { color: #505966; }
+html[data-theme="light"] .card p,
+html[data-theme="light"] .legal p,
+html[data-theme="light"] .footer,
+html[data-theme="light"] .server-directory-head p { color: #56606e; }
+
+@media (max-width: 620px) {
+  body { font-size: 15px; }
+  .landing-hero-copy > p,
+  .landing-approach-intro > p,
+  .landing-close p { font-size: 15px; line-height: 1.62; }
+  .landing-approach-list h3 { font-size: 16px; }
+  .landing-approach-list p { font-size: 13px; }
+  .product-detail-hero > p { font-size: 15px; }
+  .product-detail-grid p { font-size: 13px; }
+  .dashboard-content > .settings-section > .settings-header h2,
+  .dashboard-content > .dashboard-overview > .settings-header h2 { font-size: 24px; }
+  .dashboard-content > .settings-section > .settings-header p,
+  .dashboard-content > .dashboard-overview > .settings-header p { font-size: 14px; line-height: 1.52; }
+  .dashboard-content .workspace-summary strong { font-size: 19px; }
+  .dashboard-content .workspace-summary p { font-size: 12px; }
+  .dashboard-content .settings-subhead p,
+  .dashboard-content .module-configuration-head p,
+  .dashboard-content .setting-block p,
+  .dashboard-content .settings-disclosure summary small { font-size: 12px; }
+  .dashboard-content .settings-disclosure summary strong { font-size: 15px; }
+  .dashboard-content .settings-footer .button { font-size: 13px; }
+}

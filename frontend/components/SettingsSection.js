@@ -8,11 +8,11 @@ function UpgradeGate({ upgrade, children }) {
     <div className="plan-gate">
       <div className="plan-gate-preview" inert="" aria-hidden="true">{children}</div>
       <div className="plan-gate-overlay">
-        <span className="plan-gate-eyebrow">{upgrade.plan} feature</span>
+        <span className="plan-gate-eyebrow">Available with {upgrade.plan}</span>
         <h3>{upgrade.title}</h3>
         <p>{upgrade.description}</p>
         <a className="button small" href={upgrade.href} target="_blank" rel="noreferrer">View {upgrade.plan} in Discord <span aria-hidden="true">↗</span></a>
-        <small>Subscriptions are managed securely through Discord for this server.</small>
+        <small>Subscriptions are managed through Discord for this server.</small>
       </div>
     </div>
   );
@@ -22,14 +22,14 @@ export default function SettingsSection({ id, title, description, guildId, csrf,
   const [status, setStatus] = useState({ busy: false, message: '', bad: false });
 
   async function save() {
-    setStatus({ busy: true, message: 'Saving…', bad: false });
+    setStatus({ busy: true, message: 'Saving changes…', bad: false });
     try {
       const result = await api(`/api/guilds/${guildId}/settings/${section}`, {
         method: 'PATCH',
         headers: { 'X-CSRF-Token': csrf },
         body: JSON.stringify({ data })
       });
-      setStatus({ busy: false, message: 'Saved.', bad: false });
+      setStatus({ busy: false, message: 'Changes saved.', bad: false });
       onSaved?.(result.config);
     } catch (error) {
       setStatus({ busy: false, message: error.message, bad: true });

@@ -50,10 +50,10 @@ export default function AppealPage() {
           <div className="card">
             <div className="guild-card">
               {status.data.guild.icon ? <img className="guild-icon" src={status.data.guild.icon} alt="" /> : <div className="guild-icon">{status.data.guild.name.slice(0, 2).toUpperCase()}</div>}
-              <div className="grow"><h1>Appeal to {status.data.guild.name}</h1><p>Request a review of a moderation decision.</p></div>
+              <div className="grow"><h1>Appeal a moderation decision</h1><p>Ask the {status.data.guild.name} moderation team to review a decision.</p></div>
             </div>
             {!status.data.authenticated ? (
-              <div style={{ marginTop: 22 }}><p>Sign in with Discord so the moderation team can confirm your identity. ModerationDesk requests the <code>identify</code> scope only for this appeal.</p><a className="button" href={`/api/appeals/${guildId}/login`}>Continue with Discord</a></div>
+              <div style={{ marginTop: 22 }}><p>Sign in with Discord so the moderation team can confirm who submitted this appeal. ModerationDesk requests your identity only for this form.</p><a className="button" href={`/api/appeals/${guildId}/login`}>Continue with Discord</a></div>
             ) : (
               <div className="form-grid" style={{ marginTop: 22 }}>
                 <Text label="Case number" help="Optional. It must belong to your Discord account." type="number" min="1" value={caseId} onChange={setCaseId} />
@@ -63,7 +63,7 @@ export default function AppealPage() {
             )}
           </div>
         )}
-        {result && <div className="card"><span className="badge good">Received</span><h1>{result.duplicate ? 'An appeal is already open' : 'Appeal submitted'}</h1><p>Reference: <strong>{result.appeal.id}</strong></p><p>The server moderation team can now review and respond through ModerationDesk.</p></div>}
+        {result && <div className="card"><span className="badge good">Received</span><h1>{result.duplicate ? 'An appeal is already open' : 'Appeal submitted'}</h1><p>Reference: <strong>{result.appeal.id}</strong></p><p>The moderation team can now review your appeal.</p></div>}
       </section>
     </Shell>
   );

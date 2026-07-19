@@ -74,7 +74,7 @@ export function ModuleToggle({ label, detail = label, checked, onChange, disable
   const enabled = Boolean(checked);
   return (
     <label className={`module-toggle ${enabled ? 'enabled' : ''} ${disabled ? 'disabled' : ''}`}>
-      <span className="module-toggle-copy"><small>Module status</small><strong>{enabled ? 'Enabled' : 'Disabled'}</strong></span>
+      <span className="module-toggle-copy"><small>Status</small><strong>{enabled ? 'On' : 'Off'}</strong></span>
       <input type="checkbox" checked={enabled} disabled={disabled} aria-label={label} onChange={event => onChange(event.target.checked)} />
       <span className="module-toggle-track" aria-hidden="true"><i /></span>
       <span className="module-toggle-label">{detail}</span>
