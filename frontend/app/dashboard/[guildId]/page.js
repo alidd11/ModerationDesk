@@ -41,8 +41,8 @@ function Status({ enabled, children }) {
   return <span className={`feature-status ${enabled ? 'enabled' : ''}`}><i aria-hidden="true" />{children}</span>;
 }
 
-function SettingsDisclosure({ title, description, badge, children }) {
-  return <details className="settings-disclosure">
+function SettingsDisclosure({ title, description, badge, children, defaultOpen = false }) {
+  return <details className="settings-disclosure" open={defaultOpen}>
     <summary>
       <span><strong>{title}</strong><small>{description}</small></span>
       <span className="settings-disclosure-meta">{badge && <b>{badge}</b>}<i aria-hidden="true">⌄</i></span>
@@ -489,26 +489,23 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
 
             {activeSection === 'community' && (
               <SettingsSection id="community" title="Community" description="Manage suggestions, appeals and your server starboard." guildId={guildId} csrf={session.csrf} section="general" data={drafts.general}>
-                <div className="split-settings three">
-                  <div className="setting-block">
-                    <h3>Suggestions</h3>
+                <div className="community-disclosures">
+                  <SettingsDisclosure title="Suggestions" description="Collect member ideas in a dedicated channel.">
                     <Check label="Enable suggestions" checked={drafts.general.suggestions.enabled} onChange={value => set('general', data => (data.suggestions.enabled = value, data))} />
                     <ChannelSelect label="Suggestions channel" value={drafts.general.suggestions.channelId} channels={channels} onChange={value => set('general', data => (data.suggestions.channelId = value, data))} />
-                  </div>
-                  <div className="setting-block">
-                    <h3>Appeals</h3>
+                  </SettingsDisclosure>
+                  <SettingsDisclosure title="Appeals" description="Let members submit moderation appeals for staff review.">
                     <Check label="Enable appeals" checked={drafts.general.appeals.enabled} onChange={value => set('general', data => (data.appeals.enabled = value, data))} />
                     <ChannelSelect label="Appeals channel" value={drafts.general.appeals.channelId} channels={channels} onChange={value => set('general', data => (data.appeals.channelId = value, data))} />
-                  </div>
-                  <div className="setting-block">
-                    <h3>Starboard</h3>
+                  </SettingsDisclosure>
+                  <SettingsDisclosure title="Starboard" description="Highlight popular messages when they reach your reaction threshold." badge="Pro">
                     <Check label="Enable starboard" checked={drafts.general.starboard.enabled} onChange={value => set('general', data => (data.starboard.enabled = value, data))} />
                     <ChannelSelect label="Starboard channel" value={drafts.general.starboard.channelId} channels={channels} onChange={value => set('general', data => (data.starboard.channelId = value, data))} />
                     <div className="form-grid compact-grid">
                       <Text label="Star emoji" value={drafts.general.starboard.emoji} onChange={value => set('general', data => (data.starboard.emoji = value, data))} />
                       <Text label="Threshold" type="number" min="1" max="100" value={drafts.general.starboard.threshold} onChange={value => set('general', data => (data.starboard.threshold = value, data))} />
                     </div>
-                  </div>
+                  </SettingsDisclosure>
                 </div>
               </SettingsSection>
             )}
@@ -520,7 +517,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                   <div><span className="workspace-summary-label">Message checks</span><strong>{[drafts.automod.antiInvites, drafts.automod.antiLinks, drafts.automod.antiSpam, drafts.automod.antiDuplicates, drafts.automod.antiMassMentions, drafts.automod.antiCaps].filter(Boolean).length}<small> / 6</small></strong><p>Content patterns currently monitored.</p></div>
                   <div><span className="workspace-summary-label">Immediate response</span><strong>{drafts.automod.action === 'delete' ? 'Remove only' : drafts.automod.action === 'warn' ? 'Remove + warn' : 'Remove + timeout'}</strong><p>Applied at message time—not from a warning count.</p></div>
                 </div>
-                <div className="automod-boundary"><strong>Message-time protection</strong><span>Message protection handles a single risky message immediately. Use the <a href={`/${guildId ? `dashboard/${guildId}/` : 'dashboard/'}policies`}>escalation policy</a> for a staff-warning consequence ladder.</span></div>
+                <div className="automod-boundary"><span>AutoMod acts on a message immediately. Use <a href={`/${guildId ? `dashboard/${guildId}/` : 'dashboard/'}policies`}>Warning actions</a> for consequences after staff warnings.</span></div>
                 <div className="settings-subhead form-divider"><div><h3>Start with a policy</h3><p>Apply a starting point, then refine the checks and rule policies below before saving.</p></div><span className="badge">Preset</span></div>
                 <div className="automod-preset-grid">{Object.entries(AUTOMOD_PRESETS).map(([id, preset]) => <button type="button" key={id} className={`automod-preset ${drafts.automod.preset === id ? 'selected' : ''}`} onClick={() => applyAutomodPreset(id)}><strong>{preset.label}</strong><span>{preset.description}</span><i aria-hidden="true">Apply →</i></button>)}</div>
                 <div className="split-settings">
