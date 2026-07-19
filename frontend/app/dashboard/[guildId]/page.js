@@ -520,24 +520,26 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                   <div><span className="workspace-summary-label">Immediate response</span><strong>{drafts.automod.action === 'delete' ? 'Remove only' : drafts.automod.action === 'warn' ? 'Remove + warn' : 'Remove + timeout'}</strong><p>Applied at message time—not from a warning count.</p></div>
                 </div>
                 <div className="automod-boundary"><span>AutoMod acts on a message immediately. Use <a href={`/${guildId ? `dashboard/${guildId}/` : 'dashboard/'}policies`}>Warning actions</a> for consequences after staff warnings.</span></div>
-                <div className="settings-subhead form-divider"><div><h3>Start with a policy</h3><p>Apply a starting point, then refine the checks and rule policies below before saving.</p></div><span className="badge">Preset</span></div>
-                <div className="automod-preset-grid">{Object.entries(AUTOMOD_PRESETS).map(([id, preset]) => <button type="button" key={id} className={`automod-preset ${drafts.automod.preset === id ? 'selected' : ''}`} onClick={() => applyAutomodPreset(id)}><strong>{preset.label}</strong><span>{preset.description}</span><i aria-hidden="true">Apply →</i></button>)}</div>
-                <div className="split-settings">
-                  <div className="setting-block check-list">
-                    <h3>Message checks</h3>
-                    <Check label="Block Discord invites" checked={drafts.automod.antiInvites} onChange={value => set('automod', data => (data.antiInvites = value, data))} />
-                    <Check label="Block non-allowlisted links" checked={drafts.automod.antiLinks} onChange={value => set('automod', data => (data.antiLinks = value, data))} />
-                    <Check label="Detect spam" checked={drafts.automod.antiSpam} onChange={value => set('automod', data => (data.antiSpam = value, data))} />
-                    <Check label="Detect duplicate messages" checked={drafts.automod.antiDuplicates} onChange={value => set('automod', data => (data.antiDuplicates = value, data))} />
-                    <Check label="Detect mass mentions" checked={drafts.automod.antiMassMentions} onChange={value => set('automod', data => (data.antiMassMentions = value, data))} />
-                    <Check label="Detect excessive capitals" checked={drafts.automod.antiCaps} onChange={value => set('automod', data => (data.antiCaps = value, data))} />
+                <SettingsDisclosure title="Quick setup" description="Choose a policy, decide what to scan and set the immediate response." badge="Recommended">
+                  <div className="settings-subhead"><div><h3>Start with a policy</h3><p>Apply a starting point, then refine the checks below before saving.</p></div><span className="badge">Preset</span></div>
+                  <div className="automod-preset-grid">{Object.entries(AUTOMOD_PRESETS).map(([id, preset]) => <button type="button" key={id} className={`automod-preset ${drafts.automod.preset === id ? 'selected' : ''}`} onClick={() => applyAutomodPreset(id)}><strong>{preset.label}</strong><span>{preset.description}</span><i aria-hidden="true">Apply →</i></button>)}</div>
+                  <div className="split-settings form-divider">
+                    <div className="setting-block check-list">
+                      <h3>Message checks</h3>
+                      <Check label="Block Discord invites" checked={drafts.automod.antiInvites} onChange={value => set('automod', data => (data.antiInvites = value, data))} />
+                      <Check label="Block non-allowlisted links" checked={drafts.automod.antiLinks} onChange={value => set('automod', data => (data.antiLinks = value, data))} />
+                      <Check label="Detect spam" checked={drafts.automod.antiSpam} onChange={value => set('automod', data => (data.antiSpam = value, data))} />
+                      <Check label="Detect duplicate messages" checked={drafts.automod.antiDuplicates} onChange={value => set('automod', data => (data.antiDuplicates = value, data))} />
+                      <Check label="Detect mass mentions" checked={drafts.automod.antiMassMentions} onChange={value => set('automod', data => (data.antiMassMentions = value, data))} />
+                      <Check label="Detect excessive capitals" checked={drafts.automod.antiCaps} onChange={value => set('automod', data => (data.antiCaps = value, data))} />
+                    </div>
+                    <div className="setting-block">
+                      <h3>Immediate response</h3>
+                      <Select label="After removing the message" value={drafts.automod.action} onChange={value => set('automod', data => (data.action = value, data))}><option value="delete">Take no further member action</option><option value="warn">Create an AutoMod warning</option><option value="timeout">Temporarily timeout the member</option></Select>
+                      <Text label="Timeout seconds" type="number" min="10" max="2419200" value={drafts.automod.timeoutSeconds} onChange={value => set('automod', data => (data.timeoutSeconds = value, data))} />
+                    </div>
                   </div>
-                  <div className="setting-block">
-                    <h3>Immediate response</h3>
-                    <Select label="After removing the message" value={drafts.automod.action} onChange={value => set('automod', data => (data.action = value, data))}><option value="delete">Take no further member action</option><option value="warn">Create an AutoMod warning</option><option value="timeout">Temporarily timeout the member</option></Select>
-                    <Text label="Timeout seconds" type="number" min="10" max="2419200" value={drafts.automod.timeoutSeconds} onChange={value => set('automod', data => (data.timeoutSeconds = value, data))} />
-                  </div>
-                </div>
+                </SettingsDisclosure>
                 <SettingsDisclosure title="Advanced AutoMod settings" description="Tune thresholds, word lists and exemptions only when the defaults need adjusting.">
                   <div className="form-grid">
                     <Text label="Maximum mentions" type="number" min="2" max="50" value={drafts.automod.maxMentions} onChange={value => set('automod', data => (data.maxMentions = value, data))} />
