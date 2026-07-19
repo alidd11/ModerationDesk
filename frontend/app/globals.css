@@ -676,6 +676,28 @@ html[data-theme="light"] .plan-gate-overlay { background: radial-gradient(circle
 html[data-theme="light"] .plan-gate-overlay h3 { color: #242534; }
 html[data-theme="light"] .plan-gate-overlay p { color: #666c7a; }
 html[data-theme="light"] .footer strong { color: #2b303a; }
+html[data-theme="light"] .dashboard-overview, html[data-theme="light"] .module-surface { border-color: #dde0e9; background: #fff; box-shadow: 0 14px 34px rgba(31, 36, 50, .07); }
+html[data-theme="light"] .dashboard-overview > .settings-header, html[data-theme="light"] .module-surface > .settings-header { background: linear-gradient(100deg, #f4f2ff, #fbfbfd 62%, #fff); border-bottom-color: #e3e4eb; }
+html[data-theme="light"] .dashboard-overview .overview-stats { border-color: #d8d3fa; background: #d8d3fa; }
+html[data-theme="light"] .dashboard-overview .overview-stats article { background: #fcfcff; }
+html[data-theme="light"] .dashboard-overview .overview-columns:not(.lower) { border-color: #e1e3ea; background: #fff; }
+html[data-theme="light"] .dashboard-overview .overview-columns:not(.lower) .overview-panel + .overview-panel { border-left-color: #e1e3ea; }
+html[data-theme="light"] .overview-panel.stack-panel, html[data-theme="light"] .discipline-step, html[data-theme="light"] .log-coverage-card { background: #fff; border-color: #dfe1e8; }
+html[data-theme="light"] .health-summary, html[data-theme="light"] .module-status-list, html[data-theme="light"] .compact-records, html[data-theme="light"] .setup-checks > a, html[data-theme="light"] .sidebar-server, html[data-theme="light"] .sidebar-group + .sidebar-group { border-color: #e7e8ee; }
+html[data-theme="light"] .permission-grid span, html[data-theme="light"] .module-status-list small, html[data-theme="light"] .health-summary span, html[data-theme="light"] .compact-records small, html[data-theme="light"] .overview-stats span, html[data-theme="light"] .overview-stats small { color: #697180; }
+html[data-theme="light"] .feature-status.enabled { color: #3d4654; }
+html[data-theme="light"] .audit-surface .log-coverage-card { border-color: #dfe2eb; background: #fff; }
+html[data-theme="light"] .audit-surface .log-coverage-card.selected { border-color: #8a7be8; background: #f2f0ff; }
+html[data-theme="light"] .automod-surface .setting-block, html[data-theme="light"] .automod-surface .settings-disclosure, html[data-theme="light"] .security-surface .settings-disclosure, html[data-theme="light"] .security-surface .setting-block { border-color: #dfe1e8; background: #fff; }
+html[data-theme="light"] .settings-footer { border-top-color: #dfe1e8; background: rgba(255,255,255,.95); box-shadow: 0 -10px 24px rgba(33,38,51,.08); }
+html[data-theme="light"] .sidebar { border-color: #dfe1e8; background: #fff; }
+html[data-theme="light"] .sidebar-server-copy strong, html[data-theme="light"] .dashboard-context-server strong { color: #242936; }
+html[data-theme="light"] .sidebar-server-copy > span, html[data-theme="light"] .dashboard-context-server span { color: #737a88; }
+html[data-theme="light"] .sidebar-server-actions a, html[data-theme="light"] .sidebar-find { border-color: #d9dce5; background: #fff; color: #535b69; }
+html[data-theme="light"] .sidebar-find:hover, html[data-theme="light"] .sidebar-server-actions a:hover { border-color: #bfc4d0; background: #f4f5f8; color: #252a35; }
+html[data-theme="light"] .sidebar a { color: #505866; }
+html[data-theme="light"] .sidebar a:hover { background: #f4f4f8; color: #242833; }
+html[data-theme="light"] .sidebar a.active { background: #eeecff; color: #4134a4; box-shadow: inset 2px 0 0 #6b58da; }
 
 @media (max-width: 620px) {
   .theme-toggle { width: 36px; height: 36px; min-height: 36px; justify-content: center; padding: 0; }
