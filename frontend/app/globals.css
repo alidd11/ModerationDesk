@@ -350,6 +350,15 @@ button { color: inherit; }
 .automod-surface .automod-boundary { border-color: rgba(145,132,255,.38); background: linear-gradient(100deg, rgba(109,92,231,.17), rgba(109,92,231,.035)); }
 .automod-surface .automod-preset { border-color: rgba(255,255,255,.1); background: linear-gradient(145deg, rgba(25,26,35,.94), rgba(17,18,23,.95)); }
 .automod-surface .automod-preset.selected { border-color: #8174f5; background: linear-gradient(145deg, rgba(109,92,231,.28), rgba(43,37,82,.24)); box-shadow: inset 0 1px 0 rgba(220,216,255,.12); }
+.security-surface { border-color: rgba(142,128,255,.34); background: radial-gradient(640px 300px at 86% -14%, rgba(124,104,255,.24), transparent 62%), radial-gradient(460px 240px at 6% 8%, rgba(70,55,150,.12), transparent 65%), linear-gradient(145deg, #171722, #111216 62%); }
+.security-surface .workspace-summary { border-color: rgba(150,137,255,.32); background: linear-gradient(102deg, rgba(111,92,231,.19), rgba(47,40,88,.08) 48%, rgba(255,255,255,.015)); }
+.security-surface .settings-disclosure { border-color: rgba(148,136,255,.24); background: linear-gradient(145deg, rgba(27,27,38,.9), rgba(17,18,23,.94)); }
+.security-surface .setting-block { border-color: rgba(255,255,255,.1); background: rgba(13,14,19,.42); }
+.access-surface { border-color: rgba(87,196,126,.26); background: radial-gradient(560px 290px at 87% -12%, rgba(72,177,116,.16), transparent 62%), radial-gradient(480px 250px at 7% 12%, rgba(109,92,231,.13), transparent 62%), linear-gradient(145deg, #151920, #111216 62%); }
+.access-surface .workspace-summary { border-color: rgba(87,196,126,.26); background: linear-gradient(102deg, rgba(50,140,91,.13), rgba(109,92,231,.07) 48%, rgba(255,255,255,.015)); }
+.audit-surface { border-color: rgba(104,160,255,.24); background: radial-gradient(620px 300px at 87% -12%, rgba(75,122,230,.17), transparent 63%), radial-gradient(440px 240px at 10% 10%, rgba(109,92,231,.11), transparent 65%), linear-gradient(145deg, #151820, #111216 62%); }
+.audit-surface .workspace-summary { border-color: rgba(104,160,255,.24); background: linear-gradient(102deg, rgba(60,111,212,.13), rgba(109,92,231,.07) 48%, rgba(255,255,255,.015)); }
+.audit-surface .log-coverage-card { border-color: rgba(255,255,255,.09); background: rgba(14,16,23,.5); }.audit-surface .log-coverage-card.selected { border-color: rgba(120,157,255,.72); background: linear-gradient(135deg, rgba(74,118,218,.2), rgba(109,92,231,.12)); }
 .overview-panel h3, .setting-block h3, .data-action h3, .danger-panel h3 { margin: 0 0 5px; font-size: 15px; }
 .overview-panel p, .data-action p, .danger-panel p { margin: 0; color: var(--muted); font-size: 12px; }
 .panel-heading { min-height: 44px; display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; }
