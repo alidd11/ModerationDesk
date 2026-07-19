@@ -4,15 +4,15 @@ export const dashboardNavigation = [
     description: 'Your server at a glance',
     items: [
       { id: 'overview', label: 'Overview', keywords: 'home health status' },
-      { id: 'activity', label: 'Activity log', keywords: 'history audit timeline events' }
+      { id: 'activity', label: 'Audit trail', keywords: 'history audit timeline events' }
     ]
   },
   {
     label: 'Moderation',
     description: 'People, cases and policies',
     items: [
-      { id: 'cases', label: 'Cases', keywords: 'warnings punishments history' },
-      { id: 'appeals', label: 'Appeals', keywords: 'member review decisions' },
+      { id: 'cases', label: 'Moderation cases', keywords: 'warnings punishments history' },
+      { id: 'appeals', label: 'Appeal queue', keywords: 'member review decisions' },
       { id: 'policies', label: 'Escalation policy', keywords: 'staff warnings timeout kick ban repeat behaviour ladder' }
     ]
   },
@@ -32,10 +32,10 @@ export const dashboardNavigation = [
       { id: 'verification', label: 'Verification', keywords: 'member access oauth button' },
       { id: 'staff-access', label: 'Staff access', keywords: 'moderators administrators permissions' },
       { id: 'roles', label: 'Roles & automation', keywords: 'autoroles sticky roles member roles' },
-      { id: 'commands', label: 'Commands', keywords: 'slash rename hide customise' },
+      { id: 'commands', label: 'Command management', keywords: 'slash rename hide customise' },
       { id: 'migration', label: 'Migration', keywords: 'server move role restore oauth continuity', plan: 'Pro+' },
-      { id: 'logging', label: 'Logging', keywords: 'log channels events audit' },
-      { id: 'member-messages', label: 'Welcome & goodbye', keywords: 'welcome goodbye greeting' },
+      { id: 'logging', label: 'Event logging', keywords: 'log channels events audit' },
+      { id: 'member-messages', label: 'Member messages', keywords: 'welcome goodbye greeting' },
       { id: 'community', label: 'Community tools', keywords: 'suggestions polls giveaways starboard' }
     ]
   },

@@ -11,6 +11,7 @@ import { dashboardNavigation } from '../lib/dashboardNavigation';
 export default function Shell({ children, compact = false, wide = false }) {
   const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [theme, setTheme] = useState('dark');
   const pathname = usePathname();
   const dashboardContext = pathname.startsWith('/dashboard');
   const dashboardGuildId = pathname.split('/')[2] || '';
@@ -22,6 +23,20 @@ export default function Shell({ children, compact = false, wide = false }) {
       .then(data => setUser(data?.user || null))
       .catch(() => setUser(null));
   }, []);
+
+  useEffect(() => {
+    const savedTheme = window.localStorage.getItem('moderationdesk-theme');
+    const preferredTheme = savedTheme || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    setTheme(preferredTheme);
+    document.documentElement.dataset.theme = preferredTheme;
+  }, []);
+
+  function toggleTheme() {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(nextTheme);
+    document.documentElement.dataset.theme = nextTheme;
+    window.localStorage.setItem('moderationdesk-theme', nextTheme);
+  }
 
   useEffect(() => {
     if (!menuOpen) return undefined;
@@ -59,6 +74,10 @@ export default function Shell({ children, compact = false, wide = false }) {
           </Link>
         </div>
         <nav className="nav-actions">
+          <button className="theme-toggle" type="button" onClick={toggleTheme} aria-label={`Switch to ${theme === 'dark' ? 'day' : 'night'} mode`} title={`Switch to ${theme === 'dark' ? 'day' : 'night'} mode`}>
+            <span className="theme-toggle-icon" aria-hidden="true">{theme === 'dark' ? '☀' : '☾'}</span>
+            <span className="theme-toggle-label">{theme === 'dark' ? 'Day' : 'Night'}</span>
+          </button>
           {dashboardContext ? (
             <>
               <button className="dashboard-search-trigger" type="button" onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true }))}><span aria-hidden="true">⌕</span><span>Search</span><kbd>⌘K</kbd></button>
