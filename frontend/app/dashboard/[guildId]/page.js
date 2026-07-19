@@ -249,6 +249,15 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
     migration: drafts.migration.enabled,
     billing: plan !== 'free'
   };
+  const nextSetup = !drafts.general.staffRoleIds.length
+    ? { section: 'staff-access', label: 'Choose staff access', detail: 'Decide which roles can moderate and manage settings.' }
+    : !configuredLogs
+      ? { section: 'logging', label: 'Set up logging', detail: 'Send moderation and security activity to a staff channel.' }
+      : !drafts.automod.enabled
+        ? { section: 'automod', label: 'Enable AutoMod', detail: 'Start with a policy to screen risky messages.' }
+        : !drafts.verification.enabled
+          ? { section: 'verification', label: 'Configure verification', detail: 'Control how members gain access to your server.' }
+          : { section: 'activity', label: 'Review activity', detail: 'Your core setup is complete. Check recent server activity.' };
 
   return (
     <Shell wide>
@@ -268,10 +277,22 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
 
         <div className="dashboard-layout">
           <aside className="sidebar" aria-label="Server settings">
+            <div className="sidebar-server">
+              {guild.icon ? <img className="sidebar-server-icon" src={guild.icon} alt="" /> : <div className="sidebar-server-icon">{guild.name.slice(0, 2).toUpperCase()}</div>}
+              <div className="sidebar-server-copy">
+                <span>Current server</span>
+                <strong>{guild.name}</strong>
+                <small>{guild.memberCount.toLocaleString()} members <i aria-hidden="true">·</i> <b className={health.connected ? 'online' : ''}>{health.connected ? 'Connected' : 'Offline'}</b></small>
+              </div>
+              <div className="sidebar-server-actions">
+                <a href="/dashboard">Switch server</a>
+                <a href={`https://discord.com/channels/${guildId}`} target="_blank" rel="noreferrer">Discord <span aria-hidden="true">↗</span></a>
+              </div>
+            </div>
             <button className="sidebar-find" type="button" onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true }))}><span><i aria-hidden="true">⌕</i> Find a setting</span><kbd>⌘K</kbd></button>
             {navigation.map(group => (
-              <div className="sidebar-group" key={group.label}>
-                <div className="sidebar-label"><span>{group.label}</span><small>{group.description}</small></div>
+              <details className="sidebar-group" key={group.label} open={group.label === 'Home' || group.items.some(item => item.id === activeSection)}>
+                <summary className="sidebar-label"><span>{group.label}</span><small>{group.description}</small><i aria-hidden="true">⌄</i></summary>
                 <nav aria-label={`${group.label} settings`}>
                   {group.items.map(item => (
                     <a
@@ -289,7 +310,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                     </a>
                   ))}
                 </nav>
-              </div>
+              </details>
             ))}
           </aside>
 
@@ -301,6 +322,11 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                   <div className="setup-score"><span>{setupProgress}%</span><small>configured</small></div>
                 </div>
                 <div className="settings-body">
+                  <a className="overview-next-step" href={`/${guildId ? `dashboard/${guildId}/` : 'dashboard/'}${nextSetup.section}`} onClick={() => setActiveSection(nextSetup.section)}>
+                    <span className="overview-next-step-index">Next</span>
+                    <span><strong>{nextSetup.label}</strong><small>{nextSetup.detail}</small></span>
+                    <i aria-hidden="true">→</i>
+                  </a>
                   <div className="overview-stats operational">
                     <article><span>AutoMod actions</span><strong>{Number(stats.automodActions || 0).toLocaleString()}</strong><small>Recorded interventions</small></article>
                     <article><span>Verified members</span><strong>{Number(stats.verified || 0).toLocaleString()}</strong><small>Completed verification</small></article>
