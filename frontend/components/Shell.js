@@ -50,7 +50,7 @@ export default function Shell({ children, compact = false, wide = false }) {
     <div className={compact ? 'site compact' : wide ? 'site wide' : 'site'}>
       <header className="nav" aria-label="Primary navigation">
         <div className="nav-leading">
-          <button className="hamburger-button" type="button" aria-label={dashboardContext ? 'Open server navigation' : 'Open navigation menu'} aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}>
+          <button className={`hamburger-button ${dashboardContext ? 'dashboard-menu-trigger' : ''}`} type="button" aria-label={dashboardContext ? 'Open server navigation' : 'Open navigation menu'} aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}>
             <span aria-hidden="true" /><span aria-hidden="true" /><span aria-hidden="true" />
           </button>
           <Link className="brand" href="/">
@@ -61,7 +61,6 @@ export default function Shell({ children, compact = false, wide = false }) {
         <nav className="nav-actions">
           {dashboardContext ? (
             <>
-              <Link className="dashboard-top-link" href="/dashboard">All servers</Link>
               <button className="dashboard-search-trigger" type="button" onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true }))}><span aria-hidden="true">⌕</span><span>Search</span><kbd>⌘K</kbd></button>
               {user && <><span className="user-chip">{user.avatar ? <img src={user.avatar} alt="" /> : null}<span>{user.username}</span></span><button className="button ghost small" onClick={logout}>Log out</button></>}
             </>

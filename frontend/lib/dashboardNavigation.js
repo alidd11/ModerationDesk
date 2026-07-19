@@ -1,7 +1,7 @@
 export const dashboardNavigation = [
   {
     label: 'Workspace',
-    description: 'Monitor what is happening',
+    description: 'Monitor your server',
     items: [
       { id: 'overview', label: 'Overview', keywords: 'home health status' },
       { id: 'activity', label: 'Activity centre', keywords: 'history audit timeline events' }
@@ -9,29 +9,29 @@ export const dashboardNavigation = [
   },
   {
     label: 'Moderation',
-    description: 'Cases, appeals and policies',
+    description: 'Review people and actions',
     items: [
       { id: 'cases', label: 'Cases', keywords: 'warnings punishments history' },
       { id: 'appeals', label: 'Appeals', keywords: 'member review decisions' },
-      { id: 'policies', label: 'Member discipline', keywords: 'staff warnings timeout kick ban ladder escalation' }
+      { id: 'policies', label: 'Escalation policy', keywords: 'staff warnings timeout kick ban repeat behaviour ladder' }
     ]
   },
   {
     label: 'Protection',
-    description: 'Automated server safety',
+    description: 'Automated safety controls',
     items: [
-      { id: 'automod', label: 'AutoMod', keywords: 'spam invites links filters' },
+      { id: 'automod', label: 'Message protection', keywords: 'automod spam invites links filters message rules' },
       { id: 'anti-raid', label: 'Join protection', keywords: 'anti raid join gate quarantine' },
-      { id: 'anti-nuke', label: 'Anti-nuke', keywords: 'security destructive audit lockdown' }
+      { id: 'anti-nuke', label: 'Server protection', keywords: 'anti nuke security destructive audit lockdown' }
     ]
   },
   {
-    label: 'Server setup',
-    description: 'Access, roles and configuration',
+    label: 'Configure',
+    description: 'Access and server setup',
     items: [
       { id: 'verification', label: 'Verification', keywords: 'member access oauth button' },
       { id: 'staff-access', label: 'Staff access', keywords: 'moderators administrators permissions' },
-      { id: 'roles', label: 'Roles & automation', keywords: 'autoroles sticky roles' },
+      { id: 'roles', label: 'Roles & automation', keywords: 'autoroles sticky roles member roles' },
       { id: 'commands', label: 'Commands', keywords: 'slash rename hide customise' },
       { id: 'logging', label: 'Logging', keywords: 'log channels events audit' },
       { id: 'member-messages', label: 'Member messages', keywords: 'welcome goodbye greeting' }
@@ -39,13 +39,13 @@ export const dashboardNavigation = [
   },
   {
     label: 'Community',
-    description: 'Member-facing tools',
+    description: 'Member-facing features',
     items: [
       { id: 'community', label: 'Community tools', keywords: 'suggestions polls giveaways starboard' }
     ]
   },
   {
-    label: 'Account',
+    label: 'Manage',
     description: 'Plan and data controls',
     items: [
       { id: 'billing', label: 'Plan & billing', keywords: 'subscription premium pro pro plus discord billing' },

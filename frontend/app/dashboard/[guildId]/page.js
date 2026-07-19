@@ -48,7 +48,6 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
   const [drafts, setDrafts] = useState(null);
   const [records, setRecords] = useState({ cases: [], appeals: [], activity: [] });
   const [activeSection, setActiveSection] = useState(initialSection);
-  const [sidebarQuery, setSidebarQuery] = useState('');
   const [error, setError] = useState('');
   const [danger, setDanger] = useState('');
   const [billingBusy, setBillingBusy] = useState(false);
@@ -210,10 +209,6 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
     const matchesQuery = !query || [item.actorName, item.action, item.category, item.summary].join(' ').toLowerCase().includes(query);
     return matchesCategory && matchesQuery;
   });
-  const navigationQuery = sidebarQuery.trim().toLowerCase();
-  const visibleNavigation = navigation
-    .map(group => ({ ...group, items: group.items.filter(item => !navigationQuery || `${item.label} ${item.keywords || ''} ${group.label} ${group.description}`.toLowerCase().includes(navigationQuery)) }))
-    .filter(group => group.items.length);
   const setupSignals = [
     drafts.general.staffRoleIds.length > 0,
     configuredLogs > 0,
@@ -244,31 +239,21 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
       <div className="dashboard-shell">
         {error && <div className="error dashboard-error">{error}</div>}
 
-        <div className="mobile-workspace">
-          {guild.icon ? <img className="mobile-workspace-icon" src={guild.icon} alt="" /> : <div className="mobile-workspace-icon">{guild.name.slice(0, 2).toUpperCase()}</div>}
-          <div><strong>{guild.name}</strong><small>{guild.memberCount.toLocaleString()} members <i aria-hidden="true">·</i> <b className={health.connected ? 'online' : ''}>{health.connected ? 'Connected' : 'Offline'}</b></small></div>
-          <a href="/dashboard">Switch</a>
-        </div>
+        <section className="dashboard-context" aria-label="Current server">
+          <div className="dashboard-context-server">
+            {guild.icon ? <img className="dashboard-context-icon" src={guild.icon} alt="" /> : <div className="dashboard-context-icon">{guild.name.slice(0, 2).toUpperCase()}</div>}
+            <div><span>Server workspace</span><strong>{guild.name}</strong><small>{guild.memberCount.toLocaleString()} members <i aria-hidden="true">·</i> <b className={health.connected ? 'online' : ''}>{health.connected ? 'Connected' : 'Offline'}</b> <i aria-hidden="true">·</i> {planLabel(plan)} plan</small></div>
+          </div>
+          <div className="dashboard-context-actions">
+            <a href="/dashboard">All servers</a>
+            <a href={`https://discord.com/channels/${guildId}`} target="_blank" rel="noreferrer">Open Discord <span aria-hidden="true">↗</span></a>
+          </div>
+        </section>
 
         <div className="dashboard-layout">
           <aside className="sidebar" aria-label="Server settings">
-            <section className="sidebar-server" aria-label="Current server">
-              {guild.icon ? <img className="sidebar-server-icon" src={guild.icon} alt="" /> : <div className="sidebar-server-icon">{guild.name.slice(0, 2).toUpperCase()}</div>}
-              <div className="sidebar-server-copy">
-                <span>Current server</span>
-                <strong title={guild.name}>{guild.name}</strong>
-                <small>{guild.memberCount.toLocaleString()} members <i aria-hidden="true">·</i> <b className={health.connected ? 'online' : ''}>{health.connected ? 'Connected' : 'Offline'}</b></small>
-              </div>
-              <div className="sidebar-server-actions">
-                <a href="/dashboard">All servers</a>
-                <a href={`https://discord.com/channels/${guildId}`} target="_blank" rel="noreferrer">Discord <span aria-hidden="true">↗</span></a>
-              </div>
-            </section>
-            <div className="sidebar-utility">
-              <span>Configuration</span>
-              <label className="sidebar-search"><i aria-hidden="true">⌕</i><input value={sidebarQuery} onChange={event => setSidebarQuery(event.target.value)} placeholder="Search settings" aria-label="Find a server setting" /></label>
-            </div>
-            {visibleNavigation.map(group => (
+            <button className="sidebar-find" type="button" onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true }))}><span><i aria-hidden="true">⌕</i> Find a setting</span><kbd>⌘K</kbd></button>
+            {navigation.map(group => (
               <div className="sidebar-group" key={group.label}>
                 <div className="sidebar-label"><span>{group.label}</span><small>{group.description}</small></div>
                 <nav aria-label={`${group.label} settings`}>
@@ -287,7 +272,6 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                 </nav>
               </div>
             ))}
-            {!visibleNavigation.length && <div className="sidebar-empty">No settings match “{sidebarQuery}”.</div>}
           </aside>
 
           <div className="dashboard-content">
@@ -318,7 +302,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                     <div className="overview-panel stack-panel">
                       <div className="panel-heading"><div><h3>Protection status</h3><p>Each layer is configured independently.</p></div><span className="badge">{plan}</span></div>
                       <div className="module-status-list">
-                        <a href="#automod" onClick={() => setActiveSection('automod')}><span><b>AutoMod</b><small>Message filters and automatic sanctions</small></span><Status enabled={drafts.automod.enabled}>{drafts.automod.enabled ? 'Enabled' : 'Disabled'}</Status></a>
+                        <a href="#automod" onClick={() => setActiveSection('automod')}><span><b>Message protection</b><small>Message-time screening and immediate actions</small></span><Status enabled={drafts.automod.enabled}>{drafts.automod.enabled ? 'Enabled' : 'Disabled'}</Status></a>
                         <a href="#anti-raid" onClick={() => setActiveSection('anti-raid')}><span><b>Anti-raid</b><small>Join-spike detection and quarantine</small></span><Status enabled={drafts.security.antiRaid.enabled}>{drafts.security.antiRaid.enabled ? 'Enabled' : 'Disabled'}</Status></a>
                         <a href="#anti-nuke" onClick={() => setActiveSection('anti-nuke')}><span><b>Anti-nuke</b><small>Destructive-action response</small></span><Status enabled={drafts.security.antiNuke.enabled}>{drafts.security.antiNuke.enabled ? 'Enabled' : 'Disabled'}</Status></a>
                         <a href="#verification" onClick={() => setActiveSection('verification')}><span><b>Verification</b><small>Controlled member access</small></span><Status enabled={drafts.verification.enabled}>{drafts.verification.enabled ? 'Enabled' : 'Disabled'}</Status></a>
@@ -340,7 +324,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                       <div className="setup-checks">
                         <a href="#staff-access" onClick={() => setActiveSection('staff-access')}><span>Staff access</span><Status enabled={drafts.general.staffRoleIds.length > 0}>{drafts.general.staffRoleIds.length ? 'Configured' : 'Required'}</Status></a>
                         <a href="#logging" onClick={() => setActiveSection('logging')}><span>Logging</span><Status enabled={configuredLogs > 0}>{configuredLogs ? `${configuredLogs} channels` : 'Required'}</Status></a>
-                        <a href="#automod" onClick={() => setActiveSection('automod')}><span>AutoMod</span><Status enabled={drafts.automod.enabled}>{drafts.automod.enabled ? 'Enabled' : 'Optional'}</Status></a>
+                        <a href="#automod" onClick={() => setActiveSection('automod')}><span>Message protection</span><Status enabled={drafts.automod.enabled}>{drafts.automod.enabled ? 'Enabled' : 'Optional'}</Status></a>
                         <a href="#verification" onClick={() => setActiveSection('verification')}><span>Verification</span><Status enabled={drafts.verification.enabled}>{drafts.verification.enabled ? 'Enabled' : 'Optional'}</Status></a>
                       </div>
                     </div>
@@ -394,7 +378,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
             )}
 
             {activeSection === 'policies' && (
-              <SettingsSection id="policies" title="Member discipline" description="Build a consequence ladder from staff-issued warnings—not from message filters." guildId={guildId} csrf={session.csrf} section="moderation" data={drafts.moderation} headerControl={<ModuleToggle label="Enable discipline ladder" checked={drafts.moderation.escalation.enabled} onChange={value => set('moderation', data => (data.escalation.enabled = value, data))} />}>
+              <SettingsSection id="policies" title="Escalation policy" description="Build a consequence ladder from staff-issued warnings—not from message-time filters." guildId={guildId} csrf={session.csrf} section="moderation" data={drafts.moderation} headerControl={<ModuleToggle label="Enable escalation policy" checked={drafts.moderation.escalation.enabled} onChange={value => set('moderation', data => (data.escalation.enabled = value, data))} />}>
                 <div className="discipline-intro"><span className="workspace-summary-label">How it works</span><strong>Staff warning <i aria-hidden="true">→</i> warning count <i aria-hidden="true">→</i> consequence</strong><p>Only a staff member using <code>/mod warn</code> advances this ladder. AutoMod can remove or act on a message immediately, but never triggers a discipline step.</p></div>
                 <div className="discipline-ladder">
                   <article className="discipline-step">
@@ -513,7 +497,7 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                   <div><span className="workspace-summary-label">Message checks</span><strong>{[drafts.automod.antiInvites, drafts.automod.antiLinks, drafts.automod.antiSpam, drafts.automod.antiDuplicates, drafts.automod.antiMassMentions, drafts.automod.antiCaps].filter(Boolean).length}<small> / 6</small></strong><p>Content patterns currently monitored.</p></div>
                   <div><span className="workspace-summary-label">Immediate response</span><strong>{drafts.automod.action === 'delete' ? 'Remove only' : drafts.automod.action === 'warn' ? 'Remove + warn' : 'Remove + timeout'}</strong><p>Applied at message time—not from a warning count.</p></div>
                 </div>
-                <div className="automod-boundary"><strong>Message-time protection</strong><span>AutoMod handles a single risky message immediately. Use <a href={`/${guildId ? `dashboard/${guildId}/` : 'dashboard/'}policies`}>Member discipline</a> for a staff-warning consequence ladder.</span></div>
+                <div className="automod-boundary"><strong>Message-time protection</strong><span>Message protection handles a single risky message immediately. Use the <a href={`/${guildId ? `dashboard/${guildId}/` : 'dashboard/'}policies`}>escalation policy</a> for a staff-warning consequence ladder.</span></div>
                 <div className="settings-subhead form-divider"><div><h3>Start with a policy</h3><p>Apply a starting point, then refine the checks and rule policies below before saving.</p></div><span className="badge">Preset</span></div>
                 <div className="automod-preset-grid">{Object.entries(AUTOMOD_PRESETS).map(([id, preset]) => <button type="button" key={id} className={`automod-preset ${drafts.automod.preset === id ? 'selected' : ''}`} onClick={() => applyAutomodPreset(id)}><strong>{preset.label}</strong><span>{preset.description}</span><i aria-hidden="true">Apply →</i></button>)}</div>
                 <div className="split-settings">
