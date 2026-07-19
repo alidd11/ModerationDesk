@@ -17,7 +17,7 @@ Benefits (use these six in Discord's SKU editor):
 5. Flexible roles — Sticky roles, starboard and up to ten auto roles.
 6. Faster moderation setup — Saved protection presets and policy controls.
 
-## SKU 2 — ModerationDesk Pro Plus
+## SKU 2 — ModerationDesk Pro+
 
 - Type: Guild Subscription
 - Price: $7.99/month
@@ -41,7 +41,7 @@ Benefits (use these six in Discord's SKU editor):
 
    ```text
    DISCORD_PRO_SKU_ID=<ModerationDesk Pro SKU ID>
-   DISCORD_PRO_PLUS_SKU_ID=<ModerationDesk Pro Plus SKU ID>
+DISCORD_PRO_PLUS_SKU_ID=<ModerationDesk Pro+ SKU ID>
    ```
 
 5. Redeploy Railway. ModerationDesk will reconcile active Discord entitlements when it starts and when Discord sends entitlement create, update or delete events.

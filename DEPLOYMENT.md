@@ -141,7 +141,7 @@ Create two **Guild Subscription** SKUs in Discord Developer Portal → **Monetiz
 | SKU | Price | Plan |
 | --- | --- | --- |
 | ModerationDesk Pro | $3.99/month | Advanced moderation and protection |
-| ModerationDesk Pro Plus | $7.99/month | Anti-nuke and continuity controls |
+| ModerationDesk Pro+ | $7.99/month | Anti-nuke and continuity controls |
 
 Publish both to **Store & API**, then add their IDs as Railway variables:
 
