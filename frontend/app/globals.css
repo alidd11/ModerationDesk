@@ -512,7 +512,7 @@ input:focus, select:focus, textarea:focus { border-color: rgba(124,140,255,.72);
 }
 
 @media (max-width: 620px) {
-  .site, .site.wide, .site.compact { width: min(100% - 28px, 1180px); }
+  .site, .site.wide, .site.compact { width: min(calc(100% - 28px), 1180px); }
   .nav { min-height: 70px; }
   .nav-leading { gap: 9px; }
   .nav-actions { gap: 8px; }
