@@ -21,8 +21,8 @@ export const dashboardNavigation = [
     description: 'Automated safety controls',
     items: [
       { id: 'automod', label: 'Message protection', keywords: 'automod spam invites links filters message rules' },
-      { id: 'anti-raid', label: 'Join protection', keywords: 'anti raid join gate quarantine' },
-      { id: 'anti-nuke', label: 'Server protection', keywords: 'anti nuke security destructive audit lockdown' }
+      { id: 'anti-raid', label: 'Join protection', keywords: 'anti raid join gate quarantine', plan: 'Pro' },
+      { id: 'anti-nuke', label: 'Server protection', keywords: 'anti nuke security destructive audit lockdown', plan: 'Pro+' }
     ]
   },
   {

@@ -292,6 +292,7 @@ button { color: inherit; }
 .sidebar a.active { background: #262532; color: white; box-shadow: inset 2px 0 0 #8d80ff; }
 .sidebar a.active i { color: #9387ff; }
 .nav-meta { display: inline-flex; align-items: center; gap: 7px; }
+.nav-plan { display: inline-flex; align-items: center; gap: 4px; color: #a89eff; line-height: 1; }.nav-plan em { font-size: 8px; font-style: normal; font-weight: 850; letter-spacing: .06em; }.nav-plan-icon { position: relative; width: 9px; height: 7px; border: 1.25px solid currentColor; border-radius: 1.5px; }.nav-plan-icon::before { content: ''; position: absolute; top: -5px; left: 1px; width: 5px; height: 4px; border: 1.25px solid currentColor; border-bottom: 0; border-radius: 5px 5px 0 0; }.nav-plan.locked { color: #8d91a0; }.nav-plan.locked em { color: #aaa6ba; }
 .nav-dot { width: 5px; height: 5px; border-radius: 50%; background: #484c56; }
 .nav-dot.enabled { background: #57c47e; }
 .sidebar-empty { padding: 18px 10px; color: #878c98; font-size: 12px; line-height: 1.5; }

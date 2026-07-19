@@ -30,6 +30,7 @@ const dateFormatter = new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', ti
 const formatDate = value => value ? dateFormatter.format(new Date(value)) : '—';
 const titleCase = value => String(value || '').replaceAll('_', ' ').replace(/\b\w/g, letter => letter.toUpperCase());
 const planLabel = plan => plan === 'enterprise' ? 'Pro+' : titleCase(plan);
+const needsUpgrade = (item, plan) => item.plan === 'Pro+' ? plan !== 'enterprise' : item.plan === 'Pro' ? plan === 'free' : false;
 const AUTOMOD_PRESETS = {
   community: { label: 'Community', description: 'Invites, spam, duplicates and mass mentions. A sensible starting point for active public servers.', values: { enabled: true, action: 'delete', antiInvites: true, antiLinks: false, antiSpam: true, antiDuplicates: true, antiMassMentions: true, antiCaps: false, maxMentions: 5, spamMaxMessages: 6, spamWindowSeconds: 8, duplicateMax: 3 } },
   strict: { label: 'Strict', description: 'Adds link and capitals checks with a quicker spam threshold for high-volume communities.', values: { enabled: true, action: 'warn', antiInvites: true, antiLinks: true, antiSpam: true, antiDuplicates: true, antiMassMentions: true, antiCaps: true, maxMentions: 4, spamMaxMessages: 5, spamWindowSeconds: 8, duplicateMax: 3 } },
@@ -269,7 +270,10 @@ export default function GuildDashboardPage({ initialSection = 'overview' }) {
                       aria-current={activeSection === item.id ? 'page' : undefined}
                     >
                       <span>{item.label}</span>
-                      <span className="nav-meta"><b className={`nav-dot ${sectionStatuses[item.id] ? 'enabled' : ''}`} aria-hidden="true" /><i aria-hidden="true">›</i></span>
+                      <span className="nav-meta">
+                        {item.plan && <span className={`nav-plan ${needsUpgrade(item, plan) ? 'locked' : ''}`} title={needsUpgrade(item, plan) ? `${item.plan} plan required` : `${item.plan} feature`} aria-label={needsUpgrade(item, plan) ? `${item.plan} plan required` : `${item.plan} feature`}><i className="nav-plan-icon" aria-hidden="true" /><em>{item.plan}</em></span>}
+                        <b className={`nav-dot ${sectionStatuses[item.id] ? 'enabled' : ''}`} aria-hidden="true" /><i aria-hidden="true">›</i>
+                      </span>
                     </a>
                   ))}
                 </nav>
